@@ -27,3 +27,12 @@ add_subdirectory(cmake/stm32cubemx_navi)
 target_link_libraries(${NAVI_PROJECT} PUBLIC
     stm32cubemx_navi
 )
+
+target_sources(${NAVI_PROJECT} PUBLIC
+        Source/mean.c
+        ${SHARED_SRC_DIR}/app
+)
+
+target_include_directories(${NAVI_PROJECT} PUBLIC
+        ${SHARED_SRC_DIR}/app
+)

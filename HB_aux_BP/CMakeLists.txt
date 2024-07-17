@@ -27,3 +27,11 @@ add_subdirectory(cmake/stm32cubemx_aux)
 target_link_libraries(${AUX_PROJECT} PUBLIC
     stm32cubemx_aux
 )
+
+target_sources(${AUX_PROJECT} PUBLIC
+        ${SHARED_SRC_DIR}/app
+)
+
+target_include_directories(${AUX_PROJECT} PUBLIC
+        ${SHARED_SRC_DIR}/app
+)

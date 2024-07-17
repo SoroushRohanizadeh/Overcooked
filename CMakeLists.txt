@@ -4,6 +4,8 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
+set(SHARED_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shared")
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
@@ -16,5 +18,5 @@ project(Undercooked LANGUAGES C ASM)
 #enable_language(C ASM)
 #add_library(stm32cubemx INTERFACE)
 
-add_subdirectory(HB_aux_BP)
 add_subdirectory(HB_navi_BP)
+add_subdirectory(HB_aux_BP)
