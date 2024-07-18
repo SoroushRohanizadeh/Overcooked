@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <usart.h>
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
@@ -114,10 +116,15 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  uint8_t count = 0;
   /* Infinite loop */
+  HAL_UART_Init(&huart1);
   for(;;)
   {
-    osDelay(1);
+    count = count == 255 ? 0 : count + 1;
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, count % 2 == 0);
+    HAL_UART_Transmit(&huart1, &count, sizeof(count), 100000);
+    osDelay(200);
   }
   /* USER CODE END StartDefaultTask */
 }
