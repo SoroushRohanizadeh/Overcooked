@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <string.h>
 #include <usart.h>
 
 #include "FreeRTOS.h"
@@ -118,13 +119,13 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
   uint8_t count = 0;
   /* Infinite loop */
-  HAL_UART_Init(&huart1);
   for(;;)
   {
     count = count == 255 ? 0 : count + 1;
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, count % 2 == 0);
-    HAL_UART_Transmit(&huart1, &count, sizeof(count), 100000);
-    osDelay(200);
+    HAL_UART_Transmit(&huart1,  &count, 1, 1000);
+    // uint8_t uartSent = HAL_UART_Transmit(&huart1,  &count, 1, 1000) == HAL_OK;
+    // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, count % 2 == 0);
+    osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
 }
