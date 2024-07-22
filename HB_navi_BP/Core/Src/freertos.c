@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <adc.h>
+#include <stdio.h>
 #include <string.h>
 #include <usart.h>
 
@@ -117,14 +119,19 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-  uint8_t count = 0;
+  uint16_t raw;
+  char msg[10];
   /* Infinite loop */
   for(;;)
   {
-    count = count == 255 ? 0 : count + 1;
-    HAL_UART_Transmit(&huart1,  &count, 1, 1000);
-    // uint8_t uartSent = HAL_UART_Transmit(&huart1,  &count, 1, 1000) == HAL_OK;
-    // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, count % 2 == 0);
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, 100);
+    raw = HAL_ADC_GetValue(&hadc1);
+    HAL_ADC_Stop(&hadc1);
+
+    sprintf(msg, "%hu\r\n", raw);
+    HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */

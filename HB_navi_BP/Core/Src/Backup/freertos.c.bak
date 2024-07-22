@@ -18,6 +18,11 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <adc.h>
+#include <stdio.h>
+#include <string.h>
+#include <usart.h>
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
@@ -114,10 +119,21 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  uint32_t raw;
+  char msg[10];
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, 100);
+    raw = HAL_ADC_GetValue(&hadc1);
+    HAL_ADC_Stop(&hadc1);
+
+    sprintf(msg, "%hu\r\n", raw);
+    // HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart1,  (uint8_t*)raw, strlen(msg), HAL_MAX_DELAY);
+
+    osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
 }
