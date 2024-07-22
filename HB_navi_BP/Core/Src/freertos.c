@@ -18,11 +18,6 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include <adc.h>
-#include <stdio.h>
-#include <string.h>
-#include <usart.h>
-
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
@@ -30,7 +25,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <adc.h>
+#include <stdio.h>
+#include <string.h>
+#include <usart.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -108,6 +106,11 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_EVENTS */
 
 }
+volatile int adcConvCMPLT = 0;
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
+  adcConvCMPLT = 1;
+}
 
 /* USER CODE BEGIN Header_StartDefaultTask */
 /**
@@ -126,14 +129,16 @@ void StartDefaultTask(void *argument)
     // HAL_ADC_PollForConversion(&hadc1, 100);
     // raw = HAL_ADC_GetValue(&hadc1);
     // HAL_ADC_Stop(&hadc1);
-    char msg[16];
+    char msg[15];
     volatile uint16_t adc_dma[2];
 
     HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_dma, 2);
+    while (adcConvCMPLT == 0) {}
+    adcConvCMPLT = 0;
     sprintf(msg, "%d\t %d\r\n", adc_dma[0], adc_dma[1]);
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-    osDelay(1);
+    osDelay(100);
   }
   /* USER CODE END StartDefaultTask */
 }
