@@ -119,17 +119,18 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-  uint16_t raw;
-  char msg[10];
   /* Infinite loop */
   for(;;)
   {
-    HAL_ADC_Start(&hadc1);
-    HAL_ADC_PollForConversion(&hadc1, 100);
-    raw = HAL_ADC_GetValue(&hadc1);
-    HAL_ADC_Stop(&hadc1);
+    // HAL_ADC_Start(&hadc1);
+    // HAL_ADC_PollForConversion(&hadc1, 100);
+    // raw = HAL_ADC_GetValue(&hadc1);
+    // HAL_ADC_Stop(&hadc1);
+    char msg[16];
+    volatile uint16_t adc_dma[2];
 
-    sprintf(msg, "%hu\r\n", raw);
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_dma, 2);
+    sprintf(msg, "%d\t %d\r\n", adc_dma[0], adc_dma[1]);
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     osDelay(1);

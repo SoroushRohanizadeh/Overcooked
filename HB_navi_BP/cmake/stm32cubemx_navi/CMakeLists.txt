@@ -28,6 +28,7 @@ target_sources(stm32cubemx_navi PUBLIC
 	../../Core/Src/gpio.c
 	../../Core/Src/freertos.c
 	../../Core/Src/adc.c
+	../../Core/Src/dma.c
 	../../Core/Src/usart.c
 	../../Core/Src/stm32f1xx_it.c
 	../../Core/Src/stm32f1xx_hal_msp.c
