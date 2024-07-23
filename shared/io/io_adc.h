@@ -17,7 +17,18 @@ enum ADC_Pins {
     PB1
 };
 
-#endif //IO_ADC_H
-io_adc_init(ADC_HandleTypeDef* hadcs, bool numhadc, enum ADC_Pins* adcPins, uint8_t numPins);
+typedef struct {
+    ADC_HandleTypeDef* hadcs;
+    bool twoADC;
+    enum ADC_Pins* adcPins;
+    uint8_t numPins;
+    volatile uint16_t* adcBuffer;
+    bool* adcConvCMPLT;
 
-io_adc_read(enum ADC_Pins pin);
+    HAL_StatusTypeDef (*ADC_Start)(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+} ADC_Handler;
+
+#endif //IO_ADC_H
+void io_adc_init(ADC_Handler* handle);
+
+void io_adc_read_raw();

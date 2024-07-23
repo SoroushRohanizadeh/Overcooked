@@ -26,9 +26,12 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <adc.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <usart.h>
+
+#include "io_adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,7 +51,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-int adcConvCMPLT = 0;
+bool adcConvCMPLT = false;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -61,7 +64,8 @@ const osThreadAttr_t defaultTask_attributes = {
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-  adcConvCMPLT = 1;
+  UNUSED(hadc);
+  adcConvCMPLT = true;
 }
 /* USER CODE END FunctionPrototypes */
 
@@ -125,12 +129,28 @@ void StartDefaultTask(void *argument)
 
   char msg[15];
   volatile uint16_t adc_dma[2];
+
+  enum ADC_Pins pins[] = {PA0, PA1};
+
+  ADC_Handler handler = {
+    .hadcs = &hadc1,
+    .twoADC = false,
+    .adcPins = pins,
+    .numPins = 2,
+    .adcBuffer = adc_dma,
+    .adcConvCMPLT = &adcConvCMPLT,
+    .ADC_Start = &HAL_ADC_Start_DMA
+  };
+
+  io_adc_init(&handler);
   /* Infinite loop */
   for(;;)
   {
-    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_dma, 2);
-    while (adcConvCMPLT == 0) {}
-    adcConvCMPLT = 0;
+    // HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_dma, 2);
+    // while (!adcConvCMPLT) {}
+    // adcConvCMPLT = false;
+
+    io_adc_read_raw();
 
     sprintf(msg, "%d\t %d\r\n", adc_dma[0], adc_dma[1]);
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);

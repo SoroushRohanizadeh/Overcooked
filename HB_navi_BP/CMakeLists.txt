@@ -37,4 +37,5 @@ target_sources(${NAVI_PROJECT} PUBLIC
 target_include_directories(${NAVI_PROJECT} PUBLIC
         ${SHARED_SRC_DIR}/app
         ${SHARED_SRC_DIR}/io
+        Source
 )

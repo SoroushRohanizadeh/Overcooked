@@ -21,6 +21,10 @@ target_include_directories(stm32cubemx_navi PUBLIC
 	../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3
 	../../Drivers/CMSIS/Device/ST/STM32F1xx/Include
 	../../Drivers/CMSIS/Include
+
+	# user includes:
+	${SHARED_SRC_DIR}/app
+	${SHARED_SRC_DIR}/io
 )
 
 target_sources(stm32cubemx_navi PUBLIC
