@@ -1,7 +1,8 @@
 #ifndef IO_ADC_H
 #define IO_ADC_H
 #include <stdbool.h>
-#include <stm32f1xx_hal_adc.h>
+#include <adc.h>
+
 
 enum ADC_Pins {
     PA0,
