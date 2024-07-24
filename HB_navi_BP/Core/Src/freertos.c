@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <adc.h>
+#include <io_adc.h>
 #include <app_analog.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -48,6 +48,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 #define NUM_PINS 2
+#define PERIOD 100
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -126,9 +127,7 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
   UNUSED(argument);
   int currentTicks = osKernelGetTickCount();
-  int period = 100;
 
-  char msg[15];
   volatile uint16_t adc_dma[NUM_PINS];
 
   enum ADC_Pin pins[] = {PA0, PA1};
@@ -146,18 +145,11 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    // HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_dma, 2);
-    // while (!adcConvCMPLT) {}
-    // adcConvCMPLT = false;
-    //
-    // io_adc_read_raw();
-
+    char msg[15];
     sprintf(msg, "%d\t %d\r\n", app_analog_readPin(PA0), app_analog_readPin(PA1));
-    // sprintf(msg, "%d\t %d\r\n", handler.adcBuffer[0], handler.adcBuffer[1]);
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-    sprintf(msg, "");
 
-    currentTicks += period;
+    currentTicks += PERIOD;
     osDelayUntil(currentTicks);
   }
   /* USER CODE END StartDefaultTask */
