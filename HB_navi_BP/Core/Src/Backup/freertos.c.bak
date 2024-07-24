@@ -25,10 +25,14 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <adc.h>
+#include <io_adc.h>
+#include <app_analog.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <usart.h>
+
+#include "io_adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,12 +47,13 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define NUM_PINS 2
+#define PERIOD 100
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-int adcConvCMPLT = 0;
+bool adcConvCMPLT = false;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -61,7 +66,8 @@ const osThreadAttr_t defaultTask_attributes = {
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-  adcConvCMPLT = 1;
+  UNUSED(hadc);
+  adcConvCMPLT = true;
 }
 /* USER CODE END FunctionPrototypes */
 
@@ -119,24 +125,31 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-  /* Infinite loop */
+  UNUSED(argument);
   int currentTicks = osKernelGetTickCount();
-  int period = 100;
 
-  char msg[15]; 
-  volatile uint16_t adc_dma[2];
+  volatile uint16_t adc_dma[NUM_PINS];
 
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_dma, 2);
+  enum ADC_Pin pins[] = {PA0, PA1};
+
+  ADC_Handler handler = {
+    .hadcs = &hadc1,
+    .twoADC = false,
+    .numPins = NUM_PINS,
+    .adcBuffer = adc_dma,
+    .adcConvCMPLT = &adcConvCMPLT,
+    .ADC_Start = &HAL_ADC_Start_DMA
+  };
+
+  app_analog_init(&handler, pins);
+  /* Infinite loop */
   for(;;)
   {
-    while (adcConvCMPLT == 0) {}
-    adcConvCMPLT = 0;
-
-    sprintf(msg, "%d\t %d\r\n", adc_dma[0], adc_dma[1]);
+    char msg[15];
+    sprintf(msg, "%d\t %d\r\n", app_analog_readPin(PA0), app_analog_readPin(PA1));
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-    sprintf(msg, "");
 
-    currentTicks += period;
+    currentTicks += PERIOD;
     osDelayUntil(currentTicks);
   }
   /* USER CODE END StartDefaultTask */

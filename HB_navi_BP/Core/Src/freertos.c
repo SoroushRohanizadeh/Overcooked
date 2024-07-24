@@ -30,6 +30,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <tim.h>
 #include <usart.h>
 
 #include "io_adc.h"
@@ -141,6 +142,10 @@ void StartDefaultTask(void *argument)
     .ADC_Start = &HAL_ADC_Start_DMA
   };
 
+  HAL_TIM_Base_Start(&htim1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  int dutyCycle = 0;
+
   app_analog_init(&handler, pins);
   /* Infinite loop */
   for(;;)
@@ -148,6 +153,9 @@ void StartDefaultTask(void *argument)
     char msg[15];
     sprintf(msg, "%d\t %d\r\n", app_analog_readPin(PA0), app_analog_readPin(PA1));
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+
+    __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, dutyCycle);
+    dutyCycle = (dutyCycle == 1600 ? 0 : dutyCycle + 100);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
