@@ -25,7 +25,14 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <io_adc.h>
+#include <app_analog.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include <usart.h>
 
+#include "io_adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,12 +47,13 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define NUM_PINS 2
+#define PERIOD 100
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+bool adcConvCMPLT = false;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -57,7 +65,10 @@ const osThreadAttr_t defaultTask_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
+  UNUSED(hadc);
+  adcConvCMPLT = true;
+}
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -114,10 +125,32 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  UNUSED(argument);
+  int currentTicks = osKernelGetTickCount();
+
+  volatile uint16_t adc_dma[NUM_PINS];
+
+  enum ADC_Pin pins[] = {PA0, PA1};
+
+  ADC_Handler handler = {
+    .hadcs = &hadc1,
+    .twoADC = false,
+    .numPins = NUM_PINS,
+    .adcBuffer = adc_dma,
+    .adcConvCMPLT = &adcConvCMPLT,
+    .ADC_Start = &HAL_ADC_Start_DMA
+  };
+
+  app_analog_init(&handler, pins);
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    char msg[15];
+    sprintf(msg, "%d\t %d\r\n", app_analog_readPin(PA0), app_analog_readPin(PA1));
+    HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+
+    currentTicks += PERIOD;
+    osDelayUntil(currentTicks);
   }
   /* USER CODE END StartDefaultTask */
 }

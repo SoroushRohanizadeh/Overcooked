@@ -4,7 +4,7 @@
 
 #endif //APP_STATE_MACHINE_H
 
-#define STATE_NAME_LIMIT
+#define STATE_NAME_LIMIT 16
 
 typedef struct {
     char name[STATE_NAME_LIMIT];

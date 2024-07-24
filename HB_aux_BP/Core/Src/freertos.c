@@ -114,10 +114,15 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  HAL_UART_Init(&huart2);
+  uint8_t count = 0;
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    HAL_UART_Receive(&huart2, &count, sizeof(count), 1000000);
+    // count = count == 255 ? 0 : count + 1;
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, count % 2 == 0);
+    osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
 }
