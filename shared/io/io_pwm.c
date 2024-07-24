@@ -8,5 +8,5 @@ void io_pwm_start(PWM_Handle *handler, uint32_t channel) {
 }
 
 void io_pwm_setDutyCycle(PWM_Handle *handler, uint32_t channel, uint16_t dutyCycle) {
-    __HAL_TIM_SetCompare(handler->htim, TIM_CHANNEL_1, dutyCycle * SCALAR);
+    __HAL_TIM_SetCompare(handler->htim, channel, dutyCycle * handler->htim->Init.Period / 100);
 }
