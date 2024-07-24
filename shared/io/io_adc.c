@@ -1,19 +1,34 @@
 #include "io_adc.h"
 
-ADC_HandleTypeDef hadc_1;
-ADC_HandleTypeDef hadc_2;
+void io_adc_read_raw(ADC_Handler* handler);
+bool io_adc_pinEnabled(ADC_Handler *handler, enum ADC_Pin adcPin);
+uint8_t io_adc_getPinIndex(ADC_Handler *handler, enum ADC_Pin pin);
 
-ADC_Handler *handler;
+uint16_t io_adc_readPin(ADC_Handler *handler, enum ADC_Pin pin) {
+    if (!io_adc_pinEnabled(handler, pin)) return -1;
 
-void io_adc_init(ADC_Handler* handle) {
-    hadc_1 = handle->hadcs[0];
-    if (handle->twoADC) {
-        hadc_2 = handle->hadcs[1];
-    }
-    handler = handle;
+    io_adc_read_raw(handler);
+    return handler->adcBuffer[io_adc_getPinIndex(handler, pin)];
 }
 
-void io_adc_read_raw() {
+uint8_t io_adc_getPinIndex(ADC_Handler *handler, enum ADC_Pin pin) {
+    for (int i = 0; i < handler->numPins; i++) {
+        if (handler->adcPins[i] == pin) {
+            return i;
+        }
+    }
+    return -1; // should never get here
+}
+
+bool io_adc_pinEnabled(ADC_Handler *handler, enum ADC_Pin adcPin) {
+    for (int i = 0; i < handler->numPins; i++) {
+        if (handler->adcPins[i] == adcPin) {
+            return true;
+        }
+    }
+    return false;
+}
+void io_adc_read_raw(ADC_Handler* handler) {
     handler->ADC_Start(&hadc1, (uint32_t*)handler->adcBuffer, handler->numPins);
     while (!*handler->adcConvCMPLT) {}
     *handler->adcConvCMPLT = 0;

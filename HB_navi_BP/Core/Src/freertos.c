@@ -26,7 +26,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <io_adc.h>
-#include <app_analog.h>
 #include <io_pwm.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -34,7 +33,6 @@
 #include <tim.h>
 #include <usart.h>
 
-#include "io_adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -132,8 +130,6 @@ void StartDefaultTask(void *argument)
 
   volatile uint16_t adc_dma[NUM_PINS];
 
-  enum ADC_Pin pins[] = {PA0, PA1};
-
   ADC_Handler adcHandler = {
     .hadcs = &hadc1,
     .twoADC = false,
@@ -145,23 +141,23 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle pwmHandler = {
     .htim = &htim1,
+    .channel = TIM_CHANNEL_1,
     .TIM_start = &HAL_TIM_Base_Start,
     .PWM_start = &HAL_TIM_PWM_Start
   };
 
-  io_pwm_start(&pwmHandler, TIM_CHANNEL_1);
+  io_pwm_start(&pwmHandler);
   // int dutyCycle = 0;
 
-  app_analog_init(&adcHandler, pins);
   /* Infinite loop */
   for(;;)
   {
     char msg[15];
-    sprintf(msg, "%d\t %d\r\n", app_analog_readPin(PA0), app_analog_readPin(PA1));
+    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), io_adc_readPin(&adcHandler, PA1));
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     // __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, app_analog_readPin(PA0) * 1600 / 4055);
-    io_pwm_setDutyCycle(&pwmHandler, TIM_CHANNEL_1, app_analog_readPin(PA0) * 100 / 4055);
+    io_pwm_setDutyCycle(&pwmHandler, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
     // dutyCycle = (dutyCycle == 1600 ? 0 : dutyCycle + 100);
 
     currentTicks += PERIOD;

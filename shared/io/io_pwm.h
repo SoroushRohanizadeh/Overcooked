@@ -6,11 +6,17 @@
 
 typedef struct {
     TIM_HandleTypeDef* htim;
+    uint32_t channel;
 
     HAL_StatusTypeDef (*TIM_start)(TIM_HandleTypeDef *htim);
     HAL_StatusTypeDef (*PWM_start)(TIM_HandleTypeDef *htim, uint32_t Channel);
+
+    HAL_StatusTypeDef (*TIM_stop)(TIM_HandleTypeDef *htim);
+    HAL_StatusTypeDef (*PWM_stop)(TIM_HandleTypeDef *htim, uint32_t Channel);
 } PWM_Handle;
 
-void io_pwm_start(PWM_Handle* handler, uint32_t channel);
+void io_pwm_start(PWM_Handle* handler);
 
-void io_pwm_setDutyCycle(PWM_Handle* handler, uint32_t channel, uint16_t dutyCycle);
+void io_pwm_setDutyCycle(PWM_Handle* handler, uint16_t dutyCycle);
+
+void io_pwm_stop(PWM_Handle* handler);
