@@ -18,7 +18,7 @@ typedef enum __ADC_Pin {
     PB1
 } ADC_Pin;
 
-typedef struct {
+typedef struct __ADC_Handler {
     ADC_HandleTypeDef* hadcs;
     bool twoADC;
     uint8_t numPins;

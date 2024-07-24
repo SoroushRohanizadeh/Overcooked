@@ -5,7 +5,7 @@
 
 #include "io_pwm.h"
 
-typedef struct {
+typedef struct __Motor_Handle{
  PWM_Handle* cw_handle;
  PWM_Handle* ccw_handle;
  bool drivingCW;

@@ -59,7 +59,7 @@ bool adcConvCMPLT = false;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -150,18 +150,18 @@ void StartDefaultTask(void *argument)
     .PWM_stop = HAL_TIM_PWM_Stop
   };
 
-  // PWM_Handle ccw_pwmHandler = {
-  //   .htim = &htim1,
-  //   .channel = TIM_CHANNEL_4,
-  //   .TIM_start = HAL_TIM_Base_Start,
-  //   .PWM_start = HAL_TIM_PWM_Start,
-  //   .TIM_stop = HAL_TIM_Base_Stop,
-  //   .PWM_stop = HAL_TIM_PWM_Stop
-  // };
+  PWM_Handle ccw_pwmHandler = {
+    .htim = &htim1,
+    .channel = TIM_CHANNEL_4,
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
+  };
 
   Motor_Handle motor = {
     .cw_handle = &cw_pwmHandler,
-    // .ccw_handle = &ccw_pwmHandler,
+    .ccw_handle = &ccw_pwmHandler,
     .drivingCW = true
   };
 
