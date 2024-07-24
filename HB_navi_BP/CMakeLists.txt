@@ -33,6 +33,7 @@ target_sources(${NAVI_PROJECT} PUBLIC
         ${SHARED_SRC_DIR}/app/app_stateMachine.c
         ${SHARED_SRC_DIR}/app/app_analog.c
         ${SHARED_SRC_DIR}/io/io_adc.c
+        ${SHARED_SRC_DIR}/io/io_pwm.c
 )
 
 target_include_directories(${NAVI_PROJECT} PUBLIC
