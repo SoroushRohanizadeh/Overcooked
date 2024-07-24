@@ -4,7 +4,7 @@
 
 #include <tim.h>
 
-typedef struct {
+typedef struct __PWM_Handle {
     TIM_HandleTypeDef* htim;
     uint32_t channel;
 

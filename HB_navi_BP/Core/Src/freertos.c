@@ -129,7 +129,7 @@ void StartDefaultTask(void *argument)
 
   volatile uint16_t adc_dma[NUM_PINS];
 
-  enum ADC_Pin adc_pins[] = {PA0, PA1};
+  ADC_Pin adc_pins[] = {PA0, PA1};
 
   ADC_Handler adcHandler = {
     .hadcs = &hadc1,
