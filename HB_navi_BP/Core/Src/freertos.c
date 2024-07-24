@@ -30,7 +30,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <tim.h>
+// #include <tim.h>
 #include <usart.h>
 
 /* USER CODE END Includes */
@@ -68,16 +68,6 @@ const osThreadAttr_t defaultTask_attributes = {
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   UNUSED(hadc);
   adcConvCMPLT = true;
-}
-
-int count = 0;
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-  if (GPIO_Pin == GPIO_PIN_2) {
-    // char msg[5];
-    // sprintf(msg, "%d", count);
-    // HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-    count++;
-  }
 }
 /* USER CODE END FunctionPrototypes */
 
@@ -137,8 +127,6 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
   UNUSED(argument);
 
-  int currentTicks = osKernelGetTickCount();
-
   volatile uint16_t adc_dma[NUM_PINS];
 
   enum ADC_Pin adc_pins[] = {PA0, PA1};
@@ -150,29 +138,34 @@ void StartDefaultTask(void *argument)
     .adcBuffer = adc_dma,
     .adcConvCMPLT = &adcConvCMPLT,
     .adcPins = adc_pins,
-    .ADC_Start = &HAL_ADC_Start_DMA
+    .ADC_Start = HAL_ADC_Start_DMA
   };
 
   PWM_Handle cw_pwmHandler = {
     .htim = &htim1,
     .channel = TIM_CHANNEL_1,
-    .TIM_start = &HAL_TIM_Base_Start,
-    .PWM_start = &HAL_TIM_PWM_Start
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
   };
 
-  PWM_Handle ccw_pwmHandler = {
-    .htim = &htim1,
-    .channel = TIM_CHANNEL_4,
-    .TIM_start = &HAL_TIM_Base_Start,
-    .PWM_start = &HAL_TIM_PWM_Start
-  };
+  // PWM_Handle ccw_pwmHandler = {
+  //   .htim = &htim1,
+  //   .channel = TIM_CHANNEL_4,
+  //   .TIM_start = HAL_TIM_Base_Start,
+  //   .PWM_start = HAL_TIM_PWM_Start,
+  //   .TIM_stop = HAL_TIM_Base_Stop,
+  //   .PWM_stop = HAL_TIM_PWM_Stop
+  // };
 
   Motor_Handle motor = {
     .cw_handle = &cw_pwmHandler,
-    .ccw_handle = &ccw_pwmHandler,
+    // .ccw_handle = &ccw_pwmHandler,
     .drivingCW = true
   };
 
+  int currentTicks = osKernelGetTickCount();
   /* Infinite loop */
   for(;;)
   {
@@ -180,11 +173,7 @@ void StartDefaultTask(void *argument)
     sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), io_adc_readPin(&adcHandler, PA1));
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-    // __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, app_analog_readPin(PA0) * 1600 / 4055);
-    // io_pwm_setDutyCycle(&pwmHandler, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
-    // dutyCycle = (dutyCycle == 1600 ? 0 : dutyCycle + 100);
-
-    // hw_dcMotor_driveCW(&motor, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
+    hw_dcMotor_driveCW(&motor, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
