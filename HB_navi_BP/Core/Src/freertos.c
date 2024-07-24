@@ -145,7 +145,6 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle pwmHandler = {
     .htim = &htim1,
-    .numPins = 1,
     .TIM_start = &HAL_TIM_Base_Start,
     .PWM_start = &HAL_TIM_PWM_Start
   };
@@ -162,7 +161,7 @@ void StartDefaultTask(void *argument)
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     // __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, app_analog_readPin(PA0) * 1600 / 4055);
-    io_pwm_setDutyCycle(&pwmHandler, TIM_CHANNEL_1, app_analog_readPin(PA0) * 1600 / 4055);
+    io_pwm_setDutyCycle(&pwmHandler, TIM_CHANNEL_1, app_analog_readPin(PA0) * 100 / 4055);
     // dutyCycle = (dutyCycle == 1600 ? 0 : dutyCycle + 100);
 
     currentTicks += PERIOD;

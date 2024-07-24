@@ -2,12 +2,10 @@
 #define IO_PWM_H
 #endif //IO_PWM_H
 
-#include <stdbool.h>
 #include <tim.h>
 
 typedef struct {
     TIM_HandleTypeDef* htim;
-    uint8_t numPins;
 
     HAL_StatusTypeDef (*TIM_start)(TIM_HandleTypeDef *htim);
     HAL_StatusTypeDef (*PWM_start)(TIM_HandleTypeDef *htim, uint32_t Channel);
