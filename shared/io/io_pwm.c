@@ -1,8 +1,9 @@
 #include "io_pwm.h"
 
-void io_pwm_start(PWM_Handle *handler) {
+void io_pwm_start(PWM_Handle *handler, uint16_t dutyCycle) {
     handler->TIM_start(handler->htim);
     handler->PWM_start(handler->htim, handler->channel);
+    io_pwm_setDutyCycle(handler, dutyCycle);
 }
 
 void io_pwm_setDutyCycle(PWM_Handle *handler, uint16_t dutyCycle) {

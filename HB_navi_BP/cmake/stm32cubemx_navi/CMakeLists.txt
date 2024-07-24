@@ -25,6 +25,7 @@ target_include_directories(stm32cubemx_navi PUBLIC
 	# user includes:
 	${SHARED_SRC_DIR}/app
 	${SHARED_SRC_DIR}/io
+	${SHARED_SRC_DIR}/hw
 )
 
 target_sources(stm32cubemx_navi PUBLIC

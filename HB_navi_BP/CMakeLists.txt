@@ -32,6 +32,7 @@ target_sources(${NAVI_PROJECT} PUBLIC
         Source/mean.c
         ${SHARED_SRC_DIR}/app/app_stateMachine.c
         ${SHARED_SRC_DIR}/hw/hw_dcMotor.c
+        ${SHARED_SRC_DIR}/hw/hw_rotaryEncoder.c
         ${SHARED_SRC_DIR}/io/io_adc.c
         ${SHARED_SRC_DIR}/io/io_pwm.c
 )
