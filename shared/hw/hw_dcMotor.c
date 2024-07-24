@@ -1,5 +1,5 @@
 #include "hw_dcMotor.h"
-
+#include "hw_rotaryEncoder.h"
 
 void hw_dcMotor_driveCW(Motor_Handle *handle, uint8_t throttle) {
     if (!handle->drivingCW) hw_dcMotor_stopCCW(handle);
@@ -25,4 +25,10 @@ void hw_dcMotor_stopCW(Motor_Handle *handle) {
 
 void hw_dcMotor_stopCCW(Motor_Handle *handle) {
     io_pwm_stop(handle->ccw_handle);
+}
+
+uint16_t hw_dcMotor_speedCW(Motor_Handle *handle) {
+}
+
+uint16_t hw_dcMotor_speedCCW(Motor_Handle *handle) {
 }

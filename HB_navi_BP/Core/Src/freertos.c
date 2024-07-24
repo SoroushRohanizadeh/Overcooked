@@ -69,6 +69,13 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   UNUSED(hadc);
   adcConvCMPLT = true;
 }
+
+int count = 0;
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  if (GPIO_Pin == GPIO_PIN_2) {
+    count++;
+  }
+}
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -170,11 +177,12 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
     char msg[15];
-    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), io_adc_readPin(&adcHandler, PA1));
+    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), count);
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     hw_dcMotor_driveCW(&motor, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
 
+    count = 0;
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
   }

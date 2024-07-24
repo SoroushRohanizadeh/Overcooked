@@ -28,3 +28,7 @@ void hw_dcMotor_setThrottleCCW(Motor_Handle* handle, uint8_t throttle);
 void hw_dcMotor_stopCW(Motor_Handle* handle);
 
 void hw_dcMotor_stopCCW(Motor_Handle* handle);
+
+uint16_t hw_dcMotor_speedCW(Motor_Handle* handle);
+
+uint16_t hw_dcMotor_speedCCW(Motor_Handle* handle);

@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-typedef struct {
+typedef struct __Rotary_Handle {
     uint16_t gpioPinCW;
     uint16_t gpioPinCCW;
     uint16_t countCW;
