@@ -31,7 +31,7 @@ target_link_libraries(${NAVI_PROJECT} PUBLIC
 target_sources(${NAVI_PROJECT} PUBLIC
         Source/mean.c
         ${SHARED_SRC_DIR}/app/app_stateMachine.c
-        ${SHARED_SRC_DIR}/app/app_dcMotor.c
+        ${SHARED_SRC_DIR}/hw/hw_dcMotor.c
         ${SHARED_SRC_DIR}/io/io_adc.c
         ${SHARED_SRC_DIR}/io/io_pwm.c
 )
@@ -39,5 +39,6 @@ target_sources(${NAVI_PROJECT} PUBLIC
 target_include_directories(${NAVI_PROJECT} PUBLIC
         ${SHARED_SRC_DIR}/app
         ${SHARED_SRC_DIR}/io
+        ${SHARED_SRC_DIR}/hw
         Source
 )
