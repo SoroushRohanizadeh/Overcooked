@@ -3,24 +3,9 @@
 #include <stdbool.h>
 #include <adc.h>
 
-
-enum ADC_Pins {
-    PA0,
-    PA1,
-    PA2,
-    PA3,
-    PA4,
-    PA5,
-    PA6,
-    PA7,
-    PB0,
-    PB1
-};
-
 typedef struct {
     ADC_HandleTypeDef* hadcs;
     bool twoADC;
-    enum ADC_Pins* adcPins;
     uint8_t numPins;
     volatile uint16_t* adcBuffer;
     bool* adcConvCMPLT;

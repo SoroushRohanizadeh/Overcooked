@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <adc.h>
+#include <app_analog.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -46,7 +47,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define NUM_PINS 2
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -128,31 +129,31 @@ void StartDefaultTask(void *argument)
   int period = 100;
 
   char msg[15];
-  volatile uint16_t adc_dma[2];
+  volatile uint16_t adc_dma[NUM_PINS];
 
-  enum ADC_Pins pins[] = {PA0, PA1};
+  enum ADC_Pin pins[] = {PA0, PA1};
 
   ADC_Handler handler = {
     .hadcs = &hadc1,
     .twoADC = false,
-    .adcPins = pins,
-    .numPins = 2,
+    .numPins = NUM_PINS,
     .adcBuffer = adc_dma,
     .adcConvCMPLT = &adcConvCMPLT,
     .ADC_Start = &HAL_ADC_Start_DMA
   };
 
-  io_adc_init(&handler);
+  app_analog_init(&handler, pins);
   /* Infinite loop */
   for(;;)
   {
     // HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_dma, 2);
     // while (!adcConvCMPLT) {}
     // adcConvCMPLT = false;
+    //
+    // io_adc_read_raw();
 
-    io_adc_read_raw();
-
-    sprintf(msg, "%d\t %d\r\n", adc_dma[0], adc_dma[1]);
+    sprintf(msg, "%d\t %d\r\n", app_analog_readPin(PA0), app_analog_readPin(PA1));
+    // sprintf(msg, "%d\t %d\r\n", handler.adcBuffer[0], handler.adcBuffer[1]);
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
     sprintf(msg, "");
 

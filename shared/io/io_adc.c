@@ -20,12 +20,3 @@ void io_adc_read_raw() {
     while (!*handler->adcConvCMPLT) {}
     *handler->adcConvCMPLT = 0;
 }
-
-bool io_adc_pinEnabled(enum ADC_Pins adcPin) {
-    for (int i = 0; i < handler->numPins; i++) {
-        if (handler->adcPins[i] == adcPin) {
-            return true;
-        }
-    }
-    return false;
-}
