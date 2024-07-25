@@ -8,7 +8,7 @@ enable_language(C ASM)
 
 target_compile_definitions(stm32cubemx INTERFACE 
 	USE_HAL_DRIVER 
-	STM32F103x6
+	STM32F103xB
     $<$<CONFIG:Debug>:DEBUG>
 )
 
@@ -63,7 +63,7 @@ target_sources(stm32cubemx INTERFACE
     ../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c
     ../../Core/Src/sysmem.c
     ../../Core/Src/syscalls.c
-    ../../startup_stm32f103x6.s
+    ../../startup_stm32f103xb.s
 )
 
 target_link_directories(stm32cubemx INTERFACE

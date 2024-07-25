@@ -25,7 +25,7 @@ add_subdirectory(cmake/stm32cubemx_navi)
 
 # Add linked libraries
 target_link_libraries(${NAVI_PROJECT} PUBLIC
-    stm32cubemx_navi
+        stm32cubemx_navi
 )
 
 target_sources(${NAVI_PROJECT} PUBLIC

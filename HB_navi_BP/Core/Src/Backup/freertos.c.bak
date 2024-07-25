@@ -25,13 +25,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <hw_dcMotor.h>
-#include <io_adc.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <string.h>
-// #include <tim.h>
-#include <usart.h>
 
 /* USER CODE END Includes */
 
@@ -47,28 +40,24 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define NUM_PINS 2
-#define PERIOD 100
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-bool adcConvCMPLT = false;
+
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-  UNUSED(hadc);
-  adcConvCMPLT = true;
-}
+
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -125,58 +114,10 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-  UNUSED(argument);
-
-  volatile uint16_t adc_dma[NUM_PINS];
-
-  ADC_Pin adc_pins[] = {PA0, PA1};
-
-  ADC_Handler adcHandler = {
-    .hadcs = &hadc1,
-    .twoADC = false,
-    .numPins = NUM_PINS,
-    .adcBuffer = adc_dma,
-    .adcConvCMPLT = &adcConvCMPLT,
-    .adcPins = adc_pins,
-    .ADC_Start = HAL_ADC_Start_DMA
-  };
-
-  PWM_Handle cw_pwmHandler = {
-    .htim = &htim1,
-    .channel = TIM_CHANNEL_1,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  PWM_Handle ccw_pwmHandler = {
-    .htim = &htim1,
-    .channel = TIM_CHANNEL_4,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  Motor_Handle motor = {
-    .cw_handle = &cw_pwmHandler,
-    .ccw_handle = &ccw_pwmHandler,
-    .drivingCW = true
-  };
-
-  int currentTicks = osKernelGetTickCount();
   /* Infinite loop */
   for(;;)
   {
-    char msg[15];
-    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), io_adc_readPin(&adcHandler, PA1));
-    HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-
-    hw_dcMotor_driveCW(&motor, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
-
-    currentTicks += PERIOD;
-    osDelayUntil(currentTicks);
+    osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
 }

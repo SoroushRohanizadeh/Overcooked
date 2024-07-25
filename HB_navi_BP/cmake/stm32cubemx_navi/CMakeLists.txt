@@ -7,9 +7,9 @@ cmake_minimum_required(VERSION 3.22)
 #enable_language(C ASM)
 
 target_compile_definitions(stm32cubemx_navi PUBLIC
-	USE_HAL_DRIVER 
-	STM32F103x6
-    $<$<CONFIG:Debug>:DEBUG>
+	USE_HAL_DRIVER
+	STM32F103xB
+	$<$<CONFIG:Debug>:DEBUG>
 )
 
 target_include_directories(stm32cubemx_navi PUBLIC
@@ -68,7 +68,7 @@ target_sources(stm32cubemx_navi PUBLIC
 	../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c
 	../../Core/Src/sysmem.c
 	../../Core/Src/syscalls.c
-	../../startup_stm32f103x6.s
+	../../startup_stm32f103xb.s
 )
 
 target_link_directories(stm32cubemx_navi PUBLIC
