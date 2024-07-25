@@ -49,6 +49,6 @@ void app_drivetrain_driveLeft(DT_Handle* handle, uint8_t throttle);
 
 void app_drivetrain_driveRight(DT_Handle* handle, uint8_t throttle);
 
-void app_drivetrain_setThrottle(DT_Handle* handle, uint8_t throttle);
+void app_drivetrain_tickThrottlePID(DT_Handle* handle, uint8_t throttle);
 
 void app_drivetrain_stop(DT_Handle* handle);
