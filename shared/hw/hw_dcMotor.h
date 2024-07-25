@@ -17,6 +17,7 @@ typedef struct __Motor_Handle{
  Motor_State state;
  Rotary_Handle* rotary_handle;
  uint8_t pidIntegral;
+ uint8_t prevError;
 } Motor_Handle;
 
 /**

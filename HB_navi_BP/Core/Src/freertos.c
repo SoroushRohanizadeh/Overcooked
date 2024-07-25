@@ -174,7 +174,9 @@ void StartDefaultTask(void *argument)
     .cw_handle = &cw_pwmHandler,
     .ccw_handle = &ccw_pwmHandler,
     .state = STOP,
-    .rotary_handle = &rotary_handle
+    .rotary_handle = &rotary_handle,
+    .pidIntegral = 0,
+    .prevError = 0
   };
 
   int currentTicks = osKernelGetTickCount();
