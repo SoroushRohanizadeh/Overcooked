@@ -5,11 +5,12 @@
 #endif //APP_DCMOTOR_H
 
 #include "io_pwm.h"
+
 typedef enum Motor_State {
  CW,
  CCW,
  STOP
-}Motor_State;
+} Motor_State;
 
 typedef struct __Motor_Handle{
  PWM_Handle* cw_handle;
@@ -38,9 +39,7 @@ void hw_dcMotor_setThrottleCW_PID(Motor_Handle* handle, uint8_t throttle);
 
 void hw_dcMotor_setThrottleCCW_PID(Motor_Handle* handle, uint8_t throttle);
 
-void hw_dcMotor_stopCW(Motor_Handle* handle);
-
-void hw_dcMotor_stopCCW(Motor_Handle* handle);
+void hw_dcMotor_stop(Motor_Handle* handle);
 
 /**
  * @return Speed, represented as a percentage between minimum and maximum speeds

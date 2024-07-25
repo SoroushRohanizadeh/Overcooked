@@ -25,8 +25,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <hw_dcMotor.h>
-#include <io_adc.h>
+#include "io_adc.h"
+#include "app_drivetrain.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>

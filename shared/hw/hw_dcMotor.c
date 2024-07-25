@@ -30,18 +30,20 @@ void hw_dcMotor_driveCW(Motor_Handle *handle, uint8_t throttle) {
     if (handle->state == CW) return;
 
     if (handle->state == CCW) {
-        hw_dcMotor_stopCCW(handle);
+        hw_dcMotor_stop(handle);
     }
     io_pwm_start(handle->cw_handle,MAP_THROTTLE(throttle));
+    handle->state = CW;
 }
 
 void hw_dcMotor_driveCCW(Motor_Handle *handle, uint8_t throttle) {
     if (handle->state == CCW) return;
 
     if (handle->state == CW) {
-        hw_dcMotor_stopCCW(handle);
+        hw_dcMotor_stop(handle);
     }
     io_pwm_start(handle->ccw_handle, MAP_THROTTLE(throttle));
+    handle->state = CCW;
 }
 
 void hw_dcMotor_setThrottleCW(Motor_Handle *handle, uint8_t throttle) {
@@ -60,25 +62,24 @@ void hw_dcMotor_setThrottleCCW_PID(Motor_Handle *handle, uint8_t throttle) {
     hw_dcMotor_setThrottleCCW(handle, hw_dcMotor_throttlePID(handle, hw_dcMotor_getSpeedCW(handle), throttle));
 }
 
-void hw_dcMotor_stopCW(Motor_Handle *handle) {
-    io_pwm_stop(handle->cw_handle);
-}
-
-void hw_dcMotor_stopCCW(Motor_Handle *handle) {
-    io_pwm_stop(handle->ccw_handle);
+void hw_dcMotor_stop(Motor_Handle *handle) {
+    if (handle->state == CW) {
+        io_pwm_stop(handle->cw_handle);
+    } else if (handle->state == CCW) {
+        io_pwm_stop(handle->ccw_handle);
+    }
+    handle->state = STOP;
 }
 
 uint8_t hw_dcMotor_getSpeedCW(Motor_Handle *handle) {
+    if (handle->state != CW) return 0;
     return MAP_SPEED(handle->rotary_handle->countCW);
 }
 
 uint8_t hw_dcMotor_getSpeedCCW(Motor_Handle *handle) {
+    if (handle->state != CCW) return 0;
     return MAP_SPEED(handle->rotary_handle->countCCW);
 }
-
-// uint8_t hw_dcMotor_throttleConvert(uint8_t throttle) {
-//     return MIN_MOTOR_THROTTLE + THROTTLE_SCALE_FACTOR * (float) throttle;
-// }
 
 uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throttle) {
     throttle = MAP_THROTTLE(throttle);
