@@ -186,7 +186,7 @@ void StartDefaultTask(void *argument)
     // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), rotary_Handler.countCW);
     HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-    hw_dcMotor_driveCW(&motor, 80);
+    hw_dcMotor_driveCW(&motor, 20);
     hw_rotaryEncoder_resetCountCW(&rotary_handle);
 
     currentTicks += PERIOD;
