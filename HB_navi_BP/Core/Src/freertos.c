@@ -181,12 +181,12 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    char msg[15];
-    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), hw_dcMotor_speedCW(&motor));
-    // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), rotary_Handler.countCW);
-    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    // char msg[15];
+    // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), hw_dcMotor_getSpeedCW(&motor));
+    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-    hw_dcMotor_driveCW(&motor, 20);
+    hw_dcMotor_setThrottleCW(&motor, 50);
+    // hw_dcMotor_setThrottleCW_PID(&motor, 50);
     hw_rotaryEncoder_resetCountCW(&rotary_handle);
 
     currentTicks += PERIOD;

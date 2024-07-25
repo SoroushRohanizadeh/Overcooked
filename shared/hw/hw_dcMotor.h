@@ -16,6 +16,7 @@ typedef struct __Motor_Handle{
  PWM_Handle* ccw_handle;
  Motor_State state;
  Rotary_Handle* rotary_handle;
+ uint8_t pidIntegral;
 } Motor_Handle;
 
 /**
@@ -32,10 +33,14 @@ void hw_dcMotor_setThrottleCW(Motor_Handle* handle, uint8_t throttle);
 
 void hw_dcMotor_setThrottleCCW(Motor_Handle* handle, uint8_t throttle);
 
+void hw_dcMotor_setThrottleCW_PID(Motor_Handle* handle, uint8_t throttle);
+
+void hw_dcMotor_setThrottleCCW_PID(Motor_Handle* handle, uint8_t throttle);
+
 void hw_dcMotor_stopCW(Motor_Handle* handle);
 
 void hw_dcMotor_stopCCW(Motor_Handle* handle);
 
-uint16_t hw_dcMotor_speedCW(Motor_Handle* handle);
+uint8_t hw_dcMotor_getSpeedCW(Motor_Handle* handle);
 
-uint16_t hw_dcMotor_speedCCW(Motor_Handle* handle);
+uint8_t hw_dcMotor_getSpeedCCW(Motor_Handle* handle);
