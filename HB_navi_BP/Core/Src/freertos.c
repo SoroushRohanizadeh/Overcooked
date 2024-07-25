@@ -62,21 +62,22 @@ const osThreadAttr_t defaultTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
-Rotary_Handle rotary_Handler = {
-    .countCW = 0,
-    .countCCW = 0,
-    .gpioPinCW = GPIO_PIN_2
-};
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+Rotary_Handle rotary_handle = {
+  .countCW = 0,
+  .countCCW = 0,
+  .gpioPinCW = GPIO_PIN_15
+};
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   UNUSED(hadc);
   adcConvCMPLT = true;
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-  if(GPIO_Pin == rotary_Handler.gpioPinCW) {
-    hw_rotaryEncoder_incrementCW(&rotary_Handler);
+  if(GPIO_Pin == rotary_handle.gpioPinCW) {
+    hw_rotaryEncoder_incrementCW(&rotary_handle);
   }
 }
 /* USER CODE END FunctionPrototypes */
@@ -152,8 +153,8 @@ void StartDefaultTask(void *argument)
   };
 
   PWM_Handle cw_pwmHandler = {
-    .htim = &htim1,
-    .channel = TIM_CHANNEL_1,
+    .htim = &htim3,
+    .channel = TIM_CHANNEL_3,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
     .TIM_stop = HAL_TIM_Base_Stop,
@@ -161,7 +162,7 @@ void StartDefaultTask(void *argument)
   };
 
   PWM_Handle ccw_pwmHandler = {
-    .htim = &htim1,
+    .htim = &htim3,
     .channel = TIM_CHANNEL_4,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
@@ -169,13 +170,11 @@ void StartDefaultTask(void *argument)
     .PWM_stop = HAL_TIM_PWM_Stop
   };
 
-
-
   Motor_Handle motor = {
     .cw_handle = &cw_pwmHandler,
     .ccw_handle = &ccw_pwmHandler,
     .state = STOP,
-    .rotary_handle = &rotary_Handler
+    .rotary_handle = &rotary_handle
   };
 
   int currentTicks = osKernelGetTickCount();
@@ -183,13 +182,12 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
     char msg[15];
-    uint16_t CW_speed =  hw_dcMotor_speedCW(&motor);
-    // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), CW_speed)
+    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), hw_dcMotor_speedCW(&motor));
     // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), rotary_Handler.countCW);
-    // HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-    hw_dcMotor_driveCW(&motor, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
-    hw_rotaryEncoder_resetCountCW(&rotary_Handler);
+    hw_dcMotor_driveCW(&motor, 80);
+    hw_rotaryEncoder_resetCountCW(&rotary_handle);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
@@ -201,3 +199,4 @@ void StartDefaultTask(void *argument)
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
+

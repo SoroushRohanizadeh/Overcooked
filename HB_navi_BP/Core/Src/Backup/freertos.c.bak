@@ -30,7 +30,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-// #include <tim.h>
 #include <usart.h>
 
 /* USER CODE END Includes */
@@ -65,18 +64,20 @@ const osThreadAttr_t defaultTask_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+Rotary_Handle rotary_handle = {
+  .countCW = 0,
+  .countCCW = 0,
+  .gpioPinCW = GPIO_PIN_2
+};
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   UNUSED(hadc);
   adcConvCMPLT = true;
 }
 
-int prev = 0;
-int diff = 0;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-  if (GPIO_Pin == GPIO_PIN_2) {
-    int curr = osKernelGetTickCount();
-    diff = curr - prev;
-    prev = curr;
+  if(GPIO_Pin == rotary_handle.gpioPinCW) {
+    hw_rotaryEncoder_incrementCW(&rotary_handle);
   }
 }
 /* USER CODE END FunctionPrototypes */
@@ -172,7 +173,8 @@ void StartDefaultTask(void *argument)
   Motor_Handle motor = {
     .cw_handle = &cw_pwmHandler,
     .ccw_handle = &ccw_pwmHandler,
-    .drivingCW = true
+    .state = STOP,
+    .rotary_handle = &rotary_handle
   };
 
   int currentTicks = osKernelGetTickCount();
@@ -180,10 +182,12 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
     char msg[15];
-    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), diff);
-    HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), hw_dcMotor_speedCW(&motor));
+    // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), rotary_Handler.countCW);
+    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     hw_dcMotor_driveCW(&motor, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
+    hw_rotaryEncoder_resetCountCW(&rotary_handle);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
