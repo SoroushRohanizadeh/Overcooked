@@ -25,10 +25,14 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <adc.h>
+#include <hw_dcMotor.h>
+#include <io_adc.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+// #include <tim.h>
 #include <usart.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,25 +47,37 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define NUM_PINS 2
+#define PERIOD 100
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-int adcConvCMPLT = 0;
+bool adcConvCMPLT = false;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-  adcConvCMPLT = 1;
+  UNUSED(hadc);
+  adcConvCMPLT = true;
+}
+
+int prev = 0;
+int diff = 0;
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  if (GPIO_Pin == GPIO_PIN_2) {
+    int curr = osKernelGetTickCount();
+    diff = curr - prev;
+    prev = curr;
+  }
 }
 /* USER CODE END FunctionPrototypes */
 
@@ -119,24 +135,57 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-  /* Infinite loop */
+  UNUSED(argument);
+
+  volatile uint16_t adc_dma[NUM_PINS];
+
+  ADC_Pin adc_pins[] = {PA0, PA1};
+
+  ADC_Handler adcHandler = {
+    .hadcs = &hadc1,
+    .twoADC = false,
+    .numPins = NUM_PINS,
+    .adcBuffer = adc_dma,
+    .adcConvCMPLT = &adcConvCMPLT,
+    .adcPins = adc_pins,
+    .ADC_Start = HAL_ADC_Start_DMA
+  };
+
+  PWM_Handle cw_pwmHandler = {
+    .htim = &htim1,
+    .channel = TIM_CHANNEL_1,
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
+  };
+
+  PWM_Handle ccw_pwmHandler = {
+    .htim = &htim1,
+    .channel = TIM_CHANNEL_4,
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
+  };
+
+  Motor_Handle motor = {
+    .cw_handle = &cw_pwmHandler,
+    .ccw_handle = &ccw_pwmHandler,
+    .drivingCW = true
+  };
+
   int currentTicks = osKernelGetTickCount();
-  int period = 100;
-
-  char msg[15]; 
-  volatile uint16_t adc_dma[2];
-
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_dma, 2);
+  /* Infinite loop */
   for(;;)
   {
-    while (adcConvCMPLT == 0) {}
-    adcConvCMPLT = 0;
-
-    sprintf(msg, "%d\t %d\r\n", adc_dma[0], adc_dma[1]);
+    char msg[15];
+    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), diff);
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-    sprintf(msg, "");
 
-    currentTicks += period;
+    hw_dcMotor_driveCW(&motor, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
+
+    currentTicks += PERIOD;
     osDelayUntil(currentTicks);
   }
   /* USER CODE END StartDefaultTask */
