@@ -30,7 +30,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-// #include <tim.h>
 #include <usart.h>
 
 /* USER CODE END Includes */
@@ -62,7 +61,12 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-
+/* Welcome to Jacob Land -----------------------------------------------------*/
+Rotary_Handle rotary_Handler = {
+    .countCW = 0,
+    .countCCW = 0,
+    .gpioPinCW = GPIO_PIN_12
+  };
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
@@ -77,6 +81,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     int curr = osKernelGetTickCount();
     diff = curr - prev;
     prev = curr;
+  }
+
+  if(GPIO_Pin == GPIO_PIN_12) {
+    hw_rotaryEncoder_incrementCW(&rotary_Handler);
   }
 }
 /* USER CODE END FunctionPrototypes */
@@ -169,10 +177,13 @@ void StartDefaultTask(void *argument)
     .PWM_stop = HAL_TIM_PWM_Stop
   };
 
+
+
   Motor_Handle motor = {
     .cw_handle = &cw_pwmHandler,
     .ccw_handle = &ccw_pwmHandler,
-    .drivingCW = true
+    .state = STOP,
+    .rotary_handle = &rotary_Handler
   };
 
   int currentTicks = osKernelGetTickCount();
@@ -180,11 +191,12 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
     char msg[15];
-    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), diff);
+    uint16_t CW_speed =  hw_dcMotor_speedCW(&motor);
+    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), CW_speed);
     HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     hw_dcMotor_driveCW(&motor, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
-
+    hw_rotaryEncoder_resetCountCW(&rotary_Handler);
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
   }

@@ -1,14 +1,21 @@
 #ifndef APP_DCMOTOR_H
 #define APP_DCMOTOR_H
+#include <hw_rotaryEncoder.h>
 #include <stdbool.h>
 #endif //APP_DCMOTOR_H
 
 #include "io_pwm.h"
+typedef enum Motor_State {
+ CW,
+ CCW,
+ STOP
+}Motor_State;
 
 typedef struct __Motor_Handle{
  PWM_Handle* cw_handle;
  PWM_Handle* ccw_handle;
- bool drivingCW;
+ Motor_State state;
+ Rotary_Handle* rotary_handle;
 } Motor_Handle;
 
 /**
