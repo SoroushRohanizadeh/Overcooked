@@ -188,7 +188,7 @@ void StartDefaultTask(void *argument)
 
 
     // hw_dcMotor_setThrottleCW(&motor, 50);
-    hw_dcMotor_setThrottleCW_PID(&motor, 50);
+    hw_dcMotor_setThrottleCW_PID(&motor, 40);
     hw_rotaryEncoder_resetCountCW(&rotary_handle);
 
     currentTicks += PERIOD;

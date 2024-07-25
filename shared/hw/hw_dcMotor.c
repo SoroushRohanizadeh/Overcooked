@@ -23,7 +23,7 @@
 
 
 // uint8_t hw_dcMotor_throttleConvert(uint8_t throttle);
-uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throttle);
+uint8_t hw_dcMotor_throttlePID(uint8_t curr, uint8_t throttle);
 
 void hw_dcMotor_driveCW(Motor_Handle *handle, uint8_t throttle) {
     if (handle->state == CW) return;
@@ -44,7 +44,7 @@ void hw_dcMotor_driveCCW(Motor_Handle *handle, uint8_t throttle) {
 }
 
 void hw_dcMotor_setThrottleCW(Motor_Handle *handle, uint8_t throttle) {
-    io_pwm_setDutyCycle(handle->cw_handle, MAP_THROTTLE(throttle));
+    io_pwm_setDutyCycle(handle->cw_handle, throttle); // not mapping throttle
 }
 
 void hw_dcMotor_setThrottleCCW(Motor_Handle *handle, uint8_t throttle) {
@@ -52,11 +52,11 @@ void hw_dcMotor_setThrottleCCW(Motor_Handle *handle, uint8_t throttle) {
 }
 
 void hw_dcMotor_setThrottleCW_PID(Motor_Handle *handle, uint8_t throttle) {
-    hw_dcMotor_setThrottleCW(handle, hw_dcMotor_throttlePID(handle, hw_dcMotor_getSpeedCW(handle), throttle));
+    hw_dcMotor_setThrottleCW(handle, hw_dcMotor_throttlePID(hw_dcMotor_getSpeedCW(handle), throttle));
 }
 
 void hw_dcMotor_setThrottleCCW_PID(Motor_Handle *handle, uint8_t throttle) {
-    hw_dcMotor_setThrottleCCW(handle, hw_dcMotor_throttlePID(handle,hw_dcMotor_getSpeedCW(handle), throttle));
+    hw_dcMotor_setThrottleCCW(handle, hw_dcMotor_throttlePID(hw_dcMotor_getSpeedCW(handle), throttle));
 }
 
 void hw_dcMotor_stopCW(Motor_Handle *handle) {
@@ -79,19 +79,19 @@ uint8_t hw_dcMotor_getSpeedCCW(Motor_Handle *handle) {
 //     return MIN_MOTOR_THROTTLE + THROTTLE_SCALE_FACTOR * (float) throttle;
 // }
 
-uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throttle) {
+uint8_t hw_dcMotor_throttlePID(uint8_t curr, uint8_t throttle) {
     throttle = MAP_THROTTLE(throttle);
 
     int error = throttle - curr;
     uint8_t pidThrottle = throttle;
 
     pidThrottle += PROPORTIONAL_COEFFICIENT * error;
-    handle->pidIntegral += INTEGRAL_COEFFICIENT * error;
-    handle->pidIntegral = CLAMP(handle->pidIntegral);
-    pidThrottle += handle->pidIntegral;
+    // handle->pidIntegral += INTEGRAL_COEFFICIENT * error;
+    // handle->pidIntegral = CLAMP(handle->pidIntegral);
+    // pidThrottle += handle->pidIntegral;
 
-    char msg[15];
-    sprintf(msg, "%d\t %d\r\n", pidThrottle, pidThrottle);
+    char msg[34];
+    sprintf(msg, "throt: %d\t pid: %d\t curr: %d\r\n", throttle, pidThrottle, curr);
     HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     return pidThrottle;
