@@ -138,19 +138,19 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
   UNUSED(argument);
 
-  volatile uint16_t adc_dma[NUM_PINS];
+  // volatile uint16_t adc_dma[NUM_PINS];
 
-  ADC_Pin adc_pins[] = {PA0, PA1};
+  // ADC_Pin adc_pins[] = {PA0, PA1};
 
-  ADC_Handler adcHandler = {
-    .hadcs = &hadc1,
-    .twoADC = false,
-    .numPins = NUM_PINS,
-    .adcBuffer = adc_dma,
-    .adcConvCMPLT = &adcConvCMPLT,
-    .adcPins = adc_pins,
-    .ADC_Start = HAL_ADC_Start_DMA
-  };
+  // ADC_Handler adcHandler = {
+  //   .hadcs = &hadc1,
+  //   .twoADC = false,
+  //   .numPins = NUM_PINS,
+  //   .adcBuffer = adc_dma,
+  //   .adcConvCMPLT = &adcConvCMPLT,
+  //   .adcPins = adc_pins,
+  //   .ADC_Start = HAL_ADC_Start_DMA
+  // };
 
   PWM_Handle cw_pwmHandler = {
     .htim = &htim3,
@@ -178,6 +178,7 @@ void StartDefaultTask(void *argument)
   };
 
   int currentTicks = osKernelGetTickCount();
+  hw_dcMotor_driveCW(&motor, 50);
   /* Infinite loop */
   for(;;)
   {
@@ -185,8 +186,9 @@ void StartDefaultTask(void *argument)
     // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), hw_dcMotor_getSpeedCW(&motor));
     // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-    hw_dcMotor_setThrottleCW(&motor, 50);
-    // hw_dcMotor_setThrottleCW_PID(&motor, 50);
+
+    // hw_dcMotor_setThrottleCW(&motor, 50);
+    hw_dcMotor_setThrottleCW_PID(&motor, 50);
     hw_rotaryEncoder_resetCountCW(&rotary_handle);
 
     currentTicks += PERIOD;

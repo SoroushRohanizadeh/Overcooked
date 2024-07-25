@@ -41,6 +41,12 @@ void hw_dcMotor_stopCW(Motor_Handle* handle);
 
 void hw_dcMotor_stopCCW(Motor_Handle* handle);
 
+/**
+ * @return Speed, represented as a percentage between minimum and maximum speeds
+ */
 uint8_t hw_dcMotor_getSpeedCW(Motor_Handle* handle);
 
+/**
+ * @return Speed, represented as a percentage between minimum and maximum speeds
+ */
 uint8_t hw_dcMotor_getSpeedCCW(Motor_Handle* handle);

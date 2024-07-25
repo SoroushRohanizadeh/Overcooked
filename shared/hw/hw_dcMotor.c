@@ -14,10 +14,15 @@
 
 #define MIN_MOTOR_THROTTLE 75.0
 #define MAX_MOTOR_THROTTLE 100.0
-
 #define THROTTLE_SCALE_FACTOR (MAX_MOTOR_THROTTLE - MIN_MOTOR_THROTTLE) / 100
+#define MAP_THROTTLE(x) (MIN_MOTOR_THROTTLE + THROTTLE_SCALE_FACTOR * (float) (x))
 
-uint8_t hw_dcMotor_throttleConvert(uint8_t throttle);
+#define MIN_RAW_SPEED 0
+#define MAX_RAW_SPEED 20
+#define MAP_SPEED(x) (((x) - (MIN_RAW_SPEED)) * ((MAX_MOTOR_THROTTLE) - (MIN_MOTOR_THROTTLE)) / ((MAX_RAW_SPEED) - (MIN_RAW_SPEED)) + (MIN_MOTOR_THROTTLE))
+
+
+// uint8_t hw_dcMotor_throttleConvert(uint8_t throttle);
 uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throttle);
 
 void hw_dcMotor_driveCW(Motor_Handle *handle, uint8_t throttle) {
@@ -26,7 +31,7 @@ void hw_dcMotor_driveCW(Motor_Handle *handle, uint8_t throttle) {
     if (handle->state == CCW) {
         hw_dcMotor_stopCCW(handle);
     }
-    io_pwm_start(handle->cw_handle,hw_dcMotor_throttleConvert(throttle));
+    io_pwm_start(handle->cw_handle,MAP_THROTTLE(throttle));
 }
 
 void hw_dcMotor_driveCCW(Motor_Handle *handle, uint8_t throttle) {
@@ -35,20 +40,15 @@ void hw_dcMotor_driveCCW(Motor_Handle *handle, uint8_t throttle) {
     if (handle->state == CW) {
         hw_dcMotor_stopCCW(handle);
     }
-    io_pwm_start(handle->ccw_handle, hw_dcMotor_throttleConvert(throttle));
+    io_pwm_start(handle->ccw_handle, MAP_THROTTLE(throttle));
 }
 
 void hw_dcMotor_setThrottleCW(Motor_Handle *handle, uint8_t throttle) {
-    int value = hw_dcMotor_throttleConvert(throttle);
-    char msg[15];
-    sprintf(msg, "%d\t %d\r\n", value, value);
-    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-
-    io_pwm_setDutyCycle(handle->cw_handle, value);
+    io_pwm_setDutyCycle(handle->cw_handle, MAP_THROTTLE(throttle));
 }
 
 void hw_dcMotor_setThrottleCCW(Motor_Handle *handle, uint8_t throttle) {
-    io_pwm_setDutyCycle(handle->ccw_handle, hw_dcMotor_throttleConvert(throttle));
+    io_pwm_setDutyCycle(handle->ccw_handle, MAP_THROTTLE(throttle));
 }
 
 void hw_dcMotor_setThrottleCW_PID(Motor_Handle *handle, uint8_t throttle) {
@@ -68,18 +68,20 @@ void hw_dcMotor_stopCCW(Motor_Handle *handle) {
 }
 
 uint8_t hw_dcMotor_getSpeedCW(Motor_Handle *handle) {
-    return handle->rotary_handle->countCW;
+    return MAP_SPEED(handle->rotary_handle->countCW);
 }
 
 uint8_t hw_dcMotor_getSpeedCCW(Motor_Handle *handle) {
-    return handle->rotary_handle->countCCW;
+    return MAP_SPEED(handle->rotary_handle->countCCW);
 }
 
-uint8_t hw_dcMotor_throttleConvert(uint8_t throttle) {
-    return MIN_MOTOR_THROTTLE + THROTTLE_SCALE_FACTOR * (float) throttle;
-}
+// uint8_t hw_dcMotor_throttleConvert(uint8_t throttle) {
+//     return MIN_MOTOR_THROTTLE + THROTTLE_SCALE_FACTOR * (float) throttle;
+// }
 
 uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throttle) {
+    throttle = MAP_THROTTLE(throttle);
+
     int error = throttle - curr;
     uint8_t pidThrottle = throttle;
 
@@ -87,5 +89,10 @@ uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throt
     handle->pidIntegral += INTEGRAL_COEFFICIENT * error;
     handle->pidIntegral = CLAMP(handle->pidIntegral);
     pidThrottle += handle->pidIntegral;
+
+    char msg[15];
+    sprintf(msg, "%d\t %d\r\n", pidThrottle, pidThrottle);
+    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+
     return pidThrottle;
 }
