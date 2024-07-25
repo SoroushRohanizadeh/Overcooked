@@ -6,10 +6,8 @@ void hw_dcMotor_driveCW(Motor_Handle *handle, uint8_t throttle) {
 
     if (handle->state == CCW) {
         hw_dcMotor_stopCCW(handle);
-        io_pwm_start(handle->cw_handle, throttle);
-    } else {
-        io_pwm_start(handle->cw_handle,throttle);
     }
+    io_pwm_start(handle->cw_handle,throttle);
 }
 
 void hw_dcMotor_driveCCW(Motor_Handle *handle, uint8_t throttle) {
@@ -17,10 +15,8 @@ void hw_dcMotor_driveCCW(Motor_Handle *handle, uint8_t throttle) {
 
     if (handle->state == CW) {
         hw_dcMotor_stopCCW(handle);
-        io_pwm_start(handle->ccw_handle, throttle);
-    } else {
-        io_pwm_start(handle->ccw_handle,throttle);
     }
+    io_pwm_start(handle->ccw_handle, throttle);
 }
 
 void hw_dcMotor_setThrottleCW(Motor_Handle *handle, uint8_t throttle) {

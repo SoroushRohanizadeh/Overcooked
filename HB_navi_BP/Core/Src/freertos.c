@@ -61,12 +61,12 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Welcome to Jacob Land -----------------------------------------------------*/
+
 Rotary_Handle rotary_Handler = {
     .countCW = 0,
     .countCCW = 0,
-    .gpioPinCW = GPIO_PIN_12
-  };
+    .gpioPinCW = GPIO_PIN_2
+};
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
@@ -74,16 +74,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   adcConvCMPLT = true;
 }
 
-int prev = 0;
-int diff = 0;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-  if (GPIO_Pin == GPIO_PIN_2) {
-    int curr = osKernelGetTickCount();
-    diff = curr - prev;
-    prev = curr;
-  }
-
-  if(GPIO_Pin == GPIO_PIN_12) {
+  if(GPIO_Pin == rotary_Handler.gpioPinCW) {
     hw_rotaryEncoder_incrementCW(&rotary_Handler);
   }
 }
@@ -192,11 +184,13 @@ void StartDefaultTask(void *argument)
   {
     char msg[15];
     uint16_t CW_speed =  hw_dcMotor_speedCW(&motor);
-    sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), CW_speed);
-    HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), CW_speed)
+    // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), rotary_Handler.countCW);
+    // HAL_UART_Transmit(&huart1,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     hw_dcMotor_driveCW(&motor, io_adc_readPin(&adcHandler, PA0) * 100 / 4055);
     hw_rotaryEncoder_resetCountCW(&rotary_Handler);
+
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
   }
