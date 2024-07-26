@@ -30,3 +30,5 @@ typedef struct __ADC_Handler {
 } ADC_Handler;
 
 uint16_t io_adc_readPin(ADC_Handler* handler, ADC_Pin pin);
+
+void io_adc_read_raw(ADC_Handler* handler);

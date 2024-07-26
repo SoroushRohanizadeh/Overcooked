@@ -2,59 +2,39 @@
 
 void app_drivetrain_setDriveState(DT_Handle* handle, Drive_State state);
 
-void app_drivetrain_driveUp(DT_Handle *handle, uint8_t throttle) {
-    app_drivetrain_setDriveState(handle, UP);
-    hw_dcMotor_driveCCW(handle->wheel_1, throttle);
-    hw_dcMotor_driveCCW(handle->wheel_2, throttle);
-    hw_dcMotor_driveCW(handle->wheel_3, throttle);
-    hw_dcMotor_driveCW(handle->wheel_4, throttle);
-}
+void app_drivetrain_drive(DT_Handle *handle, uint8_t throttle[4], Drive_State state) {
+    app_drivetrain_setDriveState(handle, state);
 
-void app_drivetrain_driveDown(DT_Handle *handle, uint8_t throttle) {
-    app_drivetrain_setDriveState(handle, DOWN);
-    hw_dcMotor_driveCW(handle->wheel_1, throttle);
-    hw_dcMotor_driveCW(handle->wheel_2, throttle);
-    hw_dcMotor_driveCCW(handle->wheel_3, throttle);
-    hw_dcMotor_driveCCW(handle->wheel_4, throttle);
-}
-
-void app_drivetrain_driveLeft(DT_Handle *handle, uint8_t throttle) {
-    app_drivetrain_setDriveState(handle, LEFT);
-    hw_dcMotor_driveCW(handle->wheel_1, throttle);
-    hw_dcMotor_driveCCW(handle->wheel_2, throttle);
-    hw_dcMotor_driveCW(handle->wheel_3, throttle);
-    hw_dcMotor_driveCCW(handle->wheel_4, throttle);
-}
-
-void app_drivetrain_driveRight(DT_Handle *handle, uint8_t throttle) {
-    app_drivetrain_setDriveState(handle, RIGHT);
-    hw_dcMotor_driveCCW(handle->wheel_1, throttle);
-    hw_dcMotor_driveCW(handle->wheel_2, throttle);
-    hw_dcMotor_driveCCW(handle->wheel_3, throttle);
-    hw_dcMotor_driveCW(handle->wheel_4, throttle);
-}
-
-void app_drivetrain_tickThrottle(DT_Handle *handle, uint8_t throttle) {
     if (handle->state == UP) {
-        hw_dcMotor_tickThrottlePID(handle->wheel_1, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_2, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_3, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_4, throttle);
+        hw_dcMotor_driveCCW(handle->wheel_1, throttle[0]);
+        hw_dcMotor_driveCCW(handle->wheel_2, throttle[1]);
+        hw_dcMotor_driveCW(handle->wheel_3, throttle[2]);
+        hw_dcMotor_driveCW(handle->wheel_4, throttle[3]);
     } else if (handle->state == DOWN) {
-        hw_dcMotor_tickThrottlePID(handle->wheel_1, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_2, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_3, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_4, throttle);
+        hw_dcMotor_driveCW(handle->wheel_1, throttle[0]);
+        hw_dcMotor_driveCW(handle->wheel_2, throttle[1]);
+        hw_dcMotor_driveCCW(handle->wheel_3, throttle[2]);
+        hw_dcMotor_driveCCW(handle->wheel_4, throttle[3]);
     } else if (handle->state == LEFT) {
-        hw_dcMotor_tickThrottlePID(handle->wheel_1, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_2, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_3, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_4, throttle);
+        hw_dcMotor_driveCCW(handle->wheel_1, throttle[0]);
+        hw_dcMotor_driveCW(handle->wheel_2, throttle[1]);
+        hw_dcMotor_driveCCW(handle->wheel_3, throttle[2]);
+        hw_dcMotor_driveCW(handle->wheel_4, throttle[3]);
     } else if (handle->state == RIGHT) {
-        hw_dcMotor_tickThrottlePID(handle->wheel_1, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_2, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_3, throttle);
-        hw_dcMotor_tickThrottlePID(handle->wheel_4, throttle);
+        hw_dcMotor_driveCW(handle->wheel_1, throttle[0]);
+        hw_dcMotor_driveCCW(handle->wheel_2, throttle[1]);
+        hw_dcMotor_driveCW(handle->wheel_3, throttle[2]);
+        hw_dcMotor_driveCCW(handle->wheel_4, throttle[3]);
+    }
+}
+
+
+void app_drivetrain_tickThrottle(DT_Handle *handle, uint8_t throttle[4]) {
+    if (handle->state != DRIVE_STOP) {
+        hw_dcMotor_tickThrottlePID(handle->wheel_1, throttle[0]);
+        hw_dcMotor_tickThrottlePID(handle->wheel_2, throttle[1]);
+        hw_dcMotor_tickThrottlePID(handle->wheel_3, throttle[2]);
+        hw_dcMotor_tickThrottlePID(handle->wheel_4, throttle[3]);
     }
 }
 

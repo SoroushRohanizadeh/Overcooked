@@ -14,7 +14,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 #file(GLOB_RECURSE AUX_MID Middlewares/*.c)
 
 # Create an executable object type
-add_executable(${AUX_PROJECT})
+add_executable(${AUX_PROJECT}
+        ../shared/app/app_lineFollowing.h)
 #
 #message(${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc)
 

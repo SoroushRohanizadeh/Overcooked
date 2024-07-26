@@ -25,6 +25,7 @@
 
 // uint8_t hw_dcMotor_throttleConvert(uint8_t throttle);
 uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throttle);
+void hw_dcMotor_setThrottle(Motor_Handle *handle, uint8_t throttle);
 
 void hw_dcMotor_driveCW(Motor_Handle *handle, uint8_t throttle) {
     if (handle->state == CW) return;
@@ -52,12 +53,10 @@ void hw_dcMotor_setThrottle(Motor_Handle *handle, uint8_t throttle) {
     } else if (handle->state == CCW) {
         io_pwm_setDutyCycle(handle->ccw_handle, throttle); // not mapping throttle
     }
-
 }
 
 void hw_dcMotor_tickThrottlePID(Motor_Handle *handle, uint8_t throttle) {
     hw_dcMotor_setThrottle(handle, hw_dcMotor_throttlePID(handle, hw_dcMotor_getSpeed(handle), throttle));
-
 }
 
 void hw_dcMotor_stop(Motor_Handle *handle) {
@@ -66,19 +65,23 @@ void hw_dcMotor_stop(Motor_Handle *handle) {
     } else if (handle->state == CCW) {
         io_pwm_stop(handle->ccw_handle);
     }
-    handle->state = STOP;
+    handle->state = MOTOR_STOP;
 }
 
 uint8_t hw_dcMotor_getSpeed(Motor_Handle *handle) {
+    uint8_t speed = 0;
+
     if (handle->state == CW) {
-        return MAP_SPEED(handle->rotary_handle->countCW);
+        speed = MAP_SPEED(handle->rotary_handle->countCW);
+        hw_rotaryEncoder_resetCountCW(handle->rotary_handle);
     }
 
     if (handle->state == CCW) {
-        return MAP_SPEED(handle->rotary_handle->countCCW);
+        speed = MAP_SPEED(handle->rotary_handle->countCCW);
+        hw_rotaryEncoder_resetCountCCW(handle->rotary_handle);
     }
 
-    return 0; // if stop state
+    return speed;
 }
 
 uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throttle) {
@@ -89,9 +92,9 @@ uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throt
 
     pidThrottle += PROPORTIONAL_COEFFICIENT * error;
 
-    handle->pidIntegral += INTEGRAL_COEFFICIENT * error;
-    handle->pidIntegral = CLAMP(handle->pidIntegral);
-    pidThrottle += handle->pidIntegral;
+    // handle->pidIntegral += INTEGRAL_COEFFICIENT * error;
+    // handle->pidIntegral = CLAMP(handle->pidIntegral);
+    // pidThrottle += handle->pidIntegral;
 
     // pidThrottle += DERIVATIVE_COEFFICIENT * (error - handle->prevError);
     // handle->prevError = error;

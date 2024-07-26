@@ -67,7 +67,7 @@ const osThreadAttr_t defaultTask_attributes = {
 Rotary_Handle rotary_handle_w1 = {
   .countCW = 0,
   .countCCW = 0,
-  .gpioPinCW = W1_CCW_SIG_Pin,
+  .gpioPinCW = W1_CW_SIG_Pin,
   .gpioPinCCW = W1_CCW_SIG_Pin
 };
 
@@ -75,7 +75,7 @@ Rotary_Handle rotary_handle_w2 = {
   .countCW = 0,
   .countCCW = 0,
   .gpioPinCW = W2_CW_SIG_Pin,
-  .gpioPinCCW = W2_CW_SIG_Pin
+  .gpioPinCCW = W2_CCW_SIG_Pin
 };
 
 Rotary_Handle rotary_handle_w3 = {
@@ -101,11 +101,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
   if (GPIO_Pin == rotary_handle_w1.gpioPinCW) {
     hw_rotaryEncoder_incrementCW(&rotary_handle_w1);
   } else if (GPIO_Pin == rotary_handle_w1.gpioPinCCW) {
-    hw_rotaryEncoder_incrementCCW(&rotary_handle_w1); // TEMP, missing pins
+    hw_rotaryEncoder_incrementCCW(&rotary_handle_w1);
 
   } else if (GPIO_Pin == rotary_handle_w2.gpioPinCW) {
     hw_rotaryEncoder_incrementCW(&rotary_handle_w2);
-    hw_rotaryEncoder_incrementCCW(&rotary_handle_w2); // TEMP, missing pins
+
+  } else if (GPIO_Pin == rotary_handle_w2.gpioPinCCW) {
+    hw_rotaryEncoder_incrementCCW(&rotary_handle_w2);
 
   } else if (GPIO_Pin == rotary_handle_w3.gpioPinCW) {
     hw_rotaryEncoder_incrementCW(&rotary_handle_w3);
@@ -299,8 +301,16 @@ void StartDefaultTask(void *argument)
     .prevError = 0
   };
 
+  DT_Handle drive_handle = {
+    .wheel_1 = &wheel1,
+    .wheel_2 = &wheel2,
+    .wheel_3 = &wheel3,
+    .wheel_4 = &wheel4,
+    .state = STOP_DRIVE
+  };
+
   int currentTicks = osKernelGetTickCount();
-  hw_dcMotor_driveCW(&wheel2, 50);
+  // hw_dcMotor_driveCCW(&wheel4, 50);
   /* Infinite loop */
   for(;;)
   {
@@ -310,9 +320,11 @@ void StartDefaultTask(void *argument)
 
 
     // hw_dcMotor_setThrottleCW(&motor, 50);
-    hw_dcMotor_tickThrottlePID(&wheel2, 40);
-    hw_rotaryEncoder_resetCountCW(&rotary_handle_w2);
+    // hw_dcMotor_tickThrottlePID(&wheel4, 40);
+    // hw_rotaryEncoder_resetCountCCW(wheel4.rotary_handle);
 
+    app_drivetrain_driveRight(&drive_handle, 30);
+    //this line increments currentticks by period.
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
   }

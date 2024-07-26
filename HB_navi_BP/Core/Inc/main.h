@@ -85,9 +85,9 @@ void Error_Handler(void);
 #define W4_CW_SIG_EXTI_IRQn EXTI15_10_IRQn
 #define W1_CW_SIG_Pin GPIO_PIN_3
 #define W1_CW_SIG_GPIO_Port GPIOB
-#define W2_CCW_SIG_Pin GPIO_PIN_5
+#define W1_CW_SIG_EXTI_IRQn EXTI3_IRQn
+#define W2_CCW_SIG_Pin GPIO_PIN_4
 #define W2_CCW_SIG_GPIO_Port GPIOB
-#define W2_CCW_SIG_EXTI_IRQn EXTI9_5_IRQn
 #define W1_CCW_PWM_Pin GPIO_PIN_6
 #define W1_CCW_PWM_GPIO_Port GPIOB
 #define W1_CW_PWM_Pin GPIO_PIN_7

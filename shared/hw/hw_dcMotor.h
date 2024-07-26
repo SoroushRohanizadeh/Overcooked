@@ -7,18 +7,18 @@
 #include "io_pwm.h"
 
 typedef enum Motor_State {
- CW,
- CCW,
- STOP
+    CW,
+    CCW,
+    MOTOR_STOP
 } Motor_State;
 
 typedef struct __Motor_Handle{
- PWM_Handle* cw_handle;
- PWM_Handle* ccw_handle;
- Motor_State state;
- Rotary_Handle* rotary_handle;
- uint8_t pidIntegral;
- uint8_t prevError;
+    PWM_Handle* cw_handle;
+    PWM_Handle* ccw_handle;
+    Motor_State state;
+    Rotary_Handle* rotary_handle;
+    uint8_t pidIntegral;
+    uint8_t prevError;
 } Motor_Handle;
 
 /**
@@ -27,8 +27,6 @@ typedef struct __Motor_Handle{
 void hw_dcMotor_driveCW(Motor_Handle* handle, uint8_t throttle);
 
 void hw_dcMotor_driveCCW(Motor_Handle* handle, uint8_t throttle);
-
-void hw_dcMotor_setThrottle(Motor_Handle* handle, uint8_t throttle);
 
 void hw_dcMotor_tickThrottlePID(Motor_Handle* handle, uint8_t throttle);
 

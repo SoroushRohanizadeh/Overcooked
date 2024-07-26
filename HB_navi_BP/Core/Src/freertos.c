@@ -100,7 +100,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
   if (GPIO_Pin == rotary_handle_w1.gpioPinCW) {
     hw_rotaryEncoder_incrementCW(&rotary_handle_w1);
-
   } else if (GPIO_Pin == rotary_handle_w1.gpioPinCCW) {
     hw_rotaryEncoder_incrementCCW(&rotary_handle_w1);
 
@@ -269,7 +268,7 @@ void StartDefaultTask(void *argument)
   Motor_Handle wheel1 = {
     .cw_handle = &cw_pwmHandler_w1,
     .ccw_handle = &ccw_pwmHandler_w1,
-    .state = STOP,
+    .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w1,
     .pidIntegral = 0,
     .prevError = 0
@@ -278,7 +277,7 @@ void StartDefaultTask(void *argument)
   Motor_Handle wheel2 = {
     .cw_handle = &cw_pwmHandler_w2,
     .ccw_handle = &ccw_pwmHandler_w2,
-    .state = STOP,
+    .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w2,
     .pidIntegral = 0,
     .prevError = 0
@@ -287,7 +286,7 @@ void StartDefaultTask(void *argument)
   Motor_Handle wheel3 = {
     .cw_handle = &cw_pwmHandler_w3,
     .ccw_handle = &ccw_pwmHandler_w3,
-    .state = STOP,
+    .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w3,
     .pidIntegral = 0,
     .prevError = 0
@@ -296,25 +295,37 @@ void StartDefaultTask(void *argument)
   Motor_Handle wheel4 = {
     .cw_handle = &cw_pwmHandler_w4,
     .ccw_handle = &ccw_pwmHandler_w4,
-    .state = STOP,
+    .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w4,
     .pidIntegral = 0,
     .prevError = 0
   };
 
+  DT_Handle drive_handle = {
+    .wheel_1 = &wheel1,
+    .wheel_2 = &wheel2,
+    .wheel_3 = &wheel3,
+    .wheel_4 = &wheel4,
+    .state = DRIVE_STOP
+  };
+
+  uint8_t throttle[] = {30,30,30,30};
+
   int currentTicks = osKernelGetTickCount();
-  hw_dcMotor_driveCW(&wheel2, 50);
+  app_drivetrain_drive(&drive_handle, throttle, RIGHT);
   /* Infinite loop */
   for(;;)
   {
-    // char msg[15];
-    // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), hw_dcMotor_getSpeedCW(&motor));
-    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    char msg[15];
+    sprintf(msg, "%d\t %d\r\n", 5, 5);
+    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
 
     // hw_dcMotor_setThrottleCW(&motor, 50);
-    hw_dcMotor_tickThrottlePID(&wheel2, 40);
-    hw_rotaryEncoder_resetCountCW(&rotary_handle_w2);
+    // hw_dcMotor_tickThrottlePID(&wheel4, 40);
+    // hw_rotaryEncoder_resetCountCCW(wheel4.rotary_handle);
+
+    app_drivetrain_tickThrottle(&drive_handle, throttle);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
