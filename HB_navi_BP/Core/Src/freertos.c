@@ -64,10 +64,32 @@ const osThreadAttr_t defaultTask_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-Rotary_Handle rotary_handle = {
+Rotary_Handle rotary_handle_w1 = {
   .countCW = 0,
   .countCCW = 0,
-  .gpioPinCW = GPIO_PIN_15
+  .gpioPinCW = W1_CW_SIG_Pin,
+  .gpioPinCCW = W1_CCW_SIG_Pin
+};
+
+Rotary_Handle rotary_handle_w2 = {
+  .countCW = 0,
+  .countCCW = 0,
+  .gpioPinCW = W2_CW_SIG_Pin,
+  .gpioPinCCW = W2_CCW_SIG_Pin
+};
+
+Rotary_Handle rotary_handle_w3 = {
+  .countCW = 0,
+  .countCCW = 0,
+  .gpioPinCW = W3_CW_SIG_Pin,
+  .gpioPinCCW = W3_CCW_SIG_Pin
+};
+
+Rotary_Handle rotary_handle_w4 = {
+  .countCW = 0,
+  .countCCW = 0,
+  .gpioPinCW = W4_CW_SIG_Pin,
+  .gpioPinCCW = W4_CCW_SIG_Pin
 };
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
@@ -76,8 +98,29 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-  if(GPIO_Pin == rotary_handle.gpioPinCW) {
-    hw_rotaryEncoder_incrementCW(&rotary_handle);
+  if (GPIO_Pin == rotary_handle_w1.gpioPinCW) {
+    hw_rotaryEncoder_incrementCW(&rotary_handle_w1);
+
+  } else if (GPIO_Pin == rotary_handle_w1.gpioPinCCW) {
+    hw_rotaryEncoder_incrementCCW(&rotary_handle_w1);
+
+  } else if (GPIO_Pin == rotary_handle_w2.gpioPinCW) {
+    hw_rotaryEncoder_incrementCW(&rotary_handle_w2);
+
+  } else if (GPIO_Pin == rotary_handle_w2.gpioPinCCW) {
+    hw_rotaryEncoder_incrementCCW(&rotary_handle_w2);
+
+  } else if (GPIO_Pin == rotary_handle_w3.gpioPinCW) {
+    hw_rotaryEncoder_incrementCW(&rotary_handle_w3);
+
+  } else if (GPIO_Pin == rotary_handle_w3.gpioPinCCW) {
+    hw_rotaryEncoder_incrementCCW(&rotary_handle_w3);
+
+  } else if (GPIO_Pin == rotary_handle_w4.gpioPinCW) {
+    hw_rotaryEncoder_incrementCW(&rotary_handle_w4);
+
+  } else if (GPIO_Pin == rotary_handle_w4.gpioPinCCW) {
+    hw_rotaryEncoder_incrementCCW(&rotary_handle_w4);
   }
 }
 /* USER CODE END FunctionPrototypes */
@@ -151,8 +194,25 @@ void StartDefaultTask(void *argument)
   //   .adcPins = adc_pins,
   //   .ADC_Start = HAL_ADC_Start_DMA
   // };
+  PWM_Handle cw_pwmHandler_w1 = {
+    .htim = &htim4,
+    .channel = TIM_CHANNEL_2,
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
+  };
 
-  PWM_Handle cw_pwmHandler = {
+  PWM_Handle ccw_pwmHandler_w1 = {
+    .htim = &htim4,
+    .channel = TIM_CHANNEL_1,
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
+  };
+
+  PWM_Handle cw_pwmHandler_w2 = {
     .htim = &htim3,
     .channel = TIM_CHANNEL_3,
     .TIM_start = HAL_TIM_Base_Start,
@@ -161,7 +221,7 @@ void StartDefaultTask(void *argument)
     .PWM_stop = HAL_TIM_PWM_Stop
   };
 
-  PWM_Handle ccw_pwmHandler = {
+  PWM_Handle ccw_pwmHandler_w2 = {
     .htim = &htim3,
     .channel = TIM_CHANNEL_4,
     .TIM_start = HAL_TIM_Base_Start,
@@ -170,17 +230,80 @@ void StartDefaultTask(void *argument)
     .PWM_stop = HAL_TIM_PWM_Stop
   };
 
-  Motor_Handle motor = {
-    .cw_handle = &cw_pwmHandler,
-    .ccw_handle = &ccw_pwmHandler,
+  PWM_Handle cw_pwmHandler_w3 = {
+    .htim = &htim1,
+    .channel = TIM_CHANNEL_2,
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
+  };
+
+  PWM_Handle ccw_pwmHandler_w3 = {
+    .htim = &htim1,
+    .channel = TIM_CHANNEL_3,
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
+  };
+
+  PWM_Handle cw_pwmHandler_w4 = {
+    .htim = &htim4,
+    .channel = TIM_CHANNEL_3,
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
+  };
+
+  PWM_Handle ccw_pwmHandler_w4 = {
+    .htim = &htim4,
+    .channel = TIM_CHANNEL_4,
+    .TIM_start = HAL_TIM_Base_Start,
+    .PWM_start = HAL_TIM_PWM_Start,
+    .TIM_stop = HAL_TIM_Base_Stop,
+    .PWM_stop = HAL_TIM_PWM_Stop
+  };
+
+  Motor_Handle wheel1 = {
+    .cw_handle = &cw_pwmHandler_w1,
+    .ccw_handle = &ccw_pwmHandler_w1,
     .state = STOP,
-    .rotary_handle = &rotary_handle,
+    .rotary_handle = &rotary_handle_w1,
+    .pidIntegral = 0,
+    .prevError = 0
+  };
+
+  Motor_Handle wheel2 = {
+    .cw_handle = &cw_pwmHandler_w2,
+    .ccw_handle = &ccw_pwmHandler_w2,
+    .state = STOP,
+    .rotary_handle = &rotary_handle_w2,
+    .pidIntegral = 0,
+    .prevError = 0
+  };
+
+  Motor_Handle wheel3 = {
+    .cw_handle = &cw_pwmHandler_w3,
+    .ccw_handle = &ccw_pwmHandler_w3,
+    .state = STOP,
+    .rotary_handle = &rotary_handle_w3,
+    .pidIntegral = 0,
+    .prevError = 0
+  };
+
+  Motor_Handle wheel4 = {
+    .cw_handle = &cw_pwmHandler_w4,
+    .ccw_handle = &ccw_pwmHandler_w4,
+    .state = STOP,
+    .rotary_handle = &rotary_handle_w4,
     .pidIntegral = 0,
     .prevError = 0
   };
 
   int currentTicks = osKernelGetTickCount();
-  hw_dcMotor_driveCW(&motor, 50);
+  hw_dcMotor_driveCW(&wheel2, 50);
   /* Infinite loop */
   for(;;)
   {
@@ -190,8 +313,8 @@ void StartDefaultTask(void *argument)
 
 
     // hw_dcMotor_setThrottleCW(&motor, 50);
-    hw_dcMotor_tickThrottlePID(&motor, 40);
-    hw_rotaryEncoder_resetCountCW(&rotary_handle);
+    hw_dcMotor_tickThrottlePID(&wheel2, 40);
+    hw_rotaryEncoder_resetCountCW(&rotary_handle_w2);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

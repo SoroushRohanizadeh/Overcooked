@@ -93,8 +93,8 @@ uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throt
     handle->pidIntegral = CLAMP(handle->pidIntegral);
     pidThrottle += handle->pidIntegral;
 
-    pidThrottle += DERIVATIVE_COEFFICIENT * (error - handle->prevError);
-    handle->prevError = error;
+    // pidThrottle += DERIVATIVE_COEFFICIENT * (error - handle->prevError);
+    // handle->prevError = error;
 
     char msg[47];
     sprintf(msg, "throt: %d\t pid: %d\t curr: %d\t error: %d\r\n", throttle, pidThrottle, curr, error);
