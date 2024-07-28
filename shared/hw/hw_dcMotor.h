@@ -19,6 +19,8 @@ typedef struct __Motor_Handle{
     Rotary_Handle* rotary_handle;
     uint8_t pidIntegral;
     uint8_t prevError;
+    float kP;
+    float kI;
 } Motor_Handle;
 
 /**

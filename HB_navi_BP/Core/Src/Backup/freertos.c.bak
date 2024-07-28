@@ -268,7 +268,7 @@ void StartDefaultTask(void *argument)
   Motor_Handle wheel1 = {
     .cw_handle = &cw_pwmHandler_w1,
     .ccw_handle = &ccw_pwmHandler_w1,
-    .state = STOP,
+    .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w1,
     .pidIntegral = 0,
     .prevError = 0
@@ -277,7 +277,7 @@ void StartDefaultTask(void *argument)
   Motor_Handle wheel2 = {
     .cw_handle = &cw_pwmHandler_w2,
     .ccw_handle = &ccw_pwmHandler_w2,
-    .state = STOP,
+    .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w2,
     .pidIntegral = 0,
     .prevError = 0
@@ -286,7 +286,7 @@ void StartDefaultTask(void *argument)
   Motor_Handle wheel3 = {
     .cw_handle = &cw_pwmHandler_w3,
     .ccw_handle = &ccw_pwmHandler_w3,
-    .state = STOP,
+    .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w3,
     .pidIntegral = 0,
     .prevError = 0
@@ -295,7 +295,7 @@ void StartDefaultTask(void *argument)
   Motor_Handle wheel4 = {
     .cw_handle = &cw_pwmHandler_w4,
     .ccw_handle = &ccw_pwmHandler_w4,
-    .state = STOP,
+    .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w4,
     .pidIntegral = 0,
     .prevError = 0
@@ -306,25 +306,27 @@ void StartDefaultTask(void *argument)
     .wheel_2 = &wheel2,
     .wheel_3 = &wheel3,
     .wheel_4 = &wheel4,
-    .state = STOP_DRIVE
+    .state = DRIVE_STOP
   };
 
+  uint8_t throttle[] = {30,30,30,30};
+
+
+  // app_drivetrain_drive(&drive_handle, throttle, RIGHT);
+  hw_dcMotor_driveCW(&wheel2, 50);
+
   int currentTicks = osKernelGetTickCount();
-  // hw_dcMotor_driveCCW(&wheel4, 50);
   /* Infinite loop */
   for(;;)
   {
     // char msg[15];
-    // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), hw_dcMotor_getSpeedCW(&motor));
+    // sprintf(msg, "%d\t %d\r\n", 5, 5);
     // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
+    // app_drivetrain_tickThrottle(&drive_handle, throttle);
 
-    // hw_dcMotor_setThrottleCW(&motor, 50);
-    // hw_dcMotor_tickThrottlePID(&wheel4, 40);
-    // hw_rotaryEncoder_resetCountCCW(wheel4.rotary_handle);
+    hw_dcMotor_tickThrottlePID(&wheel2, 50);
 
-    app_drivetrain_driveRight(&drive_handle, 30);
-    //this line increments currentticks by period.
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
   }

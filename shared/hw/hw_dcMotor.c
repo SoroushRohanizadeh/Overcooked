@@ -4,12 +4,8 @@
 #include <string.h>
 #include <usart.h>
 
-#define PROPORTIONAL_COEFFICIENT 1.0
-#define INTEGRAL_COEFFICIENT 1.0
-#define DERIVATIVE_COEFFICIENT 0.000001
-
-#define INTEGRAL_MIN -10
-#define INTEGRAL_MAX 10
+#define INTEGRAL_MIN -20
+#define INTEGRAL_MAX 20
 
 #define CLAMP(x) ((x) < (INTEGRAL_MIN) ? (INTEGRAL_MIN) : ((x) > (INTEGRAL_MAX) ? (INTEGRAL_MAX) : (x)))
 
@@ -90,18 +86,18 @@ uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throt
     int error = throttle - curr;
     uint8_t pidThrottle = throttle;
 
-    pidThrottle += PROPORTIONAL_COEFFICIENT * error;
-
-    // handle->pidIntegral += INTEGRAL_COEFFICIENT * error;
+    // pidThrottle += handle->kP * error;
+    //
+    // handle->pidIntegral += handle->kI * error;
     // handle->pidIntegral = CLAMP(handle->pidIntegral);
     // pidThrottle += handle->pidIntegral;
 
     // pidThrottle += DERIVATIVE_COEFFICIENT * (error - handle->prevError);
     // handle->prevError = error;
 
-    char msg[47];
-    sprintf(msg, "throt: %d\t pid: %d\t curr: %d\t error: %d\r\n", throttle, pidThrottle, curr, error);
-    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    // char msg[47];
+    // sprintf(msg, "throt: %d\t pid: %d\t curr: %d\t error: %d\r\n", throttle, pidThrottle, curr, error);
+    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     return pidThrottle;
 }

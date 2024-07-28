@@ -24,11 +24,11 @@ typedef struct __ADC_Handler {
     uint8_t numPins;
     volatile uint16_t* adcBuffer;
     bool* adcConvCMPLT;
-    ADC_Pin *adcPins;
+    // ADC_Pin *adcPins;
 
     HAL_StatusTypeDef (*ADC_Start)(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
 } ADC_Handler;
 
-uint16_t io_adc_readPin(ADC_Handler* handler, ADC_Pin pin);
+// uint16_t io_adc_readPin(ADC_Handler* handler, ADC_Pin pin);
 
 void io_adc_read_raw(ADC_Handler* handler);
