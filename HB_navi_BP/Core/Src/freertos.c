@@ -270,43 +270,31 @@ void StartDefaultTask(void *argument)
     .ccw_handle = &ccw_pwmHandler_w1,
     .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w1,
+    .maxSpeed = 260,
     .pidIntegral = 0,
     .prevError = 0,
-    .kP = 0.2,
-    .kI = 1.0
+    .count = 0
   };
 
   Motor_Handle wheel2 = {
     .cw_handle = &cw_pwmHandler_w2,
     .ccw_handle = &ccw_pwmHandler_w2,
     .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w2,
-    .pidIntegral = 0,
-    .prevError = 0,
-    .kP = 0.2,
-    .kI = 1.0
+    .rotary_handle = &rotary_handle_w2
   };
 
   Motor_Handle wheel3 = {
     .cw_handle = &cw_pwmHandler_w3,
     .ccw_handle = &ccw_pwmHandler_w3,
     .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w3,
-    .pidIntegral = 0,
-    .prevError = 0,
-    .kP = 0.2,
-    .kI = 1.0
+    .rotary_handle = &rotary_handle_w3
   };
 
   Motor_Handle wheel4 = {
     .cw_handle = &cw_pwmHandler_w4,
     .ccw_handle = &ccw_pwmHandler_w4,
     .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w4,
-    .pidIntegral = 0,
-    .prevError = 0,
-    .kP = 0.2,
-    .kI = 1.0
+    .rotary_handle = &rotary_handle_w4
   };
 
   DT_Handle drive_handle = {
@@ -322,12 +310,12 @@ void StartDefaultTask(void *argument)
     .sns = &adcHandler
   };
 
-  uint8_t throt = 100;
-  uint8_t throttle[] = {throt,throt,throt,throt};
+  uint8_t setSpeed = 200;
+  uint8_t throttle[] = {setSpeed,setSpeed,setSpeed,setSpeed};
 
   // app_drivetrain_drive(&drive_handle, throttle, RIGHT);
 
-  hw_dcMotor_driveCCW(&wheel1, throt);
+  hw_dcMotor_driveCCW(&wheel1, setSpeed);
 
   int currentTicks = osKernelGetTickCount();
   /* Infinite loop */
@@ -337,7 +325,7 @@ void StartDefaultTask(void *argument)
 
     // app_drivetrain_tickThrottle(&drive_handle, throttle);
 
-    hw_dcMotor_tickThrottlePID(&wheel1, throt);
+    hw_dcMotor_tickSpeedPID(&wheel1);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

@@ -17,24 +17,22 @@ typedef struct __Motor_Handle{
     PWM_Handle* ccw_handle;
     Motor_State state;
     Rotary_Handle* rotary_handle;
-    uint8_t pidIntegral;
-    uint8_t prevError;
-    float kP;
-    float kI;
+    uint16_t maxSpeed; // in ticks per 10ms
+    uint16_t setSpeed; // the speed set by the control algorithm
+    uint16_t pidIntegral;
+    uint16_t prevError;
+    int count;
 } Motor_Handle;
 
 /**
- * @param throttle between 0 and 100
+ * @param speed in ticks per 10ms, between 0 and maxSpeed
  */
-void hw_dcMotor_driveCW(Motor_Handle* handle, uint8_t throttle);
+void hw_dcMotor_driveCW(Motor_Handle* handle, uint16_t speed);
 
-void hw_dcMotor_driveCCW(Motor_Handle* handle, uint8_t throttle);
+void hw_dcMotor_driveCCW(Motor_Handle* handle, uint16_t speed);
 
-void hw_dcMotor_tickThrottlePID(Motor_Handle* handle, uint8_t throttle);
+void hw_dcMotor_tickSpeedPID(Motor_Handle* handle);
 
 void hw_dcMotor_stop(Motor_Handle* handle);
 
-/**
- * @return Speed, represented as a percentage between minimum and maximum speeds
- */
-uint16_t hw_dcMotor_getSpeed(Motor_Handle* handle);
+uint16_t hw_dcMotor_getCurrentSpeed(Motor_Handle* handle);
