@@ -66,19 +66,15 @@ void hw_dcMotor_tickSpeedPID(Motor_Handle *handle) {
     // newSpeed += K_DER * (error - handle->prevError);
     // handle->prevError = error;
 
-    char msg[47];
-    sprintf(msg, "setSpeed: %d\t curr: %d\t error: %d\r\n", handle->setSpeed, curr, error);
-    // sprintf(msg, "%d\t %d\r\n", handle->setSpeed, curr);
-    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    // char msg[47];
+    // sprintf(msg, "setSpeed: %d\t curr: %d\t error: %d\r\n", handle->setSpeed, curr, error);
+    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     // handle->setSpeed = newSpeed;
     hw_dcMotor_setDutyCycle(handle, hw_dcMotor_speedToDutyCycle(handle, newSpeed));
-    // hw_dcMotor_setDutyCycle(handle, hw_dcMotor_speedToDutyCycle(handle, handle->count));
-    // handle->count = handle->count > handle->maxSpeed ? 0 : handle->count + 1;
 }
 
 uint8_t hw_dcMotor_speedToDutyCycle(Motor_Handle *handle, uint16_t newSpeed) {
-    // return (uint8_t) MAP_DUTY_CYCLE((100 * handle->setSpeed) / handle->maxSpeed);
     return (uint8_t) MAP_DUTY_CYCLE((100 * newSpeed) / handle->maxSpeed);
 }
 

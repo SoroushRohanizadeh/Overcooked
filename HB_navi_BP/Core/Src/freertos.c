@@ -270,31 +270,31 @@ void StartDefaultTask(void *argument)
     .ccw_handle = &ccw_pwmHandler_w1,
     .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w1,
-    .maxSpeed = 260,
-    .pidIntegral = 0,
-    .prevError = 0,
-    .count = 0
+    .maxSpeed = 260
   };
 
   Motor_Handle wheel2 = {
     .cw_handle = &cw_pwmHandler_w2,
     .ccw_handle = &ccw_pwmHandler_w2,
     .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w2
+    .rotary_handle = &rotary_handle_w2,
+    .maxSpeed = 260
   };
 
   Motor_Handle wheel3 = {
     .cw_handle = &cw_pwmHandler_w3,
     .ccw_handle = &ccw_pwmHandler_w3,
     .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w3
+    .rotary_handle = &rotary_handle_w3,
+    .maxSpeed = 260
   };
 
   Motor_Handle wheel4 = {
     .cw_handle = &cw_pwmHandler_w4,
     .ccw_handle = &ccw_pwmHandler_w4,
     .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w4
+    .rotary_handle = &rotary_handle_w4,
+    .maxSpeed = 260
   };
 
   DT_Handle drive_handle = {
