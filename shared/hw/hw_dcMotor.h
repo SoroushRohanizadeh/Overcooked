@@ -37,4 +37,4 @@ void hw_dcMotor_stop(Motor_Handle* handle);
 /**
  * @return Speed, represented as a percentage between minimum and maximum speeds
  */
-uint8_t hw_dcMotor_getSpeed(Motor_Handle* handle);
+uint16_t hw_dcMotor_getSpeed(Motor_Handle* handle);

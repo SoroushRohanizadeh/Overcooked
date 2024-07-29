@@ -322,22 +322,22 @@ void StartDefaultTask(void *argument)
     .sns = &adcHandler
   };
 
-  uint8_t throt = 30;
+  uint8_t throt = 100;
   uint8_t throttle[] = {throt,throt,throt,throt};
 
-  app_drivetrain_drive(&drive_handle, throttle, RIGHT);
+  // app_drivetrain_drive(&drive_handle, throttle, RIGHT);
 
-  // hw_dcMotor_driveCW(&wheel1, 50);
+  hw_dcMotor_driveCCW(&wheel1, throt);
 
   int currentTicks = osKernelGetTickCount();
   /* Infinite loop */
   for(;;)
   {
-    app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
+    // app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
 
     // app_drivetrain_tickThrottle(&drive_handle, throttle);
 
-    // hw_dcMotor_tickThrottlePID(&wheel1, 50);
+    hw_dcMotor_tickThrottlePID(&wheel1, throt);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

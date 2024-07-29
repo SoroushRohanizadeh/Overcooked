@@ -20,7 +20,7 @@
 
 
 // uint8_t hw_dcMotor_throttleConvert(uint8_t throttle);
-uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throttle);
+uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint16_t curr, uint8_t throttle);
 void hw_dcMotor_setThrottle(Motor_Handle *handle, uint8_t throttle);
 
 void hw_dcMotor_driveCW(Motor_Handle *handle, uint8_t throttle) {
@@ -64,23 +64,25 @@ void hw_dcMotor_stop(Motor_Handle *handle) {
     handle->state = MOTOR_STOP;
 }
 
-uint8_t hw_dcMotor_getSpeed(Motor_Handle *handle) {
-    uint8_t speed = 0;
+uint16_t hw_dcMotor_getSpeed(Motor_Handle *handle) {
+    uint16_t speed = 0;
 
     if (handle->state == CW) {
-        speed = MAP_SPEED(handle->rotary_handle->countCW);
+        // speed = MAP_SPEED(handle->rotary_handle->countCW);
+        speed = handle->rotary_handle->countCW;
         hw_rotaryEncoder_resetCountCW(handle->rotary_handle);
     }
 
     if (handle->state == CCW) {
-        speed = MAP_SPEED(handle->rotary_handle->countCCW);
+        // speed = MAP_SPEED(handle->rotary_handle->countCCW);
+        speed = handle->rotary_handle->countCCW;
         hw_rotaryEncoder_resetCountCCW(handle->rotary_handle);
     }
 
     return speed;
 }
 
-uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throttle) {
+uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint16_t curr, uint8_t throttle) {
     throttle = MAP_THROTTLE(throttle);
 
     int error = throttle - curr;
@@ -95,9 +97,9 @@ uint8_t hw_dcMotor_throttlePID(Motor_Handle *handle, uint8_t curr, uint8_t throt
     // pidThrottle += DERIVATIVE_COEFFICIENT * (error - handle->prevError);
     // handle->prevError = error;
 
-    // char msg[47];
-    // sprintf(msg, "throt: %d\t pid: %d\t curr: %d\t error: %d\r\n", throttle, pidThrottle, curr, error);
-    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    char msg[47];
+    sprintf(msg, "throt: %d\t pid: %d\t curr: %d\t error: %d\r\n", throttle, pidThrottle, curr, error);
+    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     return pidThrottle;
 }
