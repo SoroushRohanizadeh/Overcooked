@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "HB_navi_BP/cmake/stm32cubemx_navi",
+		"source" : "HB_navi_BP/cmake/stm32cubemx_navi"
+	}
+}

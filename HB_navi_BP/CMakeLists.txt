@@ -15,7 +15,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 #file(GLOB_RECURSE NAVI_MID Middlewares/*.c)
 
 # Create an executable object type
-add_executable(${NAVI_PROJECT} Source/mean.c)
+add_executable(${NAVI_PROJECT} Source/mean.c
+        ../shared/hw/hw_servo.h)
 
 
 add_library(stm32cubemx_navi)
@@ -33,6 +34,7 @@ target_sources(${NAVI_PROJECT} PUBLIC
         ${SHARED_SRC_DIR}/app/app_stateMachine.c
         ${SHARED_SRC_DIR}/hw/hw_dcMotor.c
         ${SHARED_SRC_DIR}/hw/hw_rotaryEncoder.c
+        ${SHARED_SRC_DIR}/hw/hw_servo.c
         ${SHARED_SRC_DIR}/io/io_adc.c
         ${SHARED_SRC_DIR}/io/io_pwm.c
 )

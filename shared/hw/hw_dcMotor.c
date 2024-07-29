@@ -1,8 +1,9 @@
 #include "hw_dcMotor.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <usart.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <usart.h>
+// #include <hw_servo.h>
 
 #define PROPORTIONAL_COEFFICIENT 1.0
 #define INTEGRAL_COEFFICIENT 1.0

@@ -25,12 +25,14 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <hw_dcMotor.h>
+#include <hw_servo.h>
 #include <io_adc.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <usart.h>
+
+//#include "hw_servo.h"
 
 /* USER CODE END Includes */
 
@@ -138,58 +140,76 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
   UNUSED(argument);
 
-  // volatile uint16_t adc_dma[NUM_PINS];
+  volatile uint16_t adc_dma[NUM_PINS];
 
-  // ADC_Pin adc_pins[] = {PA0, PA1};
+  ADC_Pin adc_pins[] = {PA0, PA1};
 
-  // ADC_Handler adcHandler = {
-  //   .hadcs = &hadc1,
-  //   .twoADC = false,
-  //   .numPins = NUM_PINS,
-  //   .adcBuffer = adc_dma,
-  //   .adcConvCMPLT = &adcConvCMPLT,
-  //   .adcPins = adc_pins,
-  //   .ADC_Start = HAL_ADC_Start_DMA
+  ADC_Handler adcHandler = {
+    .hadcs = &hadc1,
+    .twoADC = false,
+    .numPins = NUM_PINS,
+    .adcBuffer = adc_dma,
+    .adcConvCMPLT = &adcConvCMPLT,
+    .adcPins = adc_pins,
+    .ADC_Start = HAL_ADC_Start_DMA
+  };
+  //
+  // PWM_Handle cw_pwmHandler = {
+  //   .htim = &htim3,
+  //   .channel = TIM_CHANNEL_3,
+  //   .TIM_start = HAL_TIM_Base_Start,
+  //   .PWM_start = HAL_TIM_PWM_Start,
+  //   .TIM_stop = HAL_TIM_Base_Stop,
+  //   .PWM_stop = HAL_TIM_PWM_Stop
+  // };
+  //
+  // PWM_Handle ccw_pwmHandler = {
+  //   .htim = &htim3,
+  //   .channel = TIM_CHANNEL_4,
+  //   .TIM_start = HAL_TIM_Base_Start,
+  //   .PWM_start = HAL_TIM_PWM_Start,
+  //   .TIM_stop = HAL_TIM_Base_Stop,
+  //   .PWM_stop = HAL_TIM_PWM_Stop
+  // };
+  //
+  // Motor_Handle motor = {
+  //   .cw_handle = &cw_pwmHandler,
+  //   .ccw_handle = &ccw_pwmHandler,
+  //   .state = STOP,
+  //   .rotary_handle = &rotary_handle
+  // };
+  //
+  //
+  // Servo_Handle servo = {
+  //   .angle_handle = &cw_pwmHandler,
+  //   .state = OFF,
+  //   .currAngle = 0
   // };
 
-  PWM_Handle cw_pwmHandler = {
-    .htim = &htim3,
-    .channel = TIM_CHANNEL_3,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  PWM_Handle ccw_pwmHandler = {
-    .htim = &htim3,
-    .channel = TIM_CHANNEL_4,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  Motor_Handle motor = {
-    .cw_handle = &cw_pwmHandler,
-    .ccw_handle = &ccw_pwmHandler,
-    .state = STOP,
-    .rotary_handle = &rotary_handle
-  };
-
   int currentTicks = osKernelGetTickCount();
-  hw_dcMotor_driveCW(&motor, 50);
+  // hw_dcMotor_driveCW(&motor, 50);
   /* Infinite loop */
   for(;;)
   {
-    // char msg[15];
-    // sprintf(msg, "%d\t %d\r\n", io_adc_readPin(&adcHandler, PA0), hw_dcMotor_getSpeedCW(&motor));
-    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+
 
 
     // hw_dcMotor_setThrottleCW(&motor, 50);
-    hw_dcMotor_setThrottleCW_PID(&motor, 50);
-    hw_rotaryEncoder_resetCountCW(&rotary_handle);
+    //hw_dcMotor_setThrottleCW_PID(&motor, 50);
+    //hw_rotaryEncoder_resetCountCW(&rotary_handle);
+    int min_x = 0;
+    int max_x = 4055;
+    int min_y = 0;
+    int max_y = 180;
+
+
+    int angle = io_adc_readPin(&adcHandler, PA0) / 4055 * 180;
+
+    //hw_servo_init(&servo, angle);
+
+    char msg[15];
+    sprintf(msg, "%d\r\n", 1);
+    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

@@ -1,0 +1,8 @@
+"C:\Program Files\JetBrains\CLion 2024.1.1\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2024.1.1/bin/ninja/win/x64/ninja.exe" "-DCMAKE_C_COMPILER=\"C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe\"" "-DCMAKE_CXX_COMPILER=\"C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-g++.exe\"" -G Ninja -S C:\Users\jtssi\CLionProjects\Overcooked -B C:\Users\jtssi\CLionProjects\Overcooked\cmake-build-debug-mingw
+C:/Users/jtssi/CLionProjects/Overcooked
+-- The C compiler identification is GNU 10.3.1
+-- The ASM compiler identification is GNU
+-- Found assembler: C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe
+-- Configuring done (1.6s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/Users/jtssi/CLionProjects/Overcooked/cmake-build-debug-mingw
