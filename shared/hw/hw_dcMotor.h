@@ -21,15 +21,14 @@ typedef struct __Motor_Handle{
     uint16_t setSpeed; // the speed set by the control algorithm
 } Motor_Handle;
 
-/**
- * @param speed in ticks per 10ms, between 0 and maxSpeed
- */
-void hw_dcMotor_driveCW(Motor_Handle* handle, uint16_t speed);
+void hw_dcMotor_driveCW(Motor_Handle* handle, uint8_t throttle);
 
-void hw_dcMotor_driveCCW(Motor_Handle* handle, uint16_t speed);
+void hw_dcMotor_driveCCW(Motor_Handle* handle, uint8_t throttle);
 
 void hw_dcMotor_tickSpeedPID(Motor_Handle* handle);
 
 void hw_dcMotor_stop(Motor_Handle* handle);
+
+void hw_dcMotor_setThrottle(Motor_Handle *handle, uint8_t throttle);
 
 uint16_t hw_dcMotor_getCurrentSpeed(Motor_Handle* handle);

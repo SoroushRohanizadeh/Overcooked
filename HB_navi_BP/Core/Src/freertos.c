@@ -310,12 +310,12 @@ void StartDefaultTask(void *argument)
     .sns = &adcHandler
   };
 
-  uint8_t setSpeed = 200;
-  uint8_t throttle[] = {setSpeed,setSpeed,setSpeed,setSpeed};
+  uint8_t throt = 80;
+  uint8_t throttle[] = {throt,throt,throt,throt};
 
   // app_drivetrain_drive(&drive_handle, throttle, RIGHT);
 
-  hw_dcMotor_driveCCW(&wheel1, setSpeed);
+  hw_dcMotor_driveCCW(&wheel1, throt);
 
   int currentTicks = osKernelGetTickCount();
   /* Infinite loop */

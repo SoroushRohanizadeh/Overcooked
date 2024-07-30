@@ -18,10 +18,12 @@
 #define DUTY_CYCLE_SCALE_FACTOR (MAX_MOTOR_DUTY_CYCLE - MIN_MOTOR_DUTY_CYCLE) / 100
 #define MAP_DUTY_CYCLE(x) (MIN_MOTOR_DUTY_CYCLE + DUTY_CYCLE_SCALE_FACTOR * (float) (x))
 
-void hw_dcMotor_setDutyCycle(Motor_Handle *handle, uint8_t dutyCycle);
+
 uint8_t hw_dcMotor_speedToDutyCycle(Motor_Handle *handle, uint16_t newSpeed);
 
-void hw_dcMotor_driveCW(Motor_Handle* handle, uint16_t speed) {
+void hw_dcMotor_driveCW(Motor_Handle* handle, uint8_t throttle) {
+    uint16_t speed = throttle * handle->maxSpeed / 100;
+
     if (handle->state == CW) return;
 
     if (handle->state == CCW) {
@@ -33,7 +35,9 @@ void hw_dcMotor_driveCW(Motor_Handle* handle, uint16_t speed) {
     handle->state = CW;
 }
 
-void hw_dcMotor_driveCCW(Motor_Handle* handle, uint16_t speed) {
+void hw_dcMotor_driveCCW(Motor_Handle* handle, uint8_t throttle) {
+    uint16_t speed = throttle * handle->maxSpeed / 100;
+
     if (handle->state == CCW) return;
 
     if (handle->state == CW) {
@@ -45,33 +49,25 @@ void hw_dcMotor_driveCCW(Motor_Handle* handle, uint16_t speed) {
     handle->state = CCW;
 }
 
-void hw_dcMotor_setDutyCycle(Motor_Handle *handle, uint8_t dutyCycle) {
+void hw_dcMotor_setThrottle(Motor_Handle *handle, uint8_t throttle) {
     if (handle->state == CW) {
-        io_pwm_setDutyCycle(handle->cw_handle, dutyCycle);
+        io_pwm_setDutyCycle(handle->cw_handle, throttle);
     } else if (handle->state == CCW) {
-        io_pwm_setDutyCycle(handle->ccw_handle, dutyCycle);
+        io_pwm_setDutyCycle(handle->ccw_handle, throttle);
     }
 }
 
 void hw_dcMotor_tickSpeedPID(Motor_Handle *handle) {
     uint16_t curr = hw_dcMotor_getCurrentSpeed(handle);
-    int error = handle->setSpeed - curr;
-    uint16_t newSpeed = handle->setSpeed;
-    // uint16_t newSpeed = handle->setSpeed + K_PROP * error;
-    //
-    // handle->pidIntegral += K_INT * error;
-    // // handle->pidIntegral = CLAMP(handle->pidIntegral);
-    // newSpeed += handle->pidIntegral;
-    //
-    // newSpeed += K_DER * (error - handle->prevError);
-    // handle->prevError = error;
+    // int error = handle->setSpeed - curr;
+    // uint16_t newSpeed = handle->setSpeed;
 
     // char msg[47];
-    // sprintf(msg, "setSpeed: %d\t curr: %d\t error: %d\r\n", handle->setSpeed, curr, error);
+    // sprintf(msg, "setSpeed: %d\t curr: %d\r\n", handle->setSpeed, curr);
     // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-    // handle->setSpeed = newSpeed;
-    hw_dcMotor_setDutyCycle(handle, hw_dcMotor_speedToDutyCycle(handle, newSpeed));
+
+    hw_dcMotor_setThrottle(handle, hw_dcMotor_speedToDutyCycle(handle, handle->setSpeed));
 }
 
 uint8_t hw_dcMotor_speedToDutyCycle(Motor_Handle *handle, uint16_t newSpeed) {

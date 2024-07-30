@@ -21,10 +21,10 @@ void app_lineFollowing_tickPID(LF_Handle* handle, uint8_t throttle, Drive_State 
 
     io_adc_read_raw(handle->sns);
     uint16_t* values = handle->sns->adcBuffer;
-    char msg[57];
-    sprintf(msg, "%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\r\n", values[0], values[1], values[2], values[3],
-      values[4], values[5], values[6], values[7]);
-    HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    // char msg[57];
+    // sprintf(msg, "%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\r\n", values[0], values[1], values[2], values[3],
+    //   values[4], values[5], values[6], values[7]);
+    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     uint8_t pidThrottle[4] = {throttle, throttle, throttle, throttle};
 
