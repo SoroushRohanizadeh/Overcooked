@@ -25,12 +25,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "io_adc.h"
-#include "app_drivetrain.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <usart.h>
+#include "app_lineFollowing.h"
 
 /* USER CODE END Includes */
 
@@ -46,7 +45,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define NUM_PINS 2
+#define NUM_PINS 8
 #define PERIOD 100
 /* USER CODE END PM */
 
@@ -180,19 +179,20 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
   UNUSED(argument);
 
-  // volatile uint16_t adc_dma[NUM_PINS];
+  volatile uint16_t adc_dma[NUM_PINS];
 
   // ADC_Pin adc_pins[] = {PA0, PA1};
 
-  // ADC_Handler adcHandler = {
-  //   .hadcs = &hadc1,
-  //   .twoADC = false,
-  //   .numPins = NUM_PINS,
-  //   .adcBuffer = adc_dma,
-  //   .adcConvCMPLT = &adcConvCMPLT,
-  //   .adcPins = adc_pins,
-  //   .ADC_Start = HAL_ADC_Start_DMA
-  // };
+  ADC_Handler adcHandler = {
+    .hadcs = &hadc1,
+    .twoADC = false,
+    .numPins = NUM_PINS,
+    .adcBuffer = adc_dma,
+    .adcConvCMPLT = &adcConvCMPLT,
+    // .adcPins = adc_pins,
+    .ADC_Start = HAL_ADC_Start_DMA
+  };
+
   PWM_Handle cw_pwmHandler_w1 = {
     .htim = &htim4,
     .channel = TIM_CHANNEL_2,
@@ -270,8 +270,7 @@ void StartDefaultTask(void *argument)
     .ccw_handle = &ccw_pwmHandler_w1,
     .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w1,
-    .pidIntegral = 0,
-    .prevError = 0
+    .maxSpeed = 260
   };
 
   Motor_Handle wheel2 = {
@@ -279,8 +278,7 @@ void StartDefaultTask(void *argument)
     .ccw_handle = &ccw_pwmHandler_w2,
     .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w2,
-    .pidIntegral = 0,
-    .prevError = 0
+    .maxSpeed = 260
   };
 
   Motor_Handle wheel3 = {
@@ -288,8 +286,7 @@ void StartDefaultTask(void *argument)
     .ccw_handle = &ccw_pwmHandler_w3,
     .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w3,
-    .pidIntegral = 0,
-    .prevError = 0
+    .maxSpeed = 260
   };
 
   Motor_Handle wheel4 = {
@@ -297,8 +294,7 @@ void StartDefaultTask(void *argument)
     .ccw_handle = &ccw_pwmHandler_w4,
     .state = MOTOR_STOP,
     .rotary_handle = &rotary_handle_w4,
-    .pidIntegral = 0,
-    .prevError = 0
+    .maxSpeed = 260
   };
 
   DT_Handle drive_handle = {
@@ -309,23 +305,27 @@ void StartDefaultTask(void *argument)
     .state = DRIVE_STOP
   };
 
-  uint8_t throttle[] = {30,30,30,30};
+  LF_Handle lf_handle = {
+    .drive = &drive_handle,
+    .sns = &adcHandler
+  };
 
+  uint8_t throt = 100;
+  uint8_t throttle[] = {throt,throt,throt,throt};
 
   // app_drivetrain_drive(&drive_handle, throttle, RIGHT);
-  hw_dcMotor_driveCW(&wheel2, 50);
+
+  hw_dcMotor_driveCCW(&wheel3, throt);
 
   int currentTicks = osKernelGetTickCount();
   /* Infinite loop */
   for(;;)
   {
-    // char msg[15];
-    // sprintf(msg, "%d\t %d\r\n", 5, 5);
-    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    // app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
 
     // app_drivetrain_tickThrottle(&drive_handle, throttle);
 
-    hw_dcMotor_tickThrottlePID(&wheel2, 50);
+    hw_dcMotor_tickSpeedPID(&wheel3);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

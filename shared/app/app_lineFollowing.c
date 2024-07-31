@@ -14,7 +14,7 @@
 #define R2 7
 
 #define BLACK_THRESHOLD 700
-#define CORRECTION_FACTOR 0.01
+#define CORRECTION_FACTOR 0.75
 
 void app_lineFollowing_tickPID(LF_Handle* handle, uint8_t throttle, Drive_State state) {
     if (state != LEFT && state != RIGHT) return;
@@ -28,21 +28,29 @@ void app_lineFollowing_tickPID(LF_Handle* handle, uint8_t throttle, Drive_State 
 
     uint8_t pidThrottle[4] = {throttle, throttle, throttle, throttle};
 
-     // if (values[R1] >= BLACK_THRESHOLD && values[R2] >= BLACK_THRESHOLD) {
-     //    pidThrottle[2] = throttle;
-     //    pidThrottle[3] = throttle;
-     // } else
-    if (values[R1] > BLACK_THRESHOLD && values[R2] <= BLACK_THRESHOLD) {
-         pidThrottle[2] = throttle * (1 + CORRECTION_FACTOR);
-         pidThrottle[3] = throttle * (1 - CORRECTION_FACTOR);
-    } else if (values[R1] <= BLACK_THRESHOLD && values[R2] > BLACK_THRESHOLD) {
-     pidThrottle[2] = throttle * (1 - CORRECTION_FACTOR);
-     pidThrottle[3] = throttle * (1 + CORRECTION_FACTOR);
+
+
+    if (values[R1] <= BLACK_THRESHOLD && values[R2] > BLACK_THRESHOLD) {
+        // go up
+        pidThrottle[1] = throttle * (1 + CORRECTION_FACTOR);
+        pidThrottle[2] = throttle * (1 + CORRECTION_FACTOR);
+        pidThrottle[0] = throttle * (1 - CORRECTION_FACTOR);
+        pidThrottle[3] = throttle * (1 - CORRECTION_FACTOR);
+        char* msg = "left\n";
+        HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    } else if (values[R1] > BLACK_THRESHOLD && values[R2] <= BLACK_THRESHOLD) {
+        // go down
+        pidThrottle[1] = throttle * (1 - CORRECTION_FACTOR);
+        pidThrottle[2] = throttle * (1 - CORRECTION_FACTOR);
+        pidThrottle[0] = throttle * (1 + CORRECTION_FACTOR);
+        pidThrottle[3] = throttle * (1 + CORRECTION_FACTOR);
+        char* msg = "right\n";
+        HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
     }
 
     // if (values[L1] >= BLACK_THRESHOLD && values[L2] >= BLACK_THRESHOLD) {
-    pidThrottle[0] = throttle;
-    pidThrottle[1] = throttle;
+    // pidThrottle[0] = throttle;
+    // pidThrottle[1] = throttle;
     // } else if (values[L1] > BLACK_THRESHOLD && values[L2] <= BLACK_THRESHOLD) {
     //     pidThrottle[0] = throttle * (1 - CORRECTION_FACTOR);
     //     pidThrottle[1] = throttle * (1 + CORRECTION_FACTOR);

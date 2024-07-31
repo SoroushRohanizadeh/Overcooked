@@ -231,7 +231,7 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle cw_pwmHandler_w3 = {
     .htim = &htim1,
-    .channel = TIM_CHANNEL_2,
+    .channel = TIM_CHANNEL_3,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
     .TIM_stop = HAL_TIM_Base_Stop,
@@ -240,7 +240,7 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle ccw_pwmHandler_w3 = {
     .htim = &htim1,
-    .channel = TIM_CHANNEL_3,
+    .channel = TIM_CHANNEL_2,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
     .TIM_stop = HAL_TIM_Base_Stop,
@@ -249,7 +249,7 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle cw_pwmHandler_w4 = {
     .htim = &htim4,
-    .channel = TIM_CHANNEL_3,
+    .channel = TIM_CHANNEL_4,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
     .TIM_stop = HAL_TIM_Base_Stop,
@@ -258,7 +258,7 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle ccw_pwmHandler_w4 = {
     .htim = &htim4,
-    .channel = TIM_CHANNEL_4,
+    .channel = TIM_CHANNEL_3,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
     .TIM_stop = HAL_TIM_Base_Stop,
@@ -310,22 +310,28 @@ void StartDefaultTask(void *argument)
     .sns = &adcHandler
   };
 
-  uint8_t throt = 80;
+  uint8_t throt = 90;
   uint8_t throttle[] = {throt,throt,throt,throt};
 
-  // app_drivetrain_drive(&drive_handle, throttle, RIGHT);
+  app_drivetrain_drive(&drive_handle, throttle, RIGHT);
 
-  hw_dcMotor_driveCCW(&wheel1, throt);
+  // hw_dcMotor_driveCCW(&wheel4, throt);
 
   int currentTicks = osKernelGetTickCount();
   /* Infinite loop */
   for(;;)
   {
-    // app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
-
+    app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
     // app_drivetrain_tickThrottle(&drive_handle, throttle);
 
-    hw_dcMotor_tickSpeedPID(&wheel1);
+    // hw_dcMotor_tickSpeedPID(&wheel4);
+
+    // io_adc_read_raw(&adcHandler);
+    // char msg[57];
+    // sprintf(msg, "%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\r\n", adcHandler.adcBuffer[0], adcHandler.adcBuffer[1],
+    //   adcHandler.adcBuffer[2],adcHandler.adcBuffer[3],adcHandler.adcBuffer[4],adcHandler.adcBuffer[5],
+    //   adcHandler.adcBuffer[6],adcHandler.adcBuffer[7]);
+    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

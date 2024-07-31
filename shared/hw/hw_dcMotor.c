@@ -23,7 +23,6 @@ uint8_t hw_dcMotor_speedToDutyCycle(Motor_Handle *handle, uint16_t newSpeed);
 
 void hw_dcMotor_driveCW(Motor_Handle* handle, uint8_t throttle) {
     uint16_t speed = throttle * handle->maxSpeed / 100;
-
     if (handle->state == CW) return;
 
     if (handle->state == CCW) {
@@ -37,7 +36,6 @@ void hw_dcMotor_driveCW(Motor_Handle* handle, uint8_t throttle) {
 
 void hw_dcMotor_driveCCW(Motor_Handle* handle, uint8_t throttle) {
     uint16_t speed = throttle * handle->maxSpeed / 100;
-
     if (handle->state == CCW) return;
 
     if (handle->state == CW) {
