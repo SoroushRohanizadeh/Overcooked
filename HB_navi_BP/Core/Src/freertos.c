@@ -46,7 +46,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 #define NUM_PINS 8
-#define PERIOD 100
+#define PERIOD 10
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -310,10 +310,10 @@ void StartDefaultTask(void *argument)
     .sns = &adcHandler
   };
 
-  uint8_t throt = 90;
+  uint8_t throt = 100;
   uint8_t throttle[] = {throt,throt,throt,throt};
 
-  app_drivetrain_drive(&drive_handle, throttle, RIGHT);
+  app_drivetrain_drive(&drive_handle, throttle, UP);
 
   // hw_dcMotor_driveCCW(&wheel4, throt);
 
@@ -321,8 +321,8 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
-    // app_drivetrain_tickThrottle(&drive_handle, throttle);
+    // app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
+    app_drivetrain_tickThrottle(&drive_handle, throttle);
 
     // hw_dcMotor_tickSpeedPID(&wheel4);
 

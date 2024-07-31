@@ -9,7 +9,8 @@ typedef enum __Drive_State {
     DOWN,
     LEFT,
     RIGHT,
-    DRIVE_STOP
+    DRIVE_STOP,
+    ANGLE
 } Drive_State;
 
 typedef struct __DT_handle {
@@ -42,6 +43,8 @@ typedef struct __DT_handle {
  */
 
 void app_drivetrain_drive(DT_Handle* handle, uint8_t throttle[4], Drive_State state);
+
+void app_drivetrain_driveVect(DT_Handle* handle, uint8_t throttle, uint16_t theta);
 
 void app_drivetrain_tickThrottle(DT_Handle* handle, uint8_t throttle[4]);
 

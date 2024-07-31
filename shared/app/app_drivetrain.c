@@ -1,5 +1,9 @@
 #include "app_drivetrain.h"
 
+#include <math.h>
+
+#define MAX(x,y) (x) > (y) ? (x) : (y)
+
 void app_drivetrain_setDriveState(DT_Handle* handle, Drive_State state);
 
 void app_drivetrain_drive(DT_Handle *handle, uint8_t throttle[4], Drive_State state) {
@@ -26,6 +30,17 @@ void app_drivetrain_drive(DT_Handle *handle, uint8_t throttle[4], Drive_State st
         hw_dcMotor_driveCW(handle->wheel_3, throttle[2]);
         hw_dcMotor_driveCCW(handle->wheel_4, throttle[3]);
     }
+}
+
+void app_drivetrain_driveVect(DT_Handle *handle, uint8_t throttle, uint16_t theta) {
+    double sinVal = sin(theta - M_PI_4);
+    double cosVal = cos(theta - M_PI_4);
+    double max = MAX(sinVal, cosVal);
+
+    hw_dcMotor_setThrottle(handle->wheel_1, (cosVal / max) * (double) throttle);
+    hw_dcMotor_setThrottle(handle->wheel_2, (sinVal / max) * (double) throttle);
+    hw_dcMotor_setThrottle(handle->wheel_3, (sinVal / max) * (double) throttle);
+    hw_dcMotor_setThrottle(handle->wheel_4, (cosVal / max) * (double) throttle);
 }
 
 

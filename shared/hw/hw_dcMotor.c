@@ -47,6 +47,14 @@ void hw_dcMotor_driveCCW(Motor_Handle* handle, uint8_t throttle) {
     handle->state = CCW;
 }
 
+void hw_dcMotor_drive(Motor_Handle* handle, int throttle) {
+    if (throttle > 0) {
+        hw_dcMotor_driveCW(handle, throttle);
+    } else {
+        hw_dcMotor_driveCCW(handle, throttle * - 1);
+    }
+}
+
 void hw_dcMotor_setThrottle(Motor_Handle *handle, uint8_t throttle) {
     if (handle->state == CW) {
         io_pwm_setDutyCycle(handle->cw_handle, throttle);

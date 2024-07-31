@@ -25,6 +25,8 @@ void hw_dcMotor_driveCW(Motor_Handle* handle, uint8_t throttle);
 
 void hw_dcMotor_driveCCW(Motor_Handle* handle, uint8_t throttle);
 
+void hw_dcMotor_drive(Motor_Handle* handle, int throttle);
+
 void hw_dcMotor_tickSpeedPID(Motor_Handle* handle);
 
 void hw_dcMotor_stop(Motor_Handle* handle);
