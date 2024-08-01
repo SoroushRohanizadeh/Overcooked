@@ -14,46 +14,65 @@
 #define R2 7
 
 #define BLACK_THRESHOLD 400
-#define CORRECTION_FACTOR 1.0
+#define CORRECTION_FACTOR 0.9
+
+#define BRAKE_TICKS 20
 
 void app_lineFollowing_tickPID(LF_Handle* handle, uint8_t throttle, Drive_State state) {
     if (state != LEFT && state != RIGHT) return;
 
     io_adc_read_raw(handle->sns);
     uint16_t* values = handle->sns->adcBuffer;
-    // char msg[57];
-    // sprintf(msg, "%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\r\n", values[0], values[1], values[2], values[3],
-    //   values[4], values[5], values[6], values[7]);
-    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     uint8_t pidThrottle[4] = {throttle, throttle, throttle, throttle};
 
 
-
-    if (values[R1] <= BLACK_THRESHOLD && values[R2] > BLACK_THRESHOLD) {
-        // go up
-        pidThrottle[1] = throttle * (1 - CORRECTION_FACTOR);
-        pidThrottle[3] = throttle * (1 - CORRECTION_FACTOR);
-        char* msg = "left\n";
-        HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-    } else if (values[R1] > BLACK_THRESHOLD && values[R2] <= BLACK_THRESHOLD) {
-        // go down
-        pidThrottle[2] = throttle * (1 - CORRECTION_FACTOR);
-        pidThrottle[0] = throttle * (1 - CORRECTION_FACTOR);
-        char* msg = "right\n";
-        HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    if (state == RIGHT) {
+        if (values[R1] <= BLACK_THRESHOLD && values[R2] > BLACK_THRESHOLD) {
+            // go up
+            pidThrottle[1] = throttle * (1 - CORRECTION_FACTOR);
+            pidThrottle[3] = throttle * (1 - CORRECTION_FACTOR);
+        } else if (values[R1] > BLACK_THRESHOLD && values[R2] <= BLACK_THRESHOLD) {
+            // go down
+            pidThrottle[2] = throttle * (1 - CORRECTION_FACTOR);
+            pidThrottle[0] = throttle * (1 - CORRECTION_FACTOR);
+        }
+    } else {
+        if (values[L1] <= BLACK_THRESHOLD && values[L2] > BLACK_THRESHOLD) {
+            // go down
+            pidThrottle[2] = throttle * (1 - CORRECTION_FACTOR);
+            pidThrottle[0] = throttle * (1 - CORRECTION_FACTOR);
+        } else if (values[L1] > BLACK_THRESHOLD && values[L2] <= BLACK_THRESHOLD) {
+            // go up
+            pidThrottle[1] = throttle * (1 - CORRECTION_FACTOR);
+            pidThrottle[3] = throttle * (1 - CORRECTION_FACTOR);
+        }
     }
 
-    // if (values[L1] >= BLACK_THRESHOLD && values[L2] >= BLACK_THRESHOLD) {
-    // pidThrottle[0] = throttle;
-    // pidThrottle[1] = throttle;
-    // } else if (values[L1] > BLACK_THRESHOLD && values[L2] <= BLACK_THRESHOLD) {
-    //     pidThrottle[0] = throttle * (1 - CORRECTION_FACTOR);
-    //     pidThrottle[1] = throttle * (1 + CORRECTION_FACTOR);
-    // } else if (values[L1] <= BLACK_THRESHOLD && values[L2] > BLACK_THRESHOLD) {
-    //     pidThrottle[0] = throttle * (1 + CORRECTION_FACTOR);
-    //     pidThrottle[1] = throttle * (1 - CORRECTION_FACTOR);
-    // }
-
     app_drivetrain_tickThrottle(handle->drive, pidThrottle);
+}
+
+void app_lineFollowing_tickNAVI(LF_Handle *handle, uint8_t throttle, bool *toggled, Drive_State state, uint8_t* count, bool* stop) {
+    io_adc_read_raw(handle->sns);
+    volatile uint16_t* values = handle->sns->adcBuffer;
+
+    if (!*toggled) {
+        app_lineFollowing_tickPID(handle, throttle, state);
+        if (values[T2] >= BLACK_THRESHOLD) {
+            *toggled = true;
+        }
+    } else {
+        if (values[T2] < BLACK_THRESHOLD) {
+            app_drivetrain_stop(handle->drive);
+            if (*count < BRAKE_TICKS) {
+                uint8_t throt[] = {100,100,100,100};
+                app_drivetrain_drive(handle->drive, throt, LEFT);
+                char msg[15];
+                sprintf(msg, "%d\t BRAKING\r\n", *count);
+                HAL_UART_Transmit(&huart3, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+            } else if (*count >= BRAKE_TICKS) {
+                *stop = true;
+            }
+        }
+    }
 }

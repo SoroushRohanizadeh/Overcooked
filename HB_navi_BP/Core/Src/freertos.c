@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <usart.h>
 #include "app_lineFollowing.h"
@@ -195,7 +196,7 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle cw_pwmHandler_w1 = {
     .htim = &htim4,
-    .channel = TIM_CHANNEL_2,
+    .channel = TIM_CHANNEL_1,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
     .TIM_stop = HAL_TIM_Base_Stop,
@@ -204,7 +205,7 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle ccw_pwmHandler_w1 = {
     .htim = &htim4,
-    .channel = TIM_CHANNEL_1,
+    .channel = TIM_CHANNEL_2,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
     .TIM_stop = HAL_TIM_Base_Stop,
@@ -213,7 +214,7 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle cw_pwmHandler_w2 = {
     .htim = &htim3,
-    .channel = TIM_CHANNEL_3,
+    .channel = TIM_CHANNEL_4,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
     .TIM_stop = HAL_TIM_Base_Stop,
@@ -222,7 +223,7 @@ void StartDefaultTask(void *argument)
 
   PWM_Handle ccw_pwmHandler_w2 = {
     .htim = &htim3,
-    .channel = TIM_CHANNEL_4,
+    .channel = TIM_CHANNEL_3,
     .TIM_start = HAL_TIM_Base_Start,
     .PWM_start = HAL_TIM_PWM_Start,
     .TIM_stop = HAL_TIM_Base_Stop,
@@ -313,26 +314,23 @@ void StartDefaultTask(void *argument)
   uint8_t throt = 100;
   uint8_t throttle[] = {throt,throt,throt,throt};
 
-  app_drivetrain_drive(&drive_handle, throttle, UP);
+  app_drivetrain_drive(&drive_handle, throttle, RIGHT);
 
   // hw_dcMotor_driveCCW(&wheel4, throt);
-
+  // int swap = 500;
+  // int count = 0;
   int currentTicks = osKernelGetTickCount();
+  bool toggled = false;
+  bool stop = false;
+  uint8_t count = 0;
   /* Infinite loop */
   for(;;)
   {
-    // app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
-    app_drivetrain_tickThrottle(&drive_handle, throttle);
-
-    // hw_dcMotor_tickSpeedPID(&wheel4);
-
-    // io_adc_read_raw(&adcHandler);
-    // char msg[57];
-    // sprintf(msg, "%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\r\n", adcHandler.adcBuffer[0], adcHandler.adcBuffer[1],
-    //   adcHandler.adcBuffer[2],adcHandler.adcBuffer[3],adcHandler.adcBuffer[4],adcHandler.adcBuffer[5],
-    //   adcHandler.adcBuffer[6],adcHandler.adcBuffer[7]);
-    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-
+    app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
+    // if (!stop) {
+    //   app_lineFollowing_tickNAVI(&lf_handle, throt, &toggled, RIGHT, &count, &stop);
+    // }
+    // count++;
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);
   }

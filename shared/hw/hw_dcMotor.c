@@ -13,7 +13,7 @@
 
 #define CLAMP(x) ((x) < (INTEGRAL_MIN) ? (INTEGRAL_MIN) : ((x) > (INTEGRAL_MAX) ? (INTEGRAL_MAX) : (x)))
 
-#define MIN_MOTOR_DUTY_CYCLE 70.0
+#define MIN_MOTOR_DUTY_CYCLE 60.0
 #define MAX_MOTOR_DUTY_CYCLE 100.0
 #define DUTY_CYCLE_SCALE_FACTOR (MAX_MOTOR_DUTY_CYCLE - MIN_MOTOR_DUTY_CYCLE) / 100
 #define MAP_DUTY_CYCLE(x) (MIN_MOTOR_DUTY_CYCLE + DUTY_CYCLE_SCALE_FACTOR * (float) (x))
@@ -63,15 +63,14 @@ void hw_dcMotor_setThrottle(Motor_Handle *handle, uint8_t throttle) {
     }
 }
 
-void hw_dcMotor_tickSpeedPID(Motor_Handle *handle) {
-    uint16_t curr = hw_dcMotor_getCurrentSpeed(handle);
+void hw_dcMotor_tickSpeed(Motor_Handle *handle) {
+    // uint16_t curr = hw_dcMotor_getCurrentSpeed(handle);
     // int error = handle->setSpeed - curr;
     // uint16_t newSpeed = handle->setSpeed;
 
     // char msg[47];
     // sprintf(msg, "setSpeed: %d\t curr: %d\r\n", handle->setSpeed, curr);
     // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-
 
     hw_dcMotor_setThrottle(handle, hw_dcMotor_speedToDutyCycle(handle, handle->setSpeed));
 }

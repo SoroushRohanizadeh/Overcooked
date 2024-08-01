@@ -49,3 +49,9 @@ void app_drivetrain_driveVect(DT_Handle* handle, uint8_t throttle, uint16_t thet
 void app_drivetrain_tickThrottle(DT_Handle* handle, uint8_t throttle[4]);
 
 void app_drivetrain_stop(DT_Handle* handle);
+
+void app_drivetrain_distanceZero(DT_Handle* handle);
+
+void app_drivetrain_distanceTravelled(DT_Handle* handle, double* x, double* y);
+
+void app_drivetrain_brake(DT_Handle *handle);

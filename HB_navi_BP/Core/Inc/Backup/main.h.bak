@@ -73,10 +73,10 @@ void Error_Handler(void);
 #define W1_CCW_SIG_Pin GPIO_PIN_8
 #define W1_CCW_SIG_GPIO_Port GPIOA
 #define W1_CCW_SIG_EXTI_IRQn EXTI9_5_IRQn
-#define W3_CW_PWM_Pin GPIO_PIN_9
-#define W3_CW_PWM_GPIO_Port GPIOA
-#define W3_CCW_PWM_Pin GPIO_PIN_10
+#define W3_CCW_PWM_Pin GPIO_PIN_9
 #define W3_CCW_PWM_GPIO_Port GPIOA
+#define W3_CW_PWM_Pin GPIO_PIN_10
+#define W3_CW_PWM_GPIO_Port GPIOA
 #define W3_CW_SIG_Pin GPIO_PIN_11
 #define W3_CW_SIG_GPIO_Port GPIOA
 #define W3_CW_SIG_EXTI_IRQn EXTI15_10_IRQn

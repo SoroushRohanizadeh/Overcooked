@@ -20,3 +20,5 @@ typedef struct __LF_Handle {
  */
 
 void app_lineFollowing_tickPID(LF_Handle* handle, uint8_t throttle, Drive_State state);
+
+void app_lineFollowing_tickNAVI(LF_Handle* handle, uint8_t throttle, bool* toggled, Drive_State state, uint8_t* count, bool* stop);

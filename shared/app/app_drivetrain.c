@@ -4,6 +4,9 @@
 
 #define MAX(x,y) (x) > (y) ? (x) : (y)
 
+#define WHEEL_RADIUS 0.024 // meters
+#define CLICKS_PER_REV 30 * 11 * 4
+
 void app_drivetrain_setDriveState(DT_Handle* handle, Drive_State state);
 
 void app_drivetrain_drive(DT_Handle *handle, uint8_t throttle[4], Drive_State state) {
@@ -59,6 +62,24 @@ void app_drivetrain_stop(DT_Handle *handle) {
     hw_dcMotor_stop(handle->wheel_3);
     hw_dcMotor_stop(handle->wheel_4);
     handle->state = DRIVE_STOP;
+}
+
+void app_drivetrain_distanceZero(DT_Handle *handle) {
+    hw_rotaryEncoder_resetCount(handle->wheel_1->rotary_handle);
+    hw_rotaryEncoder_resetCount(handle->wheel_2->rotary_handle);
+    hw_rotaryEncoder_resetCount(handle->wheel_3->rotary_handle);
+    hw_rotaryEncoder_resetCount(handle->wheel_4->rotary_handle);
+}
+
+void app_drivetrain_distanceTravelled(DT_Handle *handle, double* x, double* y) {
+    double v_fl = hw_rotaryEncoder_getCount(handle->wheel_1->rotary_handle);
+    double v_fr = hw_rotaryEncoder_getCount(handle->wheel_2->rotary_handle);
+    double v_rl = hw_rotaryEncoder_getCount(handle->wheel_3->rotary_handle);
+    double v_rr = hw_rotaryEncoder_getCount(handle->wheel_4->rotary_handle);
+
+    // Calculate the robot's linear velocities in the x and y directions
+    *x = (v_fl + v_fr + v_rl + v_rr) * WHEEL_RADIUS / (4.0 * CLICKS_PER_REV);
+    *y = (-v_fl + v_fr + v_rl - v_rr) / 4.0;
 }
 
 void app_drivetrain_setDriveState(DT_Handle* handle, Drive_State state) {
