@@ -47,7 +47,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 #define NUM_PINS 8
-#define PERIOD 10
+#define PERIOD 100
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -314,22 +314,24 @@ void StartDefaultTask(void *argument)
   uint8_t throt = 100;
   uint8_t throttle[] = {throt,throt,throt,throt};
 
-  app_drivetrain_drive(&drive_handle, throttle, RIGHT);
-
+  app_drivetrain_driveVect(&drive_handle, throt, 0);
+  // app_drivetrain_drive(&drive_handle, throttle, RIGHT);
   // hw_dcMotor_driveCCW(&wheel4, throt);
   // int swap = 500;
   // int count = 0;
   int currentTicks = osKernelGetTickCount();
-  bool toggled = false;
-  bool stop = false;
-  uint8_t count = 0;
+  // bool stop = false;
+  // uint8_t count = 0;
   /* Infinite loop */
   for(;;)
   {
-    app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
+
+    app_drivetrain_tickDriveVect(&drive_handle);
+    // app_lineFollowing_tick(&lf_handle, throt, RIGHT);
     // if (!stop) {
-    //   app_lineFollowing_tickNAVI(&lf_handle, throt, &toggled, RIGHT, &count, &stop);
+    //   app_lineFollowing_tickNAVI(&lf_handle, throt, RIGHT, &count, &stop);
     // }
+
     // count++;
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

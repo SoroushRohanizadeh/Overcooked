@@ -13,7 +13,7 @@
 
 #define CLAMP(x) ((x) < (INTEGRAL_MIN) ? (INTEGRAL_MIN) : ((x) > (INTEGRAL_MAX) ? (INTEGRAL_MAX) : (x)))
 
-#define MIN_MOTOR_DUTY_CYCLE 60.0
+#define MIN_MOTOR_DUTY_CYCLE 70.0
 #define MAX_MOTOR_DUTY_CYCLE 100.0
 #define DUTY_CYCLE_SCALE_FACTOR (MAX_MOTOR_DUTY_CYCLE - MIN_MOTOR_DUTY_CYCLE) / 100
 #define MAP_DUTY_CYCLE(x) (MIN_MOTOR_DUTY_CYCLE + DUTY_CYCLE_SCALE_FACTOR * (float) (x))
@@ -62,6 +62,15 @@ void hw_dcMotor_setThrottle(Motor_Handle *handle, uint8_t throttle) {
         io_pwm_setDutyCycle(handle->ccw_handle, throttle);
     }
 }
+
+void hw_dcMotor_setThrottleSigned(Motor_Handle *handle, int throttle) {
+    if (throttle > 0) {
+        io_pwm_setDutyCycle(handle->ccw_handle, throttle);
+    } else if (throttle < 0) {
+        io_pwm_setDutyCycle(handle->cw_handle, throttle);
+    }
+}
+
 
 void hw_dcMotor_tickSpeed(Motor_Handle *handle) {
     // uint16_t curr = hw_dcMotor_getCurrentSpeed(handle);

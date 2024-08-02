@@ -1,5 +1,6 @@
 #ifndef APP_DRIVETRAIN_H
 #define APP_DRIVETRAIN_H
+#include <math.h>
 #endif //APP_DRIVETRAIN_H
 
 #include <hw_dcMotor.h>
@@ -18,6 +19,7 @@ typedef struct __DT_handle {
     Motor_Handle* wheel_2;
     Motor_Handle* wheel_3;
     Motor_Handle* wheel_4;
+    int __vectThrottle[4];
     Drive_State state;
 } DT_Handle;
 
@@ -35,7 +37,7 @@ typedef struct __DT_handle {
  *
  *                     W2       Up       W4
  *
- *                    <--Left-- HB --Right-->
+ *                    <--Left-- HB --Right--> (theta = 0)
  *
  *                     W1      Down      W3
  *
@@ -44,9 +46,11 @@ typedef struct __DT_handle {
 
 void app_drivetrain_drive(DT_Handle* handle, uint8_t throttle[4], Drive_State state);
 
-void app_drivetrain_driveVect(DT_Handle* handle, uint8_t throttle, uint16_t theta);
+void app_drivetrain_tickDrive(DT_Handle* handle, uint8_t throttle[4]);
 
-void app_drivetrain_tickThrottle(DT_Handle* handle, uint8_t throttle[4]);
+void app_drivetrain_driveVect(DT_Handle* handle, int throttle, double_t theta);
+
+void app_drivetrain_tickDriveVect(DT_Handle *handle);
 
 void app_drivetrain_stop(DT_Handle* handle);
 

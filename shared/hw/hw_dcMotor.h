@@ -33,4 +33,6 @@ void hw_dcMotor_stop(Motor_Handle* handle);
 
 void hw_dcMotor_setThrottle(Motor_Handle *handle, uint8_t throttle);
 
+void hw_dcMotor_setThrottleSigned(Motor_Handle *handle, int throttle);
+
 uint16_t hw_dcMotor_getCurrentSpeed(Motor_Handle* handle);

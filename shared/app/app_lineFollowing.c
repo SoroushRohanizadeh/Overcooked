@@ -14,65 +14,67 @@
 #define R2 7
 
 #define BLACK_THRESHOLD 400
-#define CORRECTION_FACTOR 0.9
+#define CORRECTION_FACTOR 0.25
 
-#define BRAKE_TICKS 20
+#define BRAKE_TICKS 1
 
-void app_lineFollowing_tickPID(LF_Handle* handle, uint8_t throttle, Drive_State state) {
+void app_lineFollowing_tick(LF_Handle* handle, uint8_t throttle, Drive_State state) {
     if (state != LEFT && state != RIGHT) return;
 
     io_adc_read_raw(handle->sns);
-    uint16_t* values = handle->sns->adcBuffer;
+    volatile uint16_t* values = handle->sns->adcBuffer;
 
-    uint8_t pidThrottle[4] = {throttle, throttle, throttle, throttle};
+    uint8_t newThrottle[4] = {throttle, throttle, throttle, throttle};
 
 
     if (state == RIGHT) {
         if (values[R1] <= BLACK_THRESHOLD && values[R2] > BLACK_THRESHOLD) {
             // go up
-            pidThrottle[1] = throttle * (1 - CORRECTION_FACTOR);
-            pidThrottle[3] = throttle * (1 - CORRECTION_FACTOR);
+            newThrottle[1] = throttle * CORRECTION_FACTOR;
+            newThrottle[3] = throttle * CORRECTION_FACTOR;
         } else if (values[R1] > BLACK_THRESHOLD && values[R2] <= BLACK_THRESHOLD) {
             // go down
-            pidThrottle[2] = throttle * (1 - CORRECTION_FACTOR);
-            pidThrottle[0] = throttle * (1 - CORRECTION_FACTOR);
+            newThrottle[2] = throttle * CORRECTION_FACTOR;
+            newThrottle[0] = throttle * CORRECTION_FACTOR;
         }
     } else {
         if (values[L1] <= BLACK_THRESHOLD && values[L2] > BLACK_THRESHOLD) {
             // go down
-            pidThrottle[2] = throttle * (1 - CORRECTION_FACTOR);
-            pidThrottle[0] = throttle * (1 - CORRECTION_FACTOR);
+            newThrottle[2] = throttle * CORRECTION_FACTOR;
+            newThrottle[0] = throttle * CORRECTION_FACTOR;
         } else if (values[L1] > BLACK_THRESHOLD && values[L2] <= BLACK_THRESHOLD) {
             // go up
-            pidThrottle[1] = throttle * (1 - CORRECTION_FACTOR);
-            pidThrottle[3] = throttle * (1 - CORRECTION_FACTOR);
+            newThrottle[1] = throttle * CORRECTION_FACTOR;
+            newThrottle[3] = throttle * CORRECTION_FACTOR;
         }
     }
 
-    app_drivetrain_tickThrottle(handle->drive, pidThrottle);
+    app_drivetrain_tickDrive(handle->drive, newThrottle);
 }
 
-void app_lineFollowing_tickNAVI(LF_Handle *handle, uint8_t throttle, bool *toggled, Drive_State state, uint8_t* count, bool* stop) {
+void app_lineFollowing_tickNAVI(LF_Handle *handle, uint8_t throttle, Drive_State state, uint8_t* count, bool* stop) {
+    if (*stop) return;
+
     io_adc_read_raw(handle->sns);
     volatile uint16_t* values = handle->sns->adcBuffer;
 
-    if (!*toggled) {
-        app_lineFollowing_tickPID(handle, throttle, state);
-        if (values[T2] >= BLACK_THRESHOLD) {
-            *toggled = true;
-        }
-    } else {
-        if (values[T2] < BLACK_THRESHOLD) {
+    char msg[16];
+    if (values[T2] < BLACK_THRESHOLD) {
+        app_lineFollowing_tick(handle, throttle, state);
+
+        sprintf(msg, "%d\t Coasting\r\n", *count);
+        HAL_UART_Transmit(&huart3, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+    } else if (values[T2] >= BLACK_THRESHOLD) {
+        if (*count < BRAKE_TICKS) {
+            uint8_t throt[] = {100,100,100,100};
+            app_drivetrain_drive(handle->drive, throt, LEFT);
+
+            sprintf(msg, "%d\t BRAKING\r\n", *count);
+            HAL_UART_Transmit(&huart3, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+            (*count)++;
+        } else if (*count >= BRAKE_TICKS) {
+            *stop = true;
             app_drivetrain_stop(handle->drive);
-            if (*count < BRAKE_TICKS) {
-                uint8_t throt[] = {100,100,100,100};
-                app_drivetrain_drive(handle->drive, throt, LEFT);
-                char msg[15];
-                sprintf(msg, "%d\t BRAKING\r\n", *count);
-                HAL_UART_Transmit(&huart3, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
-            } else if (*count >= BRAKE_TICKS) {
-                *stop = true;
-            }
         }
     }
 }

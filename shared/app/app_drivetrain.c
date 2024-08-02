@@ -1,6 +1,8 @@
 #include "app_drivetrain.h"
 
-#include <math.h>
+#include <stdio.h>
+#include <string.h>
+#include <usart.h>
 
 #define MAX(x,y) (x) > (y) ? (x) : (y)
 
@@ -35,19 +37,31 @@ void app_drivetrain_drive(DT_Handle *handle, uint8_t throttle[4], Drive_State st
     }
 }
 
-void app_drivetrain_driveVect(DT_Handle *handle, uint8_t throttle, uint16_t theta) {
+void app_drivetrain_driveVect(DT_Handle *handle, int throttle, double_t theta) {
     double sinVal = sin(theta - M_PI_4);
     double cosVal = cos(theta - M_PI_4);
-    double max = MAX(sinVal, cosVal);
+    double max = MAX(MAX(sinVal, -sinVal), MAX(cosVal, -cosVal));
 
-    hw_dcMotor_setThrottle(handle->wheel_1, (cosVal / max) * (double) throttle);
-    hw_dcMotor_setThrottle(handle->wheel_2, (sinVal / max) * (double) throttle);
-    hw_dcMotor_setThrottle(handle->wheel_3, (sinVal / max) * (double) throttle);
-    hw_dcMotor_setThrottle(handle->wheel_4, (cosVal / max) * (double) throttle);
+    handle->__vectThrottle[3] = (int) ((cosVal / max) * (double) throttle);
+    handle->__vectThrottle[2] = (int) ((sinVal / max) * (double) throttle);
+    handle->__vectThrottle[1] = (int) ((sinVal / max) * (double) throttle);
+    handle->__vectThrottle[0] = (int) ((cosVal / max) * (double) throttle);
+
+    hw_dcMotor_drive(handle->wheel_1, handle->__vectThrottle[0]);
+    hw_dcMotor_drive(handle->wheel_2, handle->__vectThrottle[1]);
+    hw_dcMotor_drive(handle->wheel_3, handle->__vectThrottle[2]);
+    hw_dcMotor_drive(handle->wheel_4, handle->__vectThrottle[3]);
+}
+
+void app_drivetrain_tickDriveVect(DT_Handle *handle) {
+    hw_dcMotor_setThrottleSigned(handle->wheel_1, handle->__vectThrottle[0]);
+    hw_dcMotor_setThrottleSigned(handle->wheel_2, handle->__vectThrottle[1]);
+    hw_dcMotor_setThrottleSigned(handle->wheel_3, handle->__vectThrottle[2]);
+    hw_dcMotor_setThrottleSigned(handle->wheel_4, handle->__vectThrottle[3]);
 }
 
 
-void app_drivetrain_tickThrottle(DT_Handle *handle, uint8_t throttle[4]) {
+void app_drivetrain_tickDrive(DT_Handle *handle, uint8_t throttle[4]) {
     if (handle->state == DRIVE_STOP) return;
 
     hw_dcMotor_setThrottle(handle->wheel_1, throttle[0]);
