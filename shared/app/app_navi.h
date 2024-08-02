@@ -30,3 +30,8 @@ void app_navi_initDriveToNode(NAVI_Handle* handle, Node* current, Node* destinat
 void app_navi_tickDriveToNode(NAVI_Handle* handle);
 
 void app_navi_endDriveToNode(NAVI_Handle* handle);
+
+
+void app_navi_initDriveToNodeDiagonal(NAVI_Handle* handle, Node* current, Node* destination);
+
+void app_navi_tickDriveToNodeDiagonal(NAVI_Handle *handle);

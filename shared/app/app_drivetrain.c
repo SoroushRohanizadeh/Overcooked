@@ -6,6 +6,7 @@
 
 #define WHEEL_RADIUS 0.024 // meters
 #define CLICKS_PER_REV 30 * 11 * 4
+#define MAX_THROTTLE 100
 
 void app_drivetrain_setDriveState(DT_Handle* handle, Drive_State state);
 
@@ -47,10 +48,10 @@ void app_drivetrain_driveVect(DT_Handle *handle, uint8_t throttle, double_t thet
 
     // Normalize wheel speeds if necessary
     double max_wheel_speed = fmax(fmax(fabs(front_left), fabs(front_right)), fmax(fabs(rear_left), fabs(rear_right)));
-    front_left = front_left / max_wheel_speed * throttle;
-    front_right = front_right / max_wheel_speed * throttle;
-    rear_left = rear_left / max_wheel_speed * throttle;
-    rear_right = rear_right / max_wheel_speed * throttle;
+    front_left = front_left / max_wheel_speed * MAX_THROTTLE;
+    front_right = front_right / max_wheel_speed * MAX_THROTTLE;
+    rear_left = rear_left / max_wheel_speed * MAX_THROTTLE;
+    rear_right = rear_right / max_wheel_speed * MAX_THROTTLE;
 
     handle->__vectThrottle[3] = -front_left;
     handle->__vectThrottle[2] = -front_right;

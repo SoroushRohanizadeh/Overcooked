@@ -315,7 +315,7 @@ void StartDefaultTask(void *argument)
   uint8_t throttle[] = {throt,throt,throt,throt};
 
   uint16_t count = 0;
-  app_drivetrain_driveVect(&drive_handle, throt,  M_PI / 6, 0);
+  app_drivetrain_driveVect(&drive_handle, throt,  M_PI_4, 100);
   // app_drivetrain_drive(&drive_handle, throttle, RIGHT);
   // hw_dcMotor_driveCCW(&wheel4, throt);
   // int swap = 500;
