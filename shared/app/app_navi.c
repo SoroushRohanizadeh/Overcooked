@@ -12,7 +12,7 @@ uint16_t app_navi_mapNodeHeight(Node_Type type);
 void app_navi_initDriveToNode(NAVI_Handle* handle, Node* current, Node* destination) {
     handle->__currentNode = current;
     handle->__destinationNode = destination;
-    app_drivetrain_driveVect(handle->dtHandle, DEFAULT_THROTTLE, app_navi_drivingAngle(handle));
+    app_drivetrain_driveVect(handle->dtHandle, DEFAULT_THROTTLE, app_navi_drivingAngle(handle), 0);
 }
 
 // Origin is Bottom Left

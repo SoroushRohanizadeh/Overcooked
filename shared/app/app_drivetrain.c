@@ -4,8 +4,6 @@
 #include <string.h>
 #include <usart.h>
 
-#define MAX(x,y) (x) > (y) ? (x) : (y)
-
 #define WHEEL_RADIUS 0.024 // meters
 #define CLICKS_PER_REV 30 * 11 * 4
 
@@ -37,15 +35,27 @@ void app_drivetrain_drive(DT_Handle *handle, uint8_t throttle[4], Drive_State st
     }
 }
 
-void app_drivetrain_driveVect(DT_Handle *handle, int throttle, double_t theta) {
-    double sinVal = sin(theta - M_PI_4);
-    double cosVal = cos(theta - M_PI_4);
-    double max = MAX(MAX(sinVal, -sinVal), MAX(cosVal, -cosVal));
+void app_drivetrain_driveVect(DT_Handle *handle, uint8_t throttle, double_t theta, double_t rotation) {
+    double x = throttle * cos(theta);
+    double y = throttle * sin(theta);
 
-    handle->__vectThrottle[3] = (int) ((cosVal / max) * (double) throttle);
-    handle->__vectThrottle[2] = (int) ((sinVal / max) * (double) throttle);
-    handle->__vectThrottle[1] = (int) ((sinVal / max) * (double) throttle);
-    handle->__vectThrottle[0] = (int) ((cosVal / max) * (double) throttle);
+    // Calculate wheel speeds
+    double front_left = y + x + rotation;
+    double front_right = y - x - rotation;
+    double rear_left = y - x + rotation;
+    double rear_right = y + x - rotation;
+
+    // Normalize wheel speeds if necessary
+    double max_wheel_speed = fmax(fmax(fabs(front_left), fabs(front_right)), fmax(fabs(rear_left), fabs(rear_right)));
+    front_left = front_left / max_wheel_speed * throttle;
+    front_right = front_right / max_wheel_speed * throttle;
+    rear_left = rear_left / max_wheel_speed * throttle;
+    rear_right = rear_right / max_wheel_speed * throttle;
+
+    handle->__vectThrottle[3] = -front_left;
+    handle->__vectThrottle[2] = -front_right;
+    handle->__vectThrottle[1] = rear_left;
+    handle->__vectThrottle[0] = rear_right;
 
     hw_dcMotor_drive(handle->wheel_1, handle->__vectThrottle[0]);
     hw_dcMotor_drive(handle->wheel_2, handle->__vectThrottle[1]);

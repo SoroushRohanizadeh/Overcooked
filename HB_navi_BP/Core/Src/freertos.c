@@ -311,10 +311,11 @@ void StartDefaultTask(void *argument)
     .sns = &adcHandler
   };
 
-  uint8_t throt = 100;
+  uint8_t throt = 50;
   uint8_t throttle[] = {throt,throt,throt,throt};
 
-  app_drivetrain_driveVect(&drive_handle, throt, 0);
+  uint16_t count = 0;
+  app_drivetrain_driveVect(&drive_handle, throt,  M_PI / 6, 0);
   // app_drivetrain_drive(&drive_handle, throttle, RIGHT);
   // hw_dcMotor_driveCCW(&wheel4, throt);
   // int swap = 500;
@@ -325,8 +326,6 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-
-    app_drivetrain_tickDriveVect(&drive_handle);
     // app_lineFollowing_tick(&lf_handle, throt, RIGHT);
     // if (!stop) {
     //   app_lineFollowing_tickNAVI(&lf_handle, throt, RIGHT, &count, &stop);

@@ -48,7 +48,7 @@ void app_drivetrain_drive(DT_Handle* handle, uint8_t throttle[4], Drive_State st
 
 void app_drivetrain_tickDrive(DT_Handle* handle, uint8_t throttle[4]);
 
-void app_drivetrain_driveVect(DT_Handle* handle, int throttle, double_t theta);
+void app_drivetrain_driveVect(DT_Handle* handle, uint8_t throttle, double_t theta, double_t rotation);
 
 void app_drivetrain_tickDriveVect(DT_Handle *handle);
 
