@@ -44,7 +44,9 @@ typedef struct __DT_handle {
  * __________________________BOT_BENCH________________________
  */
 
-void app_drivetrain_drive(DT_Handle* handle, uint8_t throttle[4], Drive_State state);
+void app_drivetrain_driveArray(DT_Handle* handle, uint8_t throttle[4], Drive_State state);
+
+void app_drivetrain_drive(DT_Handle *handle, uint8_t throttle, Drive_State state);
 
 void app_drivetrain_tickDrive(DT_Handle* handle, uint8_t throttle[4]);
 

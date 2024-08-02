@@ -10,7 +10,12 @@
 
 void app_drivetrain_setDriveState(DT_Handle* handle, Drive_State state);
 
-void app_drivetrain_drive(DT_Handle *handle, uint8_t throttle[4], Drive_State state) {
+void app_drivetrain_drive(DT_Handle *handle, uint8_t throttle, Drive_State state) {
+    uint8_t throt[4] = {throttle, throttle, throttle, throttle};
+    app_drivetrain_driveArray(handle, throt, state);
+}
+
+void app_drivetrain_driveArray(DT_Handle *handle, uint8_t throttle[4], Drive_State state) {
     app_drivetrain_setDriveState(handle, state);
 
     if (handle->state == UP) {
@@ -119,13 +124,13 @@ void app_drivetrain_brake(DT_Handle *handle) {
     uint8_t brakeThrot[] = {100, 100, 100, 100};
 
     if (state == UP) {
-        app_drivetrain_drive(handle, brakeThrot, DOWN);
+        app_drivetrain_driveArray(handle, brakeThrot, DOWN);
     } else if (state == DOWN) {
-        app_drivetrain_drive(handle, brakeThrot, UP);
+        app_drivetrain_driveArray(handle, brakeThrot, UP);
     } else if (state == LEFT) {
-        app_drivetrain_drive(handle, brakeThrot, RIGHT);
+        app_drivetrain_driveArray(handle, brakeThrot, RIGHT);
     } else if (state == RIGHT) {
-        app_drivetrain_drive(handle, brakeThrot, LEFT);
+        app_drivetrain_driveArray(handle, brakeThrot, LEFT);
     }
 
     app_drivetrain_stop(handle);

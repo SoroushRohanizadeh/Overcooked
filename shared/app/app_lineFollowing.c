@@ -67,7 +67,7 @@ void app_lineFollowing_tickNAVI(LF_Handle *handle, uint8_t throttle, Drive_State
     } else if (values[T2] >= BLACK_THRESHOLD) {
         if (*count < BRAKE_TICKS) {
             uint8_t throt[] = {100,100,100,100};
-            app_drivetrain_drive(handle->drive, throt, LEFT);
+            app_drivetrain_driveArray(handle->drive, throt, LEFT);
 
             sprintf(msg, "%d\t BRAKING\r\n", *count);
             HAL_UART_Transmit(&huart3, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
