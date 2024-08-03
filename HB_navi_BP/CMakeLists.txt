@@ -36,6 +36,7 @@ target_sources(${NAVI_PROJECT} PUBLIC
         ${SHARED_SRC_DIR}/hw/hw_dcMotor.c
         ${SHARED_SRC_DIR}/hw/hw_reflectance.c
         ${SHARED_SRC_DIR}/hw/hw_rotaryEncoder.c
+        ${SHARED_SRC_DIR}/hw/hw_servo.c
         ${SHARED_SRC_DIR}/io/io_adc.c
         ${SHARED_SRC_DIR}/io/io_pwm.c
         Source/app/app_init.c

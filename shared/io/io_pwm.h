@@ -17,9 +17,13 @@ typedef struct __PWM_Handle {
 
 void io_pwm_start(PWM_Handle* handler, uint16_t dutyCycle);
 
+void io_pwm_startFloat(PWM_Handle* handler, float dutyCycle);
+
 /**
  * @param dutyCycle between 0 and 100
  */
 void io_pwm_setDutyCycle(PWM_Handle* handler, uint16_t dutyCycle);
+
+void io_pwm_setDutyCycleFloat(PWM_Handle *handler, float dutyCycle);
 
 void io_pwm_stop(PWM_Handle *handler);
