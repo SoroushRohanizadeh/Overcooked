@@ -25,11 +25,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <app_init.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <usart.h>
-#include "app_lineFollowing.h"
 
 /* USER CODE END Includes */
 
@@ -45,8 +46,8 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define NUM_PINS 8
-#define PERIOD 10
+#define PERIOD 100
+#define NUM_ADC_PINS 8
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -63,33 +64,33 @@ const osThreadAttr_t defaultTask_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-Rotary_Handle rotary_handle_w1 = {
-  .countCW = 0,
-  .countCCW = 0,
-  .gpioPinCW = W1_CW_SIG_Pin,
-  .gpioPinCCW = W1_CCW_SIG_Pin
-};
-
-Rotary_Handle rotary_handle_w2 = {
-  .countCW = 0,
-  .countCCW = 0,
-  .gpioPinCW = W2_CW_SIG_Pin,
-  .gpioPinCCW = W2_CCW_SIG_Pin
-};
-
-Rotary_Handle rotary_handle_w3 = {
-  .countCW = 0,
-  .countCCW = 0,
-  .gpioPinCW = W3_CW_SIG_Pin,
-  .gpioPinCCW = W3_CCW_SIG_Pin
-};
-
-Rotary_Handle rotary_handle_w4 = {
-  .countCW = 0,
-  .countCCW = 0,
-  .gpioPinCW = W4_CW_SIG_Pin,
-  .gpioPinCCW = W4_CCW_SIG_Pin
-};
+// Rotary_Handle rotary_handle_w1 = {
+//   .countCW = 0,
+//   .countCCW = 0,
+//   .gpioPinCW = W1_CW_SIG_Pin,
+//   .gpioPinCCW = W1_CCW_SIG_Pin
+// };
+//
+// Rotary_Handle rotary_handle_w2 = {
+//   .countCW = 0,
+//   .countCCW = 0,
+//   .gpioPinCW = W2_CW_SIG_Pin,
+//   .gpioPinCCW = W2_CCW_SIG_Pin
+// };
+//
+// Rotary_Handle rotary_handle_w3 = {
+//   .countCW = 0,
+//   .countCCW = 0,
+//   .gpioPinCW = W3_CW_SIG_Pin,
+//   .gpioPinCCW = W3_CCW_SIG_Pin
+// };
+//
+// Rotary_Handle rotary_handle_w4 = {
+//   .countCW = 0,
+//   .countCCW = 0,
+//   .gpioPinCW = W4_CW_SIG_Pin,
+//   .gpioPinCCW = W4_CCW_SIG_Pin
+// };
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   UNUSED(hadc);
@@ -97,29 +98,29 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-  if (GPIO_Pin == rotary_handle_w1.gpioPinCW) {
-    hw_rotaryEncoder_incrementCW(&rotary_handle_w1);
-  } else if (GPIO_Pin == rotary_handle_w1.gpioPinCCW) {
-    hw_rotaryEncoder_incrementCCW(&rotary_handle_w1);
-
-  } else if (GPIO_Pin == rotary_handle_w2.gpioPinCW) {
-    hw_rotaryEncoder_incrementCW(&rotary_handle_w2);
-
-  } else if (GPIO_Pin == rotary_handle_w2.gpioPinCCW) {
-    hw_rotaryEncoder_incrementCCW(&rotary_handle_w2);
-
-  } else if (GPIO_Pin == rotary_handle_w3.gpioPinCW) {
-    hw_rotaryEncoder_incrementCW(&rotary_handle_w3);
-
-  } else if (GPIO_Pin == rotary_handle_w3.gpioPinCCW) {
-    hw_rotaryEncoder_incrementCCW(&rotary_handle_w3);
-
-  } else if (GPIO_Pin == rotary_handle_w4.gpioPinCW) {
-    hw_rotaryEncoder_incrementCW(&rotary_handle_w4);
-
-  } else if (GPIO_Pin == rotary_handle_w4.gpioPinCCW) {
-    hw_rotaryEncoder_incrementCCW(&rotary_handle_w4);
-  }
+  // if (GPIO_Pin == rotary_handle_w1.gpioPinCW) {
+  //   hw_rotaryEncoder_incrementCW(&rotary_handle_w1);
+  // } else if (GPIO_Pin == rotary_handle_w1.gpioPinCCW) {
+  //   hw_rotaryEncoder_incrementCCW(&rotary_handle_w1);
+  //
+  // } else if (GPIO_Pin == rotary_handle_w2.gpioPinCW) {
+  //   hw_rotaryEncoder_incrementCW(&rotary_handle_w2);
+  //
+  // } else if (GPIO_Pin == rotary_handle_w2.gpioPinCCW) {
+  //   hw_rotaryEncoder_incrementCCW(&rotary_handle_w2);
+  //
+  // } else if (GPIO_Pin == rotary_handle_w3.gpioPinCW) {
+  //   hw_rotaryEncoder_incrementCW(&rotary_handle_w3);
+  //
+  // } else if (GPIO_Pin == rotary_handle_w3.gpioPinCCW) {
+  //   hw_rotaryEncoder_incrementCCW(&rotary_handle_w3);
+  //
+  // } else if (GPIO_Pin == rotary_handle_w4.gpioPinCW) {
+  //   hw_rotaryEncoder_incrementCW(&rotary_handle_w4);
+  //
+  // } else if (GPIO_Pin == rotary_handle_w4.gpioPinCCW) {
+  //   hw_rotaryEncoder_incrementCCW(&rotary_handle_w4);
+  // }
 }
 /* USER CODE END FunctionPrototypes */
 
@@ -179,159 +180,27 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
   UNUSED(argument);
 
-  volatile uint16_t adc_dma[NUM_PINS];
-
-  // ADC_Pin adc_pins[] = {PA0, PA1};
+  volatile uint16_t adc_dma[NUM_ADC_PINS];
 
   ADC_Handler adcHandler = {
     .hadcs = &hadc1,
     .twoADC = false,
-    .numPins = NUM_PINS,
+    .numPins = NUM_ADC_PINS,
     .adcBuffer = adc_dma,
-    .adcConvCMPLT = &adcConvCMPLT,
     // .adcPins = adc_pins,
     .ADC_Start = HAL_ADC_Start_DMA
   };
 
-  PWM_Handle cw_pwmHandler_w1 = {
-    .htim = &htim4,
-    .channel = TIM_CHANNEL_2,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
+  app_init_init(&adcHandler);
 
-  PWM_Handle ccw_pwmHandler_w1 = {
-    .htim = &htim4,
-    .channel = TIM_CHANNEL_1,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  PWM_Handle cw_pwmHandler_w2 = {
-    .htim = &htim3,
-    .channel = TIM_CHANNEL_3,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  PWM_Handle ccw_pwmHandler_w2 = {
-    .htim = &htim3,
-    .channel = TIM_CHANNEL_4,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  PWM_Handle cw_pwmHandler_w3 = {
-    .htim = &htim1,
-    .channel = TIM_CHANNEL_3,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  PWM_Handle ccw_pwmHandler_w3 = {
-    .htim = &htim1,
-    .channel = TIM_CHANNEL_2,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  PWM_Handle cw_pwmHandler_w4 = {
-    .htim = &htim4,
-    .channel = TIM_CHANNEL_4,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  PWM_Handle ccw_pwmHandler_w4 = {
-    .htim = &htim4,
-    .channel = TIM_CHANNEL_3,
-    .TIM_start = HAL_TIM_Base_Start,
-    .PWM_start = HAL_TIM_PWM_Start,
-    .TIM_stop = HAL_TIM_Base_Stop,
-    .PWM_stop = HAL_TIM_PWM_Stop
-  };
-
-  Motor_Handle wheel1 = {
-    .cw_handle = &cw_pwmHandler_w1,
-    .ccw_handle = &ccw_pwmHandler_w1,
-    .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w1,
-    .maxSpeed = 260
-  };
-
-  Motor_Handle wheel2 = {
-    .cw_handle = &cw_pwmHandler_w2,
-    .ccw_handle = &ccw_pwmHandler_w2,
-    .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w2,
-    .maxSpeed = 260
-  };
-
-  Motor_Handle wheel3 = {
-    .cw_handle = &cw_pwmHandler_w3,
-    .ccw_handle = &ccw_pwmHandler_w3,
-    .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w3,
-    .maxSpeed = 260
-  };
-
-  Motor_Handle wheel4 = {
-    .cw_handle = &cw_pwmHandler_w4,
-    .ccw_handle = &ccw_pwmHandler_w4,
-    .state = MOTOR_STOP,
-    .rotary_handle = &rotary_handle_w4,
-    .maxSpeed = 260
-  };
-
-  DT_Handle drive_handle = {
-    .wheel_1 = &wheel1,
-    .wheel_2 = &wheel2,
-    .wheel_3 = &wheel3,
-    .wheel_4 = &wheel4,
-    .state = DRIVE_STOP
-  };
-
-  LF_Handle lf_handle = {
-    .drive = &drive_handle,
-    .sns = &adcHandler
-  };
-
-  uint8_t throt = 100;
-  uint8_t throttle[] = {throt,throt,throt,throt};
-
-  app_drivetrain_drive(&drive_handle, throttle, UP);
-
-  // hw_dcMotor_driveCCW(&wheel4, throt);
+  app_navi_initDriveToNode(app_init_getNaviHandle(), app_init_getNode("Lettuce"),
+    app_init_getNode("Plating"));
 
   int currentTicks = osKernelGetTickCount();
   /* Infinite loop */
   for(;;)
   {
-    // app_lineFollowing_tickPID(&lf_handle, throt, RIGHT);
-    app_drivetrain_tickThrottle(&drive_handle, throttle);
-
-    // hw_dcMotor_tickSpeedPID(&wheel4);
-
-    // io_adc_read_raw(&adcHandler);
-    // char msg[57];
-    // sprintf(msg, "%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\r\n", adcHandler.adcBuffer[0], adcHandler.adcBuffer[1],
-    //   adcHandler.adcBuffer[2],adcHandler.adcBuffer[3],adcHandler.adcBuffer[4],adcHandler.adcBuffer[5],
-    //   adcHandler.adcBuffer[6],adcHandler.adcBuffer[7]);
-    // HAL_UART_Transmit(&huart3,  (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    app_naviStateMachine_tick100Hz(app_init_getNaviHandle());
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

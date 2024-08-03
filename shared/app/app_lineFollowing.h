@@ -11,6 +11,7 @@ typedef struct __LF_Handle {
 } LF_Handle;
 
 /**
+ *          Serving Side
  *      W2       Up       W4
  *             T1 T2
  *         L1         R1
@@ -19,4 +20,6 @@ typedef struct __LF_Handle {
  *      W1     Down       W3
  */
 
-void app_lineFollowing_tickPID(LF_Handle* handle, uint8_t throttle, Drive_State state);
+void app_lineFollowing_tick(LF_Handle* handle, uint8_t throttle, Drive_State state);
+
+void app_lineFollowing_tickNAVI(LF_Handle* handle, uint8_t throttle, Drive_State state, uint8_t* count, bool* stop);

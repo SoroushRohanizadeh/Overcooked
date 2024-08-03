@@ -51,8 +51,8 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : PBPin PBPin PBPin PBPin
                            PBPin */
-  GPIO_InitStruct.Pin = W3_CCW_SIG_Pin|W4_CCW_SIG_Pin|W2_CW_SIG_Pin|W1_CW_SIG_Pin
-                          |W2_CCW_SIG_Pin;
+  GPIO_InitStruct.Pin = W3_CCW_SIG_Pin|W4_CCW_SIG_Pin|W2_CW_SIG_Pin|LEFT_BUMP_Pin
+                          |RIGHT_BUMP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
