@@ -19,7 +19,7 @@
 #define BRAKE_TICKS 1
 
 void app_lineFollowing_tick(LF_Handle* handle, uint8_t throttle, Drive_State state) {
-    if (state != LEFT && state != RIGHT) return;
+    if (state != DRIVE_LEFT && state != DRIVE_LEFT) return;
 
     io_adc_read_raw(handle->sns);
     volatile uint16_t* values = handle->sns->adcBuffer;
@@ -27,7 +27,7 @@ void app_lineFollowing_tick(LF_Handle* handle, uint8_t throttle, Drive_State sta
     uint8_t newThrottle[4] = {throttle, throttle, throttle, throttle};
 
 
-    if (state == RIGHT) {
+    if (state == DRIVE_LEFT) {
         if (values[R1] <= BLACK_THRESHOLD && values[R2] > BLACK_THRESHOLD) {
             // go up
             newThrottle[1] = throttle * CORRECTION_FACTOR;
@@ -67,7 +67,7 @@ void app_lineFollowing_tickNAVI(LF_Handle *handle, uint8_t throttle, Drive_State
     } else if (values[T2] >= BLACK_THRESHOLD) {
         if (*count < BRAKE_TICKS) {
             uint8_t throt[] = {100,100,100,100};
-            app_drivetrain_driveArray(handle->drive, throt, LEFT);
+            app_drivetrain_driveArray(handle->drive, throt, DRIVE_LEFT);
 
             sprintf(msg, "%d\t BRAKING\r\n", *count);
             HAL_UART_Transmit(&huart3, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);

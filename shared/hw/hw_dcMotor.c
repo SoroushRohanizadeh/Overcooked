@@ -97,18 +97,18 @@ void hw_dcMotor_stop(Motor_Handle *handle) {
     handle->state = MOTOR_STOP;
 }
 
-uint16_t hw_dcMotor_getCurrentSpeed(Motor_Handle *handle) {
-    uint16_t speed = 0;
-
-    if (handle->state == CW) {
-        speed = handle->rotary_handle->countCW;
-        hw_rotaryEncoder_resetCountCW(handle->rotary_handle);
-    }
-
-    if (handle->state == CCW) {
-        speed = handle->rotary_handle->countCCW;
-        hw_rotaryEncoder_resetCountCCW(handle->rotary_handle);
-    }
-
-    return speed;
-}
+// uint16_t hw_dcMotor_getCurrentSpeed(Motor_Handle *handle) {
+//     uint16_t speed = 0;
+//
+//     if (handle->state == CW) {
+//         speed = handle->rotary_handle->countCW;
+//         hw_rotaryEncoder_resetCountCW(handle->rotary_handle);
+//     }
+//
+//     if (handle->state == CCW) {
+//         speed = handle->rotary_handle->countCCW;
+//         hw_rotaryEncoder_resetCountCCW(handle->rotary_handle);
+//     }
+//
+//     return speed;
+// }

@@ -12,6 +12,8 @@ target_compile_definitions(stm32cubemx_navi PUBLIC
 	$<$<CONFIG:Debug>:DEBUG>
 )
 
+set(USR_SRC_DIR ../../Source)
+
 target_include_directories(stm32cubemx_navi PUBLIC
 	../../Core/Inc
 	../../Drivers/STM32F1xx_HAL_Driver/Inc
@@ -26,6 +28,7 @@ target_include_directories(stm32cubemx_navi PUBLIC
 	${SHARED_SRC_DIR}/app
 	${SHARED_SRC_DIR}/io
 	${SHARED_SRC_DIR}/hw
+	${USR_SRC_DIR}/app
 )
 
 target_sources(stm32cubemx_navi PUBLIC
@@ -69,6 +72,9 @@ target_sources(stm32cubemx_navi PUBLIC
 	../../Core/Src/sysmem.c
 	../../Core/Src/syscalls.c
 	../../startup_stm32f103xb.s
+
+	# user sources:
+	${USR_SRC_DIR}/app/app_init.c
 )
 
 target_link_directories(stm32cubemx_navi PUBLIC

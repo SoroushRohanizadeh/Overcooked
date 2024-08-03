@@ -6,12 +6,12 @@
 #include <hw_dcMotor.h>
 
 typedef enum __Drive_State {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
+    DRIVE_UP,
+    DRIVE_DOWN,
+    DRIVE_LEFT,
+    DRIVE_RIGHT,
     DRIVE_STOP,
-    ANGLE
+    DRIVE_ANGLE
 } Drive_State;
 
 typedef struct __DT_handle {
@@ -35,6 +35,7 @@ typedef struct __DT_handle {
  *
  * __________________________MID_BENCH________________________
  *
+*                          Serving Side
  *                     W2       Up       W4
  *
  *                    <--Left-- HB --Right--> (theta = 0)
