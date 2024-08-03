@@ -32,7 +32,6 @@ target_link_libraries(${NAVI_PROJECT} PUBLIC
 target_sources(${NAVI_PROJECT} PUBLIC
         Source/mean.c
         ${SHARED_SRC_DIR}/app/app_stateMachine.c
-        ${SHARED_SRC_DIR}/app/app_simpleStateMachine.c
         ${SHARED_SRC_DIR}/app/app_drivetrain.c
         ${SHARED_SRC_DIR}/app/app_lineFollowing.c
         ${SHARED_SRC_DIR}/app/app_navi.c

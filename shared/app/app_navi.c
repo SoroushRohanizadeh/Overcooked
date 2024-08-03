@@ -7,108 +7,124 @@
 #define BOTTOM_HEIGHT 762U
 #define MIDDLE_HEIGHT BOTTOM_HEIGHT / 2
 
+
+// --- State Machine ---
+const NAVI_State* currentState;
+const NAVI_State* nextState;
+void runTickFunction(NAVI_Handle* handle, void (*tick_function)(NAVI_Handle* handler)) {
+    if (tick_function != NULL) {
+        tick_function(handle);
+    }
+
+    if (nextState != currentState) {
+        if (currentState->run_on_exit != NULL) {
+            currentState->run_on_exit(handle);
+        }
+
+        currentState = nextState;
+
+        if (currentState->run_on_entry != NULL) {
+            currentState->run_on_entry(handle);
+        }
+    }
+    nextState = currentState;
+}
+
+void app_naviStateMachine_init(NAVI_Handle* handle, const NAVI_State* start_state) {
+    currentState = start_state;
+    nextState    = start_state;
+
+    if (currentState->run_on_entry != NULL)
+    {
+        currentState->run_on_entry(handle);
+    }
+}
+
+void app_naviStateMachine_tick100Hz(NAVI_Handle* handle) {
+    runTickFunction(handle, currentState->run_on_100Hz);
+}
+
+void app_naviStateMachine_setNextState(const NAVI_State* state) {
+    nextState = state;
+}
+
+
+// --- Source Code ---
+void app_initDriveVert(NAVI_Handle * handle);
+void app_tickDriveVert(NAVI_Handle * handle);
+void app_exitDriveVert(NAVI_Handle * handle);
+
+void app_initDriveHor(NAVI_Handle * handle);
+void app_tickDriveHor(NAVI_Handle * handle);
+void app_exitDriveHor(NAVI_Handle * handle);
+
+void app_initAlignVert(NAVI_Handle * handle);
+void app_tickAlignVert(NAVI_Handle * handle);
+void app_exitAlignVert(NAVI_Handle * handle);
+
+void app_initAlignHor(NAVI_Handle * handle);
+void app_tickAlignHor(NAVI_Handle * handle);
+void app_exitAlignHor(NAVI_Handle * handle);
+
+void app_initRotate(NAVI_Handle * handle);
+void app_tickRotate(NAVI_Handle * handle);
+void app_exitRotate(NAVI_Handle * handle);
+
 NAVI_State driveVertState = {
-    .name = NAVI_DRIVE_VERT,
+    .name = DRIVE_VERT,
     .run_on_entry = app_initDriveVert,
     .run_on_100Hz = app_tickDriveVert,
     .run_on_exit = app_exitDriveVert
 };
 
 NAVI_State driveHorState = {
-    .name = NAVI_DRIVE_HOR,
+    .name = DRIVE_HOR,
     .run_on_entry = app_initDriveHor,
     .run_on_100Hz = app_tickDriveHor,
     .run_on_exit = app_exitDriveHor
 };
 
 NAVI_State alignVertState = {
-    .name = NAVI_ALIGN_VERT,
+    .name = ALIGN_VERT,
     .run_on_entry = app_initAlignVert,
     .run_on_100Hz = app_tickAlignVert,
     .run_on_exit = app_exitAlignVert
 };
 
 NAVI_State alignHorState = {
-    .name = NAVI_ALIGN_HOR,
+    .name = ALIGN_HOR,
     .run_on_entry = app_initAlignHor,
     .run_on_100Hz = app_tickAlignHor,
     .run_on_exit = app_exitAlignHor
 };
 
 NAVI_State rotateState = {
-    .name = NAVI_ROTATE,
+    .name = ROTATE,
     .run_on_entry = app_initRotate,
     .run_on_100Hz = app_tickRotate,
     .run_on_exit = app_exitRotate
 };
 
-void app_navi_initDriveVertToMiddleLine(NAVI_Handle *handle);
-void app_navi_initRotate180(NAVI_Handle *handle);
-void app_navi_initDriveToWall(NAVI_Handle *handle);
-void app_navi_initDriveHorizontalToNode(NAVI_Handle *handle);
-
-
-void app_navi_initVertDirection(NAVI_Handle *handle);
-
-void app_navi_initHorizontalDirection(NAVI_Handle *handle);
-
-
 void app_navi_initDriveToNode(NAVI_Handle *handle, Node *current, Node *destination) {
     handle->__currentNode = current;
     handle->__destinationNode = destination;
 
-
     if (handle->__currentNode->type == handle->__destinationNode->type) {
-        app_simpleStateMachine_init(&stateMachine, driveHorState);
-        app_navi_initHorizontalDirection(handle);
-        return;
+        app_naviStateMachine_init(handle, &driveHorState);
+    } else if (handle->__currentNode->type == LEFT_BOUND || handle->__currentNode->type == RIGHT_BOUND) {
+        app_naviStateMachine_init(handle, &rotateState);
+    } else {
+        app_naviStateMachine_init(handle, &driveVertState);
     }
-
-    if (handle->__currentNode->type == LEFT_BOUND || handle->__currentNode->type == RIGHT_BOUND) {
-        app_simpleStateMachine_init(&stateMachine, rotateState);
-        app_navi_initRotate180(handle);
-        return;
-    }
-
-    app_simpleStateMachine_init(&stateMachine, driveVertState);
-    app_navi_initDriveToMiddleLine(handle);
 }
+
+
 
 void app_navi_tickDriveToNode(NAVI_Handle *handle) {
-    app_simpleStateMachine_tick100Hz(&stateMachine);
-
-    // if changing sides
-    //      if middle
-    //          rotate
-    //          go horizontal -
-    //      if side
-    //          go to middle
-    //          rotate
-    //          go horizontal
-    // drive and skip lines if necessary
-    // drive until line found
-    // center on line and go in
+    app_naviStateMachine_tick100Hz(handle);
 }
 
-void app_navi_initVertDirection(NAVI_Handle *handle) {
-
-}
-
-void app_navi_initHorizontalDirection(NAVI_Handle *handle) {
-    if (handle->__destinationNode->xLocation >= handle->__currentNode->xLocation) {
-        app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, RIGHT);
-    } else {
-        app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, LEFT);
-    }
-}
-
-void app_navi_initRotate180(NAVI_Handle *handle) {}
-
-void app_navi_initDriveToMiddleLine(NAVI_Handle *handle) {
-}
-
-void app_navi_endDriveToNode(NAVI_Handle *handle) {
-}
+void app_navi_endDriveToNode(NAVI_Handle *handle) {}
 
 // --- DIAGONAL NAVIGATION ---
 // double_t app_navi_drivingAngle(NAVI_Handle *handle);
