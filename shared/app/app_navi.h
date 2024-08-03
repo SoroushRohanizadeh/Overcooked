@@ -3,7 +3,7 @@
 #endif //APP_NAVI_H
 
 #include <app_drivetrain.h>
-
+#include <io_adc.h>
 
 typedef enum __Node_Type {
     TOP_NODE,
@@ -19,25 +19,10 @@ typedef struct __Node {
 
 typedef struct __NAVI_Handle {
     DT_Handle* dtHandle;
+    ADC_Handler* sns;
     Node* __currentNode;
     Node* __destinationNode;
 } NAVI_Handle;
-
-typedef enum __NAVI_STATE_NAME {
-    DRIVE_VERT,
-    DRIVE_HOR,
-    ALIGN_VERT,
-    ALIGN_HOR,
-    ROTATE
-} NAVI_STATE_NAME;
-
-typedef struct __NAVI_State {
-    NAVI_STATE_NAME name;
-
-    void (*run_on_entry)(NAVI_Handle* handle);
-    void (*run_on_100Hz)(NAVI_Handle* handle);
-    void (*run_on_exit) (NAVI_Handle* handle);
-} NAVI_State;
 
 void app_navi_initDriveToNode(NAVI_Handle* handle, Node* current, Node* destination);
 

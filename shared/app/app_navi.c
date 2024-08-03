@@ -1,14 +1,31 @@
 #include "app_navi.h"
-#include <math.h>
+#include "hw_reflectance.h"
 
 #define DEFAULT_THROTTLE 100U
 #define ROTATION_SPEED 100U
+#define CORRECTION_THROTTLE 20U
 
 #define BOTTOM_HEIGHT 762U
 #define MIDDLE_HEIGHT BOTTOM_HEIGHT / 2
 
 
 // --- State Machine ---
+typedef enum __NAVI_STATE_NAME {
+    DRIVE_VERT,
+    DRIVE_HOR,
+    ALIGN_VERT,
+    ALIGN_HOR,
+    ROTATE
+} NAVI_STATE_NAME;
+
+typedef struct __NAVI_State {
+    NAVI_STATE_NAME name;
+
+    void (*run_on_entry)(NAVI_Handle* handle);
+    void (*run_on_100Hz)(NAVI_Handle* handle);
+    void (*run_on_exit) (NAVI_Handle* handle);
+} NAVI_State;
+
 const NAVI_State* currentState;
 const NAVI_State* nextState;
 void runTickFunction(NAVI_Handle* handle, void (*tick_function)(NAVI_Handle* handler)) {
@@ -118,7 +135,91 @@ void app_navi_initDriveToNode(NAVI_Handle *handle, Node *current, Node *destinat
     }
 }
 
+// --- State Machine Functions ---
+void app_initDriveVert(NAVI_Handle *handle) {
+    if (handle->__destinationNode->type == TOP_NODE) {
+        app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, UP);
+    } else {
+        app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, DOWN);
+    }
+}
 
+void app_tickDriveVert(NAVI_Handle *handle) {
+    uint8_t sns1 = 0;
+    uint8_t sns2 = 0;
+
+    if (handle->dtHandle->state == UP) {
+        sns1 = L1;
+        sns2 = R1;
+    } else {
+        sns1 = L2;
+        sns2 = R2;
+    }
+
+    if (hw_reflectance_lineDetected(handle->sns, sns1) ||  hw_reflectance_lineDetected(handle->sns, sns2)) {
+        app_naviStateMachine_setNextState(&alignVertState);
+    }
+}
+
+void app_exitDriveVert(NAVI_Handle *handle) {
+    app_drivetrain_brake(handle->dtHandle);
+}
+
+void app_initAlignVert(NAVI_Handle *handle) {
+    if (handle->__destinationNode->type == TOP_NODE) {
+        app_drivetrain_drive(handle->dtHandle, CORRECTION_THROTTLE, DOWN);
+    } else {
+        app_drivetrain_drive(handle->dtHandle, CORRECTION_THROTTLE, UP);
+    }
+}
+
+void app_tickAlignVert(NAVI_Handle *handle) {
+    uint8_t sns1 = 0;
+    uint8_t sns2 = 0;
+
+    if (handle->dtHandle->state == UP) {
+        sns1 = L1;
+        sns2 = R1;
+    } else {
+        sns1 = L2;
+        sns2 = R2;
+    }
+
+    if (!hw_reflectance_lineDetected(handle->sns, sns1) || !hw_reflectance_lineDetected(handle->sns, sns2)) {
+        app_drivetrain_stop(handle->dtHandle);
+        app_naviStateMachine_setNextState(&rotateState);
+    }
+}
+
+void app_initRotate(NAVI_Handle *handle) {
+    app_drivetrain_driveVect(handle->dtHandle, 0, 0, ROTATION_SPEED);
+}
+
+void app_tickRotate(NAVI_Handle *handle) {
+    
+}
+
+void app_exitRotate(NAVI_Handle *handle) {
+}
+
+void app_initDriveHor(NAVI_Handle *handle) {
+}
+
+void app_tickDriveHor(NAVI_Handle *handle) {
+}
+
+void app_exitDriveHor(NAVI_Handle *handle) {
+}
+
+void app_initAlignHor(NAVI_Handle *handle) {
+}
+
+void app_tickAlignHor(NAVI_Handle *handle) {
+}
+
+void app_exitAlignHor(NAVI_Handle *handle) {
+}
+// --- END State Machine Functions ---
 
 void app_navi_tickDriveToNode(NAVI_Handle *handle) {
     app_naviStateMachine_tick100Hz(handle);

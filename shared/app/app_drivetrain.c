@@ -6,7 +6,9 @@
 
 #define WHEEL_RADIUS 0.024 // meters
 #define CLICKS_PER_REV 30 * 11 * 4
+
 #define MAX_THROTTLE 100
+#define BRAKE_THROTTLE 100
 
 void app_drivetrain_setDriveState(DT_Handle* handle, Drive_State state);
 
@@ -121,16 +123,14 @@ void app_drivetrain_brake(DT_Handle *handle) {
     Drive_State state = handle->state;
     app_drivetrain_stop(handle);
 
-    uint8_t brakeThrot[] = {100, 100, 100, 100};
-
     if (state == UP) {
-        app_drivetrain_driveArray(handle, brakeThrot, DOWN);
+        app_drivetrain_drive(handle, BRAKE_THROTTLE, DOWN);
     } else if (state == DOWN) {
-        app_drivetrain_driveArray(handle, brakeThrot, UP);
+        app_drivetrain_drive(handle, BRAKE_THROTTLE, UP);
     } else if (state == LEFT) {
-        app_drivetrain_driveArray(handle, brakeThrot, RIGHT);
+        app_drivetrain_drive(handle, BRAKE_THROTTLE, RIGHT);
     } else if (state == RIGHT) {
-        app_drivetrain_driveArray(handle, brakeThrot, LEFT);
+        app_drivetrain_drive(handle, BRAKE_THROTTLE, LEFT);
     }
 
     app_drivetrain_stop(handle);

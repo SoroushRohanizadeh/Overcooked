@@ -78,3 +78,8 @@ void app_lineFollowing_tickNAVI(LF_Handle *handle, uint8_t throttle, Drive_State
         }
     }
 }
+
+bool app_lineFollowing_lineDetected(ADC_Handler* handle, uint8_t sns) {
+    io_adc_read_raw(handle);
+    return handle->adcBuffer[sns] >= BLACK_THRESHOLD;
+}
