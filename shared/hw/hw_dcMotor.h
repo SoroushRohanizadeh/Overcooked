@@ -15,7 +15,7 @@ typedef struct __Motor_Handle{
     PWM_Handle* cw_handle;
     PWM_Handle* ccw_handle;
     Motor_State state;
-    Rotary_Handle* rotary_handle;
+    // Rotary_Handle* rotary_handle;
     uint16_t maxSpeed; // in ticks per 10ms
     uint16_t setSpeed; // the speed set by the control algorithm
 } Motor_Handle;

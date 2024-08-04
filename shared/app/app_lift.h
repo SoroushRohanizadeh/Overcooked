@@ -18,8 +18,10 @@ typedef struct __LIFT_Handle {
     uint16_t topBumperPin;
     GPIO_TypeDef* bottomBumperDef;
     uint16_t bottomBumperPin;
+    uint16_t encoderCWPin;
+    uint16_t encoderCCWPin;
 
-    uint16_t __currHeight; // in encoder ticks
+    uint32_t __currHeight; // in encoder ticks
     uint16_t __goalHeight; // in encoder ticks
     uint16_t __maxHeight;
     LIFT_State __state;

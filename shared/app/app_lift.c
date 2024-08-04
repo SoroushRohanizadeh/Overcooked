@@ -104,7 +104,6 @@ void app_lift_initHome(LIFT_Handle *handle) {
 void app_lift_tickHome(LIFT_Handle *handle) {
     if (!HAL_GPIO_ReadPin(handle->bottomBumperDef, handle->bottomBumperPin)) {
         app_lift_stop(handle);
-        hw_rotaryEncoder_resetCount(handle->dcMotor->rotary_handle);
         handle->__currHeight = 0;
     }
 }
@@ -118,14 +117,14 @@ void app_lift_tickCalibrateZ(LIFT_Handle *handle, UART_HandleTypeDef *uart) {
     if (!handle->__calibTopReached) {
         if (!HAL_GPIO_ReadPin(handle->topBumperDef, handle->topBumperPin)) {
             app_lift_stop(handle);
-            hw_rotaryEncoder_resetCount(handle->dcMotor->rotary_handle);
+            handle->__currHeight = 0;
             app_lift_initMoveDown(handle, DEFAULT_LIFT_THROTTLE);
         }
     } else {
         if (!HAL_GPIO_ReadPin(handle->bottomBumperDef, handle->bottomBumperPin)) {
             app_lift_stop(handle);
             char msg[21];
-            sprintf(msg, "Ticks: %ld\r\n", hw_rotaryEncoder_getCount(handle->dcMotor->rotary_handle));
+            sprintf(msg, "Ticks: %ld\r\n", handle->__currHeight);
             HAL_UART_Transmit(uart, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
         }
     }
