@@ -2,7 +2,7 @@
 #define HW_SERVO_H
 #endif //HW_SERVO_H
 
-#include <hw_dcMotor.h>
+#include <io_pwm.h>
 
 typedef enum __Servo_State {
     ON,
