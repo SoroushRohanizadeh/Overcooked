@@ -8,35 +8,34 @@
 #define CLAMP_ANGLE(x) ((x) < MIN_ANGLE ? MIN_ANGLE : ((x) > MAX_ANGLE ? MAX_ANGLE : (x)))
 
 #define ROUGH_ERROR_BOUND 50
-#define PRECISE_ERROR_BOUND 10
 #define WITHIN_ERROR(curr, goal, error) ((goal + error) >= curr && (goal - error) <= curr)
 
 #define DEFAULT_CLAW_THROTTLE 100U
-#define CLAW_BRAKE_THROTTLE 100U
+#define BRAKE_THROTTLE 100U
 #define CALIB_THROTTLE 20U
 #define HOMING_THROTTLE 20U
 
 
 void app_claw_initExtend(CLAW_Handle *handle, uint8_t throttle) {
-    if (handle->__state == CLAW_UP) return;
+    if (handle->__state == CLAW_EXTEND) return;
 
-    if (handle->__state == CLAW_DOWN) {
+    if (handle->__state == CLAW_RETRACT) {
         app_claw_stopExtension(handle);
     }
 
     hw_dcMotor_drive(handle->dcMotor, throttle); // TODO MIGHT BE BACKWARDS
-    handle->__state = CLAW_UP;
+    handle->__state = CLAW_EXTEND;
 }
 
 void app_claw_initRetract(CLAW_Handle *handle, uint8_t throttle) {
-    if (handle->__state == CLAW_DOWN) return;
+    if (handle->__state == CLAW_RETRACT) return;
 
-    if (handle->__state == CLAW_UP) {
+    if (handle->__state == CLAW_EXTEND) {
         app_claw_stopExtension(handle);
     }
 
     hw_dcMotor_drive(handle->dcMotor, -throttle); // TODO MIGHT BE BACKWARDS
-    handle->__state = CLAW_DOWN;
+    handle->__state = CLAW_RETRACT;
 }
 
 void app_claw_initMoveToPos(CLAW_Handle *handle, uint16_t pos) {
@@ -73,10 +72,10 @@ void app_claw_stopExtension(CLAW_Handle *handle) {
     CLAW_State state = handle->__state;
     hw_dcMotor_stop(handle->dcMotor);
 
-    if (state == CLAW_STOPPED_EXT) {
-        app_claw_initRetract(handle, CLAW_BRAKE_THROTTLE);
+    if (state == CLAW_EXTEND) {
+        app_claw_initRetract(handle, BRAKE_THROTTLE);
     } else {
-        app_claw_initExtend(handle, CLAW_BRAKE_THROTTLE);
+        app_claw_initExtend(handle, BRAKE_THROTTLE);
     }
 
     hw_dcMotor_stop(handle->dcMotor);

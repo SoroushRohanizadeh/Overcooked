@@ -33,7 +33,7 @@ target_sources(${NAVI_PROJECT} PUBLIC
         ${SHARED_SRC_DIR}/app/app_drivetrain.c
         ${SHARED_SRC_DIR}/app/app_lineFollowing.c
         ${SHARED_SRC_DIR}/app/app_navi.c
-        ${SHARED_SRC_DIR}/app/app_stacker.c
+        ${SHARED_SRC_DIR}/app/app_sweeper.c
         ${SHARED_SRC_DIR}/app/app_lift.c
         ${SHARED_SRC_DIR}/app/app_claw.c
         ${SHARED_SRC_DIR}/hw/hw_dcMotor.c

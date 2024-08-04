@@ -7,8 +7,8 @@
 #endif //APP_CLAW_H
 
 typedef enum __CLAW_State {
-    CLAW_UP,
-    CLAW_DOWN,
+    CLAW_EXTEND,
+    CLAW_RETRACT,
     CLAW_STOPPED_EXT
 } CLAW_State;
 
@@ -24,7 +24,6 @@ typedef struct __CLAW_Handle {
 
     uint32_t __currPos; // in encoder ticks with respect to the fully extended state
     uint16_t __goalPos; // in encoder ticks with respect to the fully extended state
-    uint16_t __maxExtension;
     CLAW_State __state;
     bool __calibFullyExtended;
 } CLAW_Handle;

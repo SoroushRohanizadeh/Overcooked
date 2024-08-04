@@ -12,7 +12,7 @@
 #define WITHIN_ERROR(curr, goal, error) ((goal + error) >= curr && (goal - error) <= curr)
 
 #define DEFAULT_LIFT_THROTTLE 100U
-#define LIFT_BRAKE_THROTTLE 100U
+#define BRAKE_THROTTLE 100U
 #define ALIGNMENT_THROTTLE 20U
 #define HOMING_THROTTLE 20U
 
@@ -87,9 +87,9 @@ void app_lift_stopZ(LIFT_Handle *handle) {
     hw_dcMotor_stop(handle->dcMotor);
 
     if (state == LIFT_UP) {
-        app_lift_initMoveDown(handle, LIFT_BRAKE_THROTTLE);
+        app_lift_initMoveDown(handle, BRAKE_THROTTLE);
     } else {
-        app_lift_initMoveUp(handle, LIFT_BRAKE_THROTTLE);
+        app_lift_initMoveUp(handle, BRAKE_THROTTLE);
     }
 
     hw_dcMotor_stop(handle->dcMotor);

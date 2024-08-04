@@ -23,7 +23,6 @@ typedef struct __LIFT_Handle {
 
     uint32_t __currHeight; // in encoder ticks
     uint16_t __goalHeight; // in encoder ticks
-    uint16_t __maxHeight;
     LIFT_State __state;
     bool __calibTopReached;
 } LIFT_Handle;
