@@ -38,7 +38,7 @@ void app_lift_tickAlignHeight(LIFT_Handle* handle);
 void app_lift_incrementHeight(LIFT_Handle* handle);
 void app_lift_deIncrementHeight(LIFT_Handle* handle);
 
-void app_lift_stop(LIFT_Handle* handle);
+void app_lift_stopZ(LIFT_Handle* handle);
 
 void app_lift_setX(LIFT_Handle* handle, uint8_t x);
 

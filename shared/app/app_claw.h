@@ -7,34 +7,43 @@
 #endif //APP_CLAW_H
 
 typedef enum __CLAW_State {
-    CLAW_EXTENDING,
-    CLAW_CONTRACTING,
-    CLAW_STOP_EXTEND
+    CLAW_UP,
+    CLAW_DOWN,
+    CLAW_STOPPED_Z
 } CLAW_State;
 
 typedef struct __CLAW_Handle {
     Servo_Handle* servo;
     Motor_Handle* dcMotor;
-    GPIO_TypeDef* topBumperDef;
-    uint16_t topBumperPin;
-    GPIO_TypeDef* bottomBumperDef;
-    uint16_t bottomBumperPin;
+    GPIO_TypeDef* extendedBumperDef;
+    uint16_t extendedBumperPin;
+    GPIO_TypeDef* rectractedBumperDef;
+    uint16_t rectractedBumperPin;
+    uint16_t encoderCWPin;
+    uint16_t encoderCCWPin;
 
-    uint8_t __height;
+    uint32_t __currPos; // in encoder ticks
+    uint16_t __goalPos; // in encoder ticks
+    uint16_t __maxExtension;
     CLAW_State __state;
-    bool __calibTopReached;
+    bool __calibFullyExtended;
 } CLAW_Handle;
 
-void app_claw_extend(CLAW_Handle* handle);
+void app_claw_initMoveToPos(CLAW_Handle* handle, uint16_t length);
+void app_claw_initMoveByLength(CLAW_Handle* handle, uint16_t length);
+void app_claw_tickMovePos(CLAW_Handle* handle);
 
-void app_claw_contract(CLAW_Handle* handle);
+void app_claw_incrementPos(CLAW_Handle* handle);
+void app_claw_deIncrementPos(CLAW_Handle* handle);
 
-void app_claw_stop(CLAW_Handle* handle);
+void app_claw_stopExtension(CLAW_Handle* handle);
 
-void app_claw_setX(CLAW_Handle* handle, uint8_t x);
+void app_claw_setAngle(CLAW_Handle* handle, uint8_t angle);
 
+// Homing
+void app_claw_initHome(CLAW_Handle* handle);
+void app_claw_tickHome(CLAW_Handle* handle);
 
 // ONLY CALLED FOR CALIBRATION
-void app_claw_initCalibrateZ(CLAW_Handle* handle);
-
-void app_claw_tickCalibrateZ(CLAW_Handle* handle, UART_HandleTypeDef *uart);
+void app_claw_initCalibrateExtension(CLAW_Handle* handle);
+void app_claw_tickCalibrateExtension(CLAW_Handle* handle, UART_HandleTypeDef *uart);

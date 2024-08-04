@@ -19,7 +19,7 @@ void app_lift_initMoveUp(LIFT_Handle *handle, uint8_t throttle) {
     if (handle->__state == LIFT_UP) return;
 
     if (handle->__state == LIFT_DOWN) {
-        app_lift_stop(handle);
+        app_lift_stopZ(handle);
     }
 
     hw_dcMotor_drive(handle->dcMotor, throttle); // TODO MIGHT BE BACKWARDS
@@ -30,7 +30,7 @@ void app_lift_initMoveDown(LIFT_Handle *handle, uint8_t throttle) {
     if (handle->__state == LIFT_DOWN) return;
 
     if (handle->__state == LIFT_UP) {
-        app_lift_stop(handle);
+        app_lift_stopZ(handle);
     }
 
     hw_dcMotor_drive(handle->dcMotor, -throttle); // TODO MIGHT BE BACKWARDS
@@ -49,7 +49,7 @@ void app_lift_initMoveToHeight(LIFT_Handle *handle, uint16_t height) {
 
 void app_lift_tickMoveHeight(LIFT_Handle *handle) {
     if (WITHIN_ERROR(handle->__currHeight, handle->__goalHeight, ROUGH_ERROR_BOUND)) {
-        app_lift_stop(handle);
+        app_lift_stopZ(handle);
     }
 }
 
@@ -77,7 +77,7 @@ void app_lift_initMoveByHeight(LIFT_Handle *handle, uint16_t height) {
     app_lift_initMoveToHeight(handle, handle->__currHeight + height);
 }
 
-void app_lift_stop(LIFT_Handle *handle) {
+void app_lift_stopZ(LIFT_Handle *handle) {
     if (handle->__state == LIFT_STOPPED_Z) return;
 
     LIFT_State state = handle->__state;
@@ -103,7 +103,7 @@ void app_lift_initHome(LIFT_Handle *handle) {
 
 void app_lift_tickHome(LIFT_Handle *handle) {
     if (!HAL_GPIO_ReadPin(handle->bottomBumperDef, handle->bottomBumperPin)) {
-        app_lift_stop(handle);
+        app_lift_stopZ(handle);
         handle->__currHeight = 0;
     }
 }
@@ -116,13 +116,13 @@ void app_lift_initCalibrateZ(LIFT_Handle *handle) {
 void app_lift_tickCalibrateZ(LIFT_Handle *handle, UART_HandleTypeDef *uart) {
     if (!handle->__calibTopReached) {
         if (!HAL_GPIO_ReadPin(handle->topBumperDef, handle->topBumperPin)) {
-            app_lift_stop(handle);
+            app_lift_stopZ(handle);
             handle->__currHeight = 0;
             app_lift_initMoveDown(handle, DEFAULT_LIFT_THROTTLE);
         }
     } else {
         if (!HAL_GPIO_ReadPin(handle->bottomBumperDef, handle->bottomBumperPin)) {
-            app_lift_stop(handle);
+            app_lift_stopZ(handle);
             char msg[21];
             sprintf(msg, "Ticks: %ld\r\n", handle->__currHeight);
             HAL_UART_Transmit(uart, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
