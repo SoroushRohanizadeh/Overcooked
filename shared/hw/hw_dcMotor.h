@@ -1,9 +1,9 @@
 #ifndef APP_DCMOTOR_H
 #define APP_DCMOTOR_H
+#include "io_pwm.h"
 #endif //APP_DCMOTOR_H
 
 #include <hw_rotaryEncoder.h>
-#include "io_pwm.h"
 
 typedef enum Motor_State {
     CW,

@@ -263,7 +263,11 @@ void app_tickDriveHor(NAVI_Handle *handle) {
     }
 
     if (hw_reflectance_lineDetected(handle->sns, sns)) {
-        app_naviStateMachine_setNextState(&alignHorState);
+        if (handle->__numSkipsHorizontal == 0) {
+            app_naviStateMachine_setNextState(&alignHorState);
+        } else {
+            handle->__numSkipsHorizontal -= 1;
+        }
     }
 }
 

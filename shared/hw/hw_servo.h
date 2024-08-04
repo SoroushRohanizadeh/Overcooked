@@ -1,8 +1,8 @@
 #ifndef HW_SERVO_H
 #define HW_SERVO_H
+#include <io_pwm.h>
 #endif //HW_SERVO_H
 
-#include <io_pwm.h>
 
 typedef enum __Servo_State {
     ON,

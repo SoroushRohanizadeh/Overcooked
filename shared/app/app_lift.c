@@ -56,8 +56,8 @@ void app_lift_tickCalibrateZ(LIFT_Handle *handle, UART_HandleTypeDef *uart) {
     } else {
         if (HAL_GPIO_ReadPin(handle->bottomBumperDef, handle->bottomBumperPin)) {
             app_lift_stop(handle);
-            char msg[10];
-            sprintf(msg, "Ticks: %d\r\n", hw_rotaryEncoder_getCount(handle->dcMotor->rotary_handle));
+            char msg[21];
+            sprintf(msg, "Ticks: %ld\r\n", hw_rotaryEncoder_getCount(handle->dcMotor->rotary_handle));
             HAL_UART_Transmit(uart, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
         }
     }

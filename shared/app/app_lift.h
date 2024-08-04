@@ -36,4 +36,4 @@ void app_lift_setX(LIFT_Handle* handle, uint8_t x);
 // ONLY CALLED FOR CALIBRATION
 void app_lift_initCalibrateZ(LIFT_Handle* handle);
 
-void app_lift_tickCalibrateZ(LIFT_Handle* handle);
+void app_lift_tickCalibrateZ(LIFT_Handle* handle, UART_HandleTypeDef *uart);
