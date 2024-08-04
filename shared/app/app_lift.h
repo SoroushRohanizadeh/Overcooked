@@ -19,21 +19,31 @@ typedef struct __LIFT_Handle {
     GPIO_TypeDef* bottomBumperDef;
     uint16_t bottomBumperPin;
 
-    uint8_t __height;
+    uint16_t __currHeight; // in encoder ticks
+    uint16_t __goalHeight; // in encoder ticks
+    uint16_t __maxHeight;
     LIFT_State __state;
-    bool calibTopReached;
+    bool __calibTopReached;
 } LIFT_Handle;
 
-void app_lift_moveUp(LIFT_Handle* handle);
+void app_lift_initMoveToHeight(LIFT_Handle* handle, uint16_t height);
+void app_lift_initMoveByHeight(LIFT_Handle* handle, uint16_t height);
+void app_lift_tickMoveHeight(LIFT_Handle* handle);
 
-void app_lift_moveDown(LIFT_Handle* handle);
+void app_lift_initAlignHeight(LIFT_Handle* handle);
+void app_lift_tickAlignHeight(LIFT_Handle* handle);
+
+void app_lift_incrementHeight(LIFT_Handle* handle);
+void app_lift_deIncrementHeight(LIFT_Handle* handle);
 
 void app_lift_stop(LIFT_Handle* handle);
 
 void app_lift_setX(LIFT_Handle* handle, uint8_t x);
 
+// Homing
+void app_lift_initHome(LIFT_Handle* handle);
+void app_lift_tickHome(LIFT_Handle* handle);
 
 // ONLY CALLED FOR CALIBRATION
 void app_lift_initCalibrateZ(LIFT_Handle* handle);
-
 void app_lift_tickCalibrateZ(LIFT_Handle* handle, UART_HandleTypeDef *uart);
