@@ -245,10 +245,10 @@ void app_navi_numSkips(NAVI_Handle *handle, Drive_State state) {
 
 void app_initDriveHor(NAVI_Handle *handle) {
     if (handle->__destinationNode->xLocation > handle->__currentNode->xLocation) {
-        app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, DRIVE_RIGHT);
+        app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, DRIVE_RIGHT); // TODO consider making this vector slightly into wall
         app_navi_numSkips(handle, DRIVE_RIGHT);
     } else {
-        app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, DRIVE_LEFT);
+        app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, DRIVE_LEFT); // TODO consider making this vector slightly into wall
         app_navi_numSkips(handle, DRIVE_LEFT);
     }
 }

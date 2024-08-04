@@ -27,8 +27,8 @@ typedef struct __NAVI_Handle {
     uint16_t leftBumperPin;
     GPIO_TypeDef* rightBumperDef;
     uint16_t rightBumperPin;
-    Node* __currentNode;
-    Node* __destinationNode;
+    const Node* __currentNode;
+    const Node* __destinationNode;
     uint8_t __numSkipsHorizontal;
     uint8_t numNodes;
     Node* nodes;

@@ -9,7 +9,7 @@
 typedef enum __CLAW_State {
     CLAW_UP,
     CLAW_DOWN,
-    CLAW_STOPPED_Z
+    CLAW_STOPPED_EXT
 } CLAW_State;
 
 typedef struct __CLAW_Handle {
@@ -22,14 +22,14 @@ typedef struct __CLAW_Handle {
     uint16_t encoderCWPin;
     uint16_t encoderCCWPin;
 
-    uint32_t __currPos; // in encoder ticks
-    uint16_t __goalPos; // in encoder ticks
+    uint32_t __currPos; // in encoder ticks with respect to the fully extended state
+    uint16_t __goalPos; // in encoder ticks with respect to the fully extended state
     uint16_t __maxExtension;
     CLAW_State __state;
     bool __calibFullyExtended;
 } CLAW_Handle;
 
-void app_claw_initMoveToPos(CLAW_Handle* handle, uint16_t length);
+void app_claw_initMoveToPos(CLAW_Handle* handle, uint16_t pos);
 void app_claw_initMoveByLength(CLAW_Handle* handle, uint16_t length);
 void app_claw_tickMovePos(CLAW_Handle* handle);
 

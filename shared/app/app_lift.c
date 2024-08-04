@@ -14,6 +14,7 @@
 #define DEFAULT_LIFT_THROTTLE 100U
 #define LIFT_BRAKE_THROTTLE 100U
 #define ALIGNMENT_THROTTLE 20U
+#define HOMING_THROTTLE 20U
 
 void app_lift_initMoveUp(LIFT_Handle *handle, uint8_t throttle) {
     if (handle->__state == LIFT_UP) return;
@@ -56,11 +57,13 @@ void app_lift_tickMoveHeight(LIFT_Handle *handle) {
 void app_lift_initAlignHeight(LIFT_Handle *handle) {
     if (handle->__currHeight < handle->__goalHeight) {
         app_lift_initMoveUp(handle, ALIGNMENT_THROTTLE);
+    } else if (handle->__currHeight > handle->__goalHeight) {
+        app_lift_initMoveDown(handle, ALIGNMENT_THROTTLE);
     }
 }
 
 void app_lift_tickAlignHeight(LIFT_Handle *handle) {
-    if (WITHIN_ERROR(handle->__currHeight, handle->__goalHeight, ROUGH_ERROR_BOUND)) {
+    if (WITHIN_ERROR(handle->__currHeight, handle->__goalHeight, PRECISE_ERROR_BOUND)) {
         hw_dcMotor_stop(handle->dcMotor);
     }
 }
@@ -98,7 +101,7 @@ void app_lift_setX(LIFT_Handle* handle, uint8_t x) {
 }
 
 void app_lift_initHome(LIFT_Handle *handle) {
-    app_lift_initMoveDown(handle, DEFAULT_LIFT_THROTTLE);
+    app_lift_initMoveDown(handle, HOMING_THROTTLE);
 }
 
 void app_lift_tickHome(LIFT_Handle *handle) {
@@ -128,5 +131,4 @@ void app_lift_tickCalibrateZ(LIFT_Handle *handle, UART_HandleTypeDef *uart) {
             HAL_UART_Transmit(uart, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
         }
     }
-
 }
