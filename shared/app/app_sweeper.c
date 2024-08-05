@@ -13,6 +13,10 @@
 #define CALIB_THROTTLE 20U
 #define HOMING_THROTTLE 20U
 
+#define SWEEPER_CENTER 200U // TODO determine this
+
+void (*app_sweeper_tickFunction)(SWEEP_Handle *handle);
+
 void app_sweeper_initRight(SWEEP_Handle *handle, uint8_t throttle) {
     if (handle->__state == SWEEP_RIGHT) return;
 
@@ -43,15 +47,26 @@ void app_sweeper_initMoveToPos(SWEEP_Handle *handle, uint16_t pos) {
     } else {
         app_sweeper_initRight(handle, DEFAULT_SWEEP_THROTTLE);
     }
+    app_sweeper_tickFunction = app_sweeper_tickMovePos;
 }
 
 void app_sweeper_initMoveByLength(SWEEP_Handle *handle, uint16_t length) {
     app_sweeper_initMoveToPos(handle, handle->__currPos + length);
 }
 
+void app_sweeper_initMoveToCenter(SWEEP_Handle *handle) {
+    app_sweeper_initMoveToPos(handle, SWEEPER_CENTER);
+}
+
 void app_sweeper_tickMovePos(SWEEP_Handle *handle) {
+    app_sweeper_tickFunction(handle);
+}
+
+void app_sweeper_tickRoughMove(SWEEP_Handle *handle) {
     if (WITHIN_ERROR(handle->__currPos, handle->__goalPos, ROUGH_ERROR_BOUND)) {
         app_sweeper_stop(handle);
+        app_sweeper_initAlignPos(handle);
+        app_sweeper_tickFunction = app_sweeper_tickAlignPos;
     }
 }
 
@@ -63,9 +78,15 @@ void app_sweeper_initAlignPos(SWEEP_Handle *handle) {
     }
 }
 
+void app_sweeper_arrived(SWEEP_Handle *handle) {
+    // do nothing
+}
+
 void app_sweeper_tickAlignPos(SWEEP_Handle *handle) {
     if (WITHIN_ERROR(handle->__currPos, handle->__goalPos, PRECISE_ERROR_BOUND)) {
         hw_dcMotor_stop(handle->dcMotor);
+        handle->__state = SWEEPER_ARRIVED;
+        app_sweeper_tickFunction = app_sweeper_arrived;
     }
 }
 

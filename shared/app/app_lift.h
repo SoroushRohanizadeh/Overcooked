@@ -8,7 +8,8 @@
 typedef enum __LIFT_State {
     LIFT_UP,
     LIFT_DOWN,
-    LIFT_STOPPED_Z
+    LIFT_STOPPED_Z,
+    LIFT_ARRIVED
 } LIFT_State;
 
 typedef struct __LIFT_Handle {
@@ -25,6 +26,8 @@ typedef struct __LIFT_Handle {
     uint16_t __goalHeight; // in encoder ticks
     LIFT_State __state;
     bool __calibTopReached;
+
+    void (*__tickFunction)(struct __LIFT_Handle *handle);
 } LIFT_Handle;
 
 void app_lift_initMoveToHeight(LIFT_Handle* handle, uint16_t height);
@@ -40,6 +43,7 @@ void app_lift_deIncrementHeight(LIFT_Handle* handle);
 void app_lift_stopZ(LIFT_Handle* handle);
 
 void app_lift_setX(LIFT_Handle* handle, uint8_t x);
+void app_lift_setXForStack(LIFT_Handle* handle);
 
 // Homing
 void app_lift_initHome(LIFT_Handle* handle);

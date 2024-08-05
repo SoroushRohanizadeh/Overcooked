@@ -8,7 +8,9 @@
 typedef enum __SWEEP_State {
     SWEEP_LEFT,
     SWEEP_RIGHT,
-    SWEEP_STOP
+    SWEEP_STOP,
+    SWEEPER_ARRIVED,
+    SWEEPER_HOME
 } SWEEP_State;
 
 typedef struct __SWEEP_Handle {
@@ -28,6 +30,8 @@ typedef struct __SWEEP_Handle {
 
 void app_sweeper_initMoveToPos(SWEEP_Handle* handle, uint16_t pos);
 void app_sweeper_initMoveByLength(SWEEP_Handle* handle, uint16_t length);
+void app_sweeper_initMoveToCenter(SWEEP_Handle* handle);
+
 void app_sweeper_tickMovePos(SWEEP_Handle* handle);
 
 void app_sweeper_initAlignPos(SWEEP_Handle* handle);

@@ -15,6 +15,9 @@
 #define CALIB_THROTTLE 20U
 #define HOMING_THROTTLE 20U
 
+#define FULLY_EXTENDED_POS 0U
+
+void (*tickFunction)(CLAW_Handle *handle);
 
 void app_claw_initExtend(CLAW_Handle *handle, uint8_t throttle) {
     if (handle->__state == CLAW_EXTEND) return;
@@ -38,6 +41,19 @@ void app_claw_initRetract(CLAW_Handle *handle, uint8_t throttle) {
     handle->__state = CLAW_RETRACT;
 }
 
+void app_claw_tickArrive(CLAW_Handle *handle) {
+    UNUSED(handle);
+    // do nothing
+}
+
+void app_claw_tickMove(CLAW_Handle *handle) {
+    if (WITHIN_ERROR(handle->__currPos, handle->__goalPos, ROUGH_ERROR_BOUND)) {
+        app_claw_stopExtension(handle);
+        handle->__state = CLAW_ARRIVED;
+        tickFunction = app_claw_tickArrive;
+    }
+}
+
 void app_claw_initMoveToPos(CLAW_Handle *handle, uint16_t pos) {
     handle->__goalPos = pos;
 
@@ -46,16 +62,24 @@ void app_claw_initMoveToPos(CLAW_Handle *handle, uint16_t pos) {
     } else {
         app_claw_initExtend(handle, DEFAULT_CLAW_THROTTLE);
     }
+
+    tickFunction = app_claw_tickMove;
 }
 
 void app_claw_initMoveByLength(CLAW_Handle *handle, uint16_t length) {
     app_claw_initMoveToPos(handle, handle->__currPos + length);
 }
 
+void app_claw_initFullyRetracted(CLAW_Handle *handle) {
+    app_claw_initRetract(handle, handle->fullyRetractedPos);
+}
+
 void app_claw_tickMovePos(CLAW_Handle *handle) {
-    if (WITHIN_ERROR(handle->__currPos, handle->__goalPos, ROUGH_ERROR_BOUND)) {
-        app_claw_stopExtension(handle);
-    }
+    tickFunction(handle);
+}
+
+void app_claw_initFullyExtend(CLAW_Handle *handle) {
+    app_claw_initMoveToPos(handle, FULLY_EXTENDED_POS);
 }
 
 void app_claw_incrementPos(CLAW_Handle *handle) {

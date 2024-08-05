@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MIN_X_LOCATION 0 // TODO determine this using calib functions
-#define MAX_X_LOCATION 180 // TODO determine this using calib functions
+#define DEFAULT_LIFT_X 20U // TODO determine this
+
+#define MIN_X_LOCATION 0U // TODO determine this using calib functions
+#define MAX_X_LOCATION 180U // TODO determine this using calib functions
 #define CLAMP_ANGLE(x) ((x) < MIN_X_LOCATION ? MIN_X_LOCATION : ((x) > MAX_X_LOCATION ? MAX_X_LOCATION : (x)))
 
 #define ROUGH_ERROR_BOUND 50 // in encoder ticks middle finger
@@ -38,6 +40,14 @@ void app_lift_initMoveDown(LIFT_Handle *handle, uint8_t throttle) {
     handle->__state = LIFT_DOWN;
 }
 
+void app_lift_tickHeight(LIFT_Handle* handle) {
+    if (WITHIN_ERROR(handle->__currHeight, handle->__goalHeight, ROUGH_ERROR_BOUND)) {
+        app_lift_stopZ(handle);
+        app_lift_initAlignHeight(handle);
+        handle->__tickFunction = app_lift_tickAlignHeight;
+    }
+}
+
 void app_lift_initMoveToHeight(LIFT_Handle *handle, uint16_t height) {
     handle->__goalHeight = height;
 
@@ -46,12 +56,12 @@ void app_lift_initMoveToHeight(LIFT_Handle *handle, uint16_t height) {
     } else {
         app_lift_initMoveDown(handle, DEFAULT_LIFT_THROTTLE);
     }
+
+    handle->__tickFunction = app_lift_tickHeight;
 }
 
 void app_lift_tickMoveHeight(LIFT_Handle *handle) {
-    if (WITHIN_ERROR(handle->__currHeight, handle->__goalHeight, ROUGH_ERROR_BOUND)) {
-        app_lift_stopZ(handle);
-    }
+    handle->__tickFunction(handle);
 }
 
 void app_lift_initAlignHeight(LIFT_Handle *handle) {
@@ -62,9 +72,16 @@ void app_lift_initAlignHeight(LIFT_Handle *handle) {
     }
 }
 
+void app_lift_tickArrived(LIFT_Handle *handle) {
+    UNUSED(handle);
+    // do nothing
+}
+
 void app_lift_tickAlignHeight(LIFT_Handle *handle) {
     if (WITHIN_ERROR(handle->__currHeight, handle->__goalHeight, PRECISE_ERROR_BOUND)) {
         hw_dcMotor_stop(handle->dcMotor);
+        handle->__state == LIFT_ARRIVED;
+        handle->__tickFunction = app_lift_tickArrived;
     }
 }
 
@@ -98,6 +115,10 @@ void app_lift_stopZ(LIFT_Handle *handle) {
 
 void app_lift_setX(LIFT_Handle* handle, uint8_t x) {
     hw_servo_setAngle(handle->servo, CLAMP_ANGLE(x));
+}
+
+void app_lift_setXForStack(LIFT_Handle *handle) {
+    app_lift_setX(handle, DEFAULT_LIFT_X);
 }
 
 void app_lift_initHome(LIFT_Handle *handle) {
