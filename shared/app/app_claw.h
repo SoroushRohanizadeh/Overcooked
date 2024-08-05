@@ -17,8 +17,8 @@ typedef struct __CLAW_Handle {
     Motor_Handle* dcMotor;
     GPIO_TypeDef* extendedBumperDef;
     uint16_t extendedBumperPin;
-    GPIO_TypeDef* rectractedBumperDef;
-    uint16_t rectractedBumperPin;
+    GPIO_TypeDef* retractedBumperDef;
+    uint16_t retractedBumperPin;
     uint16_t encoderCWPin;
     uint16_t encoderCCWPin;
 

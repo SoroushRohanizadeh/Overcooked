@@ -7,7 +7,7 @@
 #define MAX_X_LOCATION 180 // TODO determine this using calib functions
 #define CLAMP_ANGLE(x) ((x) < MIN_X_LOCATION ? MIN_X_LOCATION : ((x) > MAX_X_LOCATION ? MAX_X_LOCATION : (x)))
 
-#define ROUGH_ERROR_BOUND 50
+#define ROUGH_ERROR_BOUND 50 // in encoder ticks middle finger
 #define PRECISE_ERROR_BOUND 10
 #define WITHIN_ERROR(curr, goal, error) ((goal + error) >= curr && (goal - error) <= curr)
 

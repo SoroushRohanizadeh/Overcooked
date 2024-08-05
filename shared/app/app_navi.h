@@ -30,6 +30,7 @@ typedef struct __NAVI_Handle {
     const Node* __currentNode;
     const Node* __destinationNode;
     uint8_t __numSkipsHorizontal;
+    bool __lineSeenToSkip;
     uint8_t numNodes;
     Node* nodes;
 } NAVI_Handle;
@@ -38,7 +39,7 @@ void app_navi_initDriveToNode(NAVI_Handle* handle, const Node* current, const No
 
 void app_navi_tickDriveToNode(NAVI_Handle* handle);
 
-void app_navi_endDriveToNode(NAVI_Handle* handle);
+// void app_navi_endDriveToNode(NAVI_Handle* handle);
 
 // --- State Machine ---
 typedef enum __NAVI_STATE_NAME {

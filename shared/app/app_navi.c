@@ -179,7 +179,7 @@ void app_tickAlignVert(NAVI_Handle *handle) {
         sns2 = R2;
     }
 
-    // ASSUMES WE DO NOT SHOOT PAST THE TAPE COMPLETELY
+    // TODO ASSUMES WE DO NOT SHOOT PAST THE TAPE COMPLETELY
     if (!hw_reflectance_lineDetected(handle->sns, sns1) || !hw_reflectance_lineDetected(handle->sns, sns2)) {
         app_drivetrain_stop(handle->dtHandle);
         app_naviStateMachine_setNextState(&rotateState);
@@ -244,6 +244,8 @@ void app_navi_numSkips(NAVI_Handle *handle, Drive_State state) {
 }
 
 void app_initDriveHor(NAVI_Handle *handle) {
+    handle->__lineSeenToSkip = false;
+
     if (handle->__destinationNode->xLocation > handle->__currentNode->xLocation) {
         app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, DRIVE_RIGHT); // TODO consider making this vector slightly into wall
         app_navi_numSkips(handle, DRIVE_RIGHT);
@@ -265,9 +267,12 @@ void app_tickDriveHor(NAVI_Handle *handle) {
     if (hw_reflectance_lineDetected(handle->sns, sns)) {
         if (handle->__numSkipsHorizontal == 0) {
             app_naviStateMachine_setNextState(&alignHorState);
-        } else {
+        } else if (!handle->__lineSeenToSkip) {
+            handle->__lineSeenToSkip = true;
             handle->__numSkipsHorizontal -= 1;
         }
+    } else {
+        handle->__lineSeenToSkip = false;
     }
 }
 
@@ -303,7 +308,7 @@ void app_navi_tickDriveToNode(NAVI_Handle *handle) {
     app_naviStateMachine_tick100Hz(handle);
 }
 
-void app_navi_endDriveToNode(NAVI_Handle *handle) {}
+// void app_navi_endDriveToNode(NAVI_Handle *handle) {}
 
 // --- DIAGONAL NAVIGATION ---
 // double_t app_navi_drivingAngle(NAVI_Handle *handle);

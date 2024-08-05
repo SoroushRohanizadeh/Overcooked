@@ -1,7 +1,6 @@
 #ifndef APP_DCMOTOR_H
 #define APP_DCMOTOR_H
 #include "io_pwm.h"
-#endif //APP_DCMOTOR_H
 
 #include <hw_rotaryEncoder.h>
 
@@ -19,6 +18,10 @@ typedef struct __Motor_Handle{
     uint16_t maxSpeed; // in ticks per 10ms
     uint16_t setSpeed; // the speed set by the control algorithm
 } Motor_Handle;
+
+#endif //APP_DCMOTOR_H
+
+
 
 void hw_dcMotor_driveCW(Motor_Handle* handle, uint8_t throttle);
 

@@ -1,9 +1,6 @@
 #ifndef HW_SERVO_H
 #define HW_SERVO_H
 #include <io_pwm.h>
-#endif //HW_SERVO_H
-
-
 typedef enum __Servo_State {
     ON,
     OFF
@@ -14,6 +11,11 @@ typedef struct __Servo_Handle{
     Servo_State state;
     uint8_t currAngle;
 } Servo_Handle;
+
+#endif //HW_SERVO_H
+
+
+
 
 void hw_servo_init(Servo_Handle* handle, uint8_t angle);
 

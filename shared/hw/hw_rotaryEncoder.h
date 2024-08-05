@@ -1,7 +1,5 @@
 #ifndef HW_ROTARYENCODER_H
 #define HW_ROTARYENCODER_H
-#endif //HW_ROTARYENCODER_H
-
 #include <stdint.h>
 
 typedef struct __Rotary_Handle {
@@ -10,6 +8,11 @@ typedef struct __Rotary_Handle {
     uint32_t countCW;
     uint32_t countCCW;
 } Rotary_Handle;
+
+#endif //HW_ROTARYENCODER_H
+
+
+
 
 void hw_rotaryEncoder_incrementCW(Rotary_Handle* handle);
 

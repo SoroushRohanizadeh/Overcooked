@@ -110,7 +110,7 @@ void app_claw_tickCalibrateExtension(CLAW_Handle *handle, UART_HandleTypeDef *ua
             app_claw_initRetract(handle, CALIB_THROTTLE);
         }
     } else {
-        if (!HAL_GPIO_ReadPin(handle->rectractedBumperDef, handle->rectractedBumperPin)) {
+        if (!HAL_GPIO_ReadPin(handle->retractedBumperDef, handle->retractedBumperPin)) {
             app_claw_stopExtension(handle);
             char msg[21];
             sprintf(msg, "Ticks: %ld\r\n", handle->__currPos);
