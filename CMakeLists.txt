@@ -16,7 +16,8 @@ include("gcc-arm-none-eabi.cmake")
 project(Undercooked LANGUAGES C ASM)
 
 #enable_language(C ASM)
-#add_library(stm32cubemx INTERFACE)
+#add_library(stm32cubemx_main INTERFACE)
 
 add_subdirectory(HB_navi_BP)
 add_subdirectory(HB_aux_BP)
+add_subdirectory(JG_main)

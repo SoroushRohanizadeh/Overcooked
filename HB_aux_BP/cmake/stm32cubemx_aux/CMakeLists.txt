@@ -1,21 +1,21 @@
 cmake_minimum_required(VERSION 3.22)
 
-#project(stm32cubemx)
-#add_library(stm32cubemx PUBLIC)
+#project(stm32cubemx_main)
+#add_library(stm32cubemx_main PUBLIC)
 
 # Enable CMake support for ASM and C languages
 #enable_language(C ASM)
 
 target_compile_definitions(stm32cubemx_aux PUBLIC
-	USE_HAL_DRIVER 
-	STM32F103x6
+	USE_HAL_DRIVER
+	STM32F103xB
     $<$<CONFIG:Debug>:DEBUG>
 )
 
 target_include_directories(stm32cubemx_aux PUBLIC
 	../../Core/Inc
-	../../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
 	../../Drivers/STM32F1xx_HAL_Driver/Inc
+	../../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
 	../../Middlewares/Third_Party/FreeRTOS/Source/include
 	../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
 	../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3
@@ -28,6 +28,8 @@ target_sources(stm32cubemx_aux PUBLIC
 	../../Core/Src/gpio.c
 	../../Core/Src/freertos.c
 	../../Core/Src/adc.c
+	../../Core/Src/dma.c
+	../../Core/Src/tim.c
 	../../Core/Src/usart.c
 	../../Core/Src/stm32f1xx_it.c
 	../../Core/Src/stm32f1xx_hal_msp.c
@@ -61,7 +63,7 @@ target_sources(stm32cubemx_aux PUBLIC
 	../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c
 	../../Core/Src/sysmem.c
 	../../Core/Src/syscalls.c
-	../../startup_stm32f103x6.s
+	../../startup_stm32f103xb.s
 )
 
 target_link_directories(stm32cubemx_aux PUBLIC

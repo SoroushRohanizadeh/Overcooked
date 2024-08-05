@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
-#project(stm32cubemx)
-#add_library(stm32cubemx PUBLIC)
+#project(stm32cubemx_main)
+#add_library(stm32cubemx_main PUBLIC)
 
 # Enable CMake support for ASM and C languages
 #enable_language(C ASM)

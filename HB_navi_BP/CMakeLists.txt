@@ -43,10 +43,6 @@ target_sources(${NAVI_PROJECT} PUBLIC
         ${SHARED_SRC_DIR}/io/io_adc.c
         ${SHARED_SRC_DIR}/io/io_pwm.c
         Source/app/app_init.c
-        Source/app/app_stacking.c
-        Source/app/app_preStacking.c
-        Source/app/app_serving.c
-        Source/app/app_preServing.c
 )
 
 target_include_directories(${NAVI_PROJECT} PUBLIC

@@ -14,8 +14,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 #file(GLOB_RECURSE AUX_MID Middlewares/*.c)
 
 # Create an executable object type
-add_executable(${AUX_PROJECT}
-        ../shared/app/app_lineFollowing.h)
+add_executable(${AUX_PROJECT})
 #
 #message(${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc)
 
@@ -30,9 +29,28 @@ target_link_libraries(${AUX_PROJECT} PUBLIC
 )
 
 target_sources(${AUX_PROJECT} PUBLIC
-        ${SHARED_SRC_DIR}/app
+        ${SHARED_SRC_DIR}/app/app_stateMachine.c
+        ${SHARED_SRC_DIR}/app/app_drivetrain.c
+        ${SHARED_SRC_DIR}/app/app_lineFollowing.c
+        ${SHARED_SRC_DIR}/app/app_navi.c
+        ${SHARED_SRC_DIR}/app/app_sweeper.c
+        ${SHARED_SRC_DIR}/app/app_lift.c
+        ${SHARED_SRC_DIR}/app/app_claw.c
+        ${SHARED_SRC_DIR}/hw/hw_dcMotor.c
+        ${SHARED_SRC_DIR}/hw/hw_reflectance.c
+        ${SHARED_SRC_DIR}/hw/hw_rotaryEncoder.c
+        ${SHARED_SRC_DIR}/hw/hw_servo.c
+        ${SHARED_SRC_DIR}/io/io_adc.c
+        ${SHARED_SRC_DIR}/io/io_pwm.c
+        Source/app/app_stacking.c
+        Source/app/app_preStacking.c
+        Source/app/app_serving.c
+        Source/app/app_preServing.c
 )
 
 target_include_directories(${AUX_PROJECT} PUBLIC
         ${SHARED_SRC_DIR}/app
+        ${SHARED_SRC_DIR}/io
+        ${SHARED_SRC_DIR}/hw
+        Source/app
 )
