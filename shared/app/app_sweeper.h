@@ -29,7 +29,7 @@ typedef struct __SWEEP_Handle {
 } SWEEP_Handle;
 
 void app_sweeper_initMoveToPos(SWEEP_Handle* handle, uint16_t pos);
-void app_sweeper_initMoveByLength(SWEEP_Handle* handle, uint16_t length);
+void app_sweeper_initMoveByLength(SWEEP_Handle* handle, int length);
 void app_sweeper_initMoveToCenter(SWEEP_Handle* handle);
 
 void app_sweeper_tickMovePos(SWEEP_Handle* handle);

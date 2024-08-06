@@ -31,12 +31,11 @@ typedef struct __CLAW_Handle {
 } CLAW_Handle;
 
 void app_claw_initMoveToPos(CLAW_Handle* handle, uint16_t pos);
-void app_claw_initMoveByLength(CLAW_Handle* handle, uint16_t length);
+void app_claw_initMoveByLength(CLAW_Handle* handle, int length);
 void app_claw_initFullyRetracted(CLAW_Handle* handle);
 void app_claw_initFullyExtend(CLAW_Handle* handle);
 
 void app_claw_tickMovePos(CLAW_Handle* handle);
-
 
 void app_claw_incrementPos(CLAW_Handle* handle);
 void app_claw_deIncrementPos(CLAW_Handle* handle);

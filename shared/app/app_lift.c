@@ -93,7 +93,7 @@ void app_lift_deIncrementHeight(LIFT_Handle *handle) {
     handle->__currHeight--;
 }
 
-void app_lift_initMoveByHeight(LIFT_Handle *handle, uint16_t height) {
+void app_lift_initMoveByHeight(LIFT_Handle *handle, int height) {
     app_lift_initMoveToHeight(handle, handle->__currHeight + height);
 }
 

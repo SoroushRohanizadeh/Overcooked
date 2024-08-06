@@ -66,7 +66,7 @@ void app_claw_initMoveToPos(CLAW_Handle *handle, uint16_t pos) {
     tickFunction = app_claw_tickMove;
 }
 
-void app_claw_initMoveByLength(CLAW_Handle *handle, uint16_t length) {
+void app_claw_initMoveByLength(CLAW_Handle *handle, int length) {
     app_claw_initMoveToPos(handle, handle->__currPos + length);
 }
 

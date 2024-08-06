@@ -2,11 +2,6 @@
 #define APP_PRESTACKING_H
 #include <app_stacking.h>
 
-typedef enum __PreStacking_State {
-    PRE_STACKING,
-    PRE_STACKING_DONE
-} PreStacking_State;
-
 #endif //APP_PRESTACKING_H
 
 /**

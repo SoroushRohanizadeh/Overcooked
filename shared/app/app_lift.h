@@ -31,7 +31,7 @@ typedef struct __LIFT_Handle {
 } LIFT_Handle;
 
 void app_lift_initMoveToHeight(LIFT_Handle* handle, uint16_t height);
-void app_lift_initMoveByHeight(LIFT_Handle* handle, uint16_t height);
+void app_lift_initMoveByHeight(LIFT_Handle* handle, int height);
 void app_lift_tickMoveHeight(LIFT_Handle* handle);
 
 void app_lift_initAlignHeight(LIFT_Handle* handle);

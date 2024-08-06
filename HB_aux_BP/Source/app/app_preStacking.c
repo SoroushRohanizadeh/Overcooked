@@ -16,8 +16,7 @@ void app_preStacking_init(STACK_Handle *handle, uint16_t lastItemHeight) {
     app_lift_setXForStack(handle->leftLift);
     app_lift_setXForStack(handle->rightLift);
 
-    handle->__sweeperPreStackDelay = 0;
-
+    app_sweeper_initMoveToCenter(handle->sweeper);
 
     __preStackTick = app_preStacking_tickStacking;
 }
@@ -28,21 +27,12 @@ void app_preStacking_tick(STACK_Handle *handle) {
 
 void app_preStacking_tickStacking(STACK_Handle *handle) {
     app_claw_tickMovePos(handle->claw);
+    app_sweeper_tickMovePos(handle->sweeper);
 
-    if (handle->__sweeperPreStackDelay == SWEEPER_DELAY_TICKS) {
-        app_sweeper_initMoveToCenter(handle->sweeper);
-    } else if (handle->__sweeperPreStackDelay > SWEEPER_DELAY_TICKS) {
-        app_sweeper_tickMovePos(handle->sweeper);
-        if (handle->claw->__state == CLAW_ARRIVED
-            && handle->sweeper->__state == SWEEPER_ARRIVED) {
-
-            __preStackTick = app_preStacking_tickArrived;
-            handle->__preStackState == PRE_STACKING_DONE;
-        }
-    } else {
-        handle->__sweeperPreStackDelay++;
+    if (handle->claw->__state == CLAW_ARRIVED && handle->sweeper->__state == SWEEPER_ARRIVED) {
+        __preStackTick = app_preStacking_tickArrived;
+        handle->__preStackState == PRE_STACKING_DONE;
     }
-
 }
 
 void app_preStacking_tickArrived(STACK_Handle *handle) {

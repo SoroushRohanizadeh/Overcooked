@@ -50,7 +50,7 @@ void app_sweeper_initMoveToPos(SWEEP_Handle *handle, uint16_t pos) {
     app_sweeper_tickFunction = app_sweeper_tickMovePos;
 }
 
-void app_sweeper_initMoveByLength(SWEEP_Handle *handle, uint16_t length) {
+void app_sweeper_initMoveByLength(SWEEP_Handle *handle, int length) {
     app_sweeper_initMoveToPos(handle, handle->__currPos + length);
 }
 
