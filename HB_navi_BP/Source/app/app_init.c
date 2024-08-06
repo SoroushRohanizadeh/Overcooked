@@ -114,6 +114,12 @@ DT_Handle driveHandle = {
   .state = DRIVE_STOP
 };
 
+const Node start = {
+  .name = "Start",
+  .type = LEFT_BOUND,
+  .xLocation = 0
+};
+
 const Node lettuce = {
   .name = "Lettuce",
   .type = BOTTOM_NODE,

@@ -194,13 +194,14 @@ void StartDefaultTask(void *argument)
   app_init_init(&adcHandler);
 
   app_navi_initDriveToNode(app_init_getNaviHandle(), app_init_getNode("Lettuce"),
-    app_init_getNode("Plating"));
+    app_init_getNode("Cooking"));
 
   int currentTicks = osKernelGetTickCount();
   /* Infinite loop */
   for(;;)
   {
     app_naviStateMachine_tick100Hz(app_init_getNaviHandle());
+
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

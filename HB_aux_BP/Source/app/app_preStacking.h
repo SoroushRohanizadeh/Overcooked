@@ -8,5 +8,5 @@
  *
  * @param lastItemHeight height of last food item placed
  */
-void app_preStacking_init(STACK_Handle* handle, uint16_t lastItemHeight);
-void app_preStacking_tick(STACK_Handle* handle);
+void app_preStacking_init(AUX_Handle* handle, uint16_t lastItemHeight);
+void app_preStacking_tick(AUX_Handle* handle);

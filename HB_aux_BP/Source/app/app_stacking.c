@@ -18,9 +18,9 @@ const STACK_State* nextStackState;
 #define SWEEPER_LEFT_LIFT_POS 0 // in encoder ticks TODO determine
 
 // --- State Machine ---
-void runStackTickFunction(STACK_Handle* handle,
-    void (*tickClaw)(STACK_Handle* handler),
-    void (*tickStack)(STACK_Handle* handler)) {
+void runStackTickFunction(AUX_Handle* handle,
+    void (*tickClaw)(AUX_Handle* handler),
+    void (*tickStack)(AUX_Handle* handler)) {
 
     if (tickClaw != NULL) {
         tickClaw(handle);
@@ -58,7 +58,7 @@ void runStackTickFunction(STACK_Handle* handle,
     nextStackState = currentStackState;
 }
 
-void app_stackStateMachine_init(STACK_Handle *handle,
+void app_stackStateMachine_init(AUX_Handle *handle,
                                 const CLAW_Stack_State *start_claw,
                                 const STACK_State *start_stack) {
 
@@ -85,54 +85,54 @@ void app_stackStateMachine_setNextStackState(const STACK_State* state) {
     nextStackState = state;
 }
 
-void app_stackStateMachine_tick100Hz(STACK_Handle *handle) {
+void app_stackStateMachine_tick100Hz(AUX_Handle *handle) {
     runStackTickFunction(handle, currentClawState->run_on_100Hz, currentStackState->run_on_100Hz);
 }
 
 // --- Sweeper State Functions ---
-void initSweeperLeft(STACK_Handle *handle);
-void tickSweeperLeft(STACK_Handle *handle);
+void initSweeperLeft(AUX_Handle *handle);
+void tickSweeperLeft(AUX_Handle *handle);
 
-void initLeftLiftDown(STACK_Handle *handle);
-void tickLeftLiftDown(STACK_Handle *handle);
+void initLeftLiftDown(AUX_Handle *handle);
+void tickLeftLiftDown(AUX_Handle *handle);
 
-void initSweeperCenter(STACK_Handle *handle);
-void tickSweeperCenter(STACK_Handle *handle);
+void initSweeperCenter(AUX_Handle *handle);
+void tickSweeperCenter(AUX_Handle *handle);
 
-void initSweeperRight(STACK_Handle *handle);
-void tickSweeperRight(STACK_Handle *handle);
+void initSweeperRight(AUX_Handle *handle);
+void tickSweeperRight(AUX_Handle *handle);
 
-void initRightLiftDown(STACK_Handle *handle);
-void tickRightLiftDown(STACK_Handle *handle);
+void initRightLiftDown(AUX_Handle *handle);
+void tickRightLiftDown(AUX_Handle *handle);
 
-void tickStackWaiting(STACK_Handle *handle);
+void tickStackWaiting(AUX_Handle *handle);
 
 // --- Claw State Functions ---
-void initGrabFirst(STACK_Handle *handle);
-void tickGrabFirst(STACK_Handle *handle);
+void initGrabFirst(AUX_Handle *handle);
+void tickGrabFirst(AUX_Handle *handle);
 
-void initRetractFirst(STACK_Handle *handle);
-void tickRetractFirst(STACK_Handle *handle);
+void initRetractFirst(AUX_Handle *handle);
+void tickRetractFirst(AUX_Handle *handle);
 
-void initClearancePos1(STACK_Handle *handle);
-void tickClearancePos1(STACK_Handle *handle);
+void initClearancePos1(AUX_Handle *handle);
+void tickClearancePos1(AUX_Handle *handle);
 
-void initClearancePos2(STACK_Handle * handle);
-void tickClearancePos2(STACK_Handle * handle);
+void initClearancePos2(AUX_Handle * handle);
+void tickClearancePos2(AUX_Handle * handle);
 
-void initExtendForSecond(STACK_Handle *handle);
-void tickExtendForSecond(STACK_Handle *handle);
+void initExtendForSecond(AUX_Handle *handle);
+void tickExtendForSecond(AUX_Handle *handle);
 
-void initGrabSecond(STACK_Handle *handle);
-void tickGrabSecond(STACK_Handle *handle);
+void initGrabSecond(AUX_Handle *handle);
+void tickGrabSecond(AUX_Handle *handle);
 
-void initRetractSecond(STACK_Handle *handle);
-void tickRetractSecond(STACK_Handle *handle);
+void initRetractSecond(AUX_Handle *handle);
+void tickRetractSecond(AUX_Handle *handle);
 
-void initInsertSecond(STACK_Handle *handle);
-void tickInsertSecond(STACK_Handle *handle);
+void initInsertSecond(AUX_Handle *handle);
+void tickInsertSecond(AUX_Handle *handle);
 
-void tickClawWaiting(STACK_Handle *handle);
+void tickClawWaiting(AUX_Handle *handle);
 
 STACK_State sweeperLeft = {
     .name = "sweeperLeft",
@@ -224,44 +224,44 @@ CLAW_Stack_State clawWaiting = {
 };
 
 // --- Public Functions ---
-void app_stacking_initStack(STACK_Handle *handle, STACK_Item *item) {
+void app_stacking_initStack(AUX_Handle *handle, STACK_Item *item) {
     handle->item = item;
     app_stackStateMachine_init(handle, &grabFirst, &stackWaiting);
 }
 
-void app_stacking_tickStack(STACK_Handle *handle) {
+void app_stacking_tickStack(AUX_Handle *handle) {
     app_stackStateMachine_tick100Hz(handle);
 }
 
 
 // --- State Function Definitions ---
-void initSweeperLeft(STACK_Handle *handle) {
+void initSweeperLeft(AUX_Handle *handle) {
     app_sweeper_initMoveToPos(handle->sweeper, SWEEPER_LEFT_LIFT_POS);
 }
 
-void tickSweeperLeft(STACK_Handle *handle) {
+void tickSweeperLeft(AUX_Handle *handle) {
     app_sweeper_tickMovePos(handle->sweeper);
     if (handle->sweeper->__state == SWEEPER_ARRIVED) {
         app_stackStateMachine_setNextStackState(&leftLiftDown);
     }
 }
 
-void initLeftLiftDown(STACK_Handle *handle) {
+void initLeftLiftDown(AUX_Handle *handle) {
     app_lift_initMoveByHeight(handle->leftLift, -handle->item->height);
 }
 
-void tickLeftLiftDown(STACK_Handle *handle) {
+void tickLeftLiftDown(AUX_Handle *handle) {
     app_lift_tickMoveHeight(handle->leftLift);
     if (handle->leftLift->__state == LIFT_ARRIVED) {
         app_stackStateMachine_setNextStackState(&sweeperCenter);
     }
 }
 
-void initSweeperCenter(STACK_Handle *handle) {
+void initSweeperCenter(AUX_Handle *handle) {
     app_sweeper_initMoveToPos(handle->sweeper, SWEEPER_CENTER_POS);
 }
 
-void tickSweeperCenter(STACK_Handle *handle) {
+void tickSweeperCenter(AUX_Handle *handle) {
     app_sweeper_tickMovePos(handle->sweeper);
     if (handle->sweeper->__state == SWEEPER_ARRIVED) {
         app_stackStateMachine_setNextStackState(&stackWaiting);
@@ -271,62 +271,62 @@ void tickSweeperCenter(STACK_Handle *handle) {
     }
 }
 
-void initSweeperRight(STACK_Handle *handle) {
+void initSweeperRight(AUX_Handle *handle) {
     app_sweeper_initMoveToPos(handle->sweeper, SWEEPER_RIGHT_LIFT_POS);
 }
 
-void tickSweeperRight(STACK_Handle *handle) {
+void tickSweeperRight(AUX_Handle *handle) {
     app_sweeper_tickMovePos(handle->sweeper);
     if (handle->sweeper->__state == SWEEPER_ARRIVED) {
         app_stackStateMachine_setNextStackState(&rightLiftDown);
     }
 }
 
-void initRightLiftDown(STACK_Handle *handle) {
+void initRightLiftDown(AUX_Handle *handle) {
     app_lift_initMoveByHeight(handle->rightLift, -handle->item->height);
 }
 
-void tickRightLiftDown(STACK_Handle *handle) {
+void tickRightLiftDown(AUX_Handle *handle) {
     app_lift_tickMoveHeight(handle->rightLift);
     if (handle->rightLift->__state == LIFT_ARRIVED) {
         app_stackStateMachine_setNextStackState(&stackWaiting);
     }
 }
 
-void tickStackWaiting(STACK_Handle *handle) {
+void tickStackWaiting(AUX_Handle *handle) {
     UNUSED(handle);
     // do nothing
 }
 
-void initGrabFirst(STACK_Handle *handle) {
+void initGrabFirst(AUX_Handle *handle) {
     app_claw_setAngle(handle->claw, 0);
     handle->__clawAngleCounter = 0;
 }
 
-void tickGrabFirst(STACK_Handle *handle) {
+void tickGrabFirst(AUX_Handle *handle) {
     if (handle->__clawAngleCounter >= NUM_TICKS_CLAW_DESCEND) {
         app_stackStateMachine_setNextClawState(&retractFirst);
     }
     handle->__clawAngleCounter++;
 }
 
-void initRetractFirst(STACK_Handle *handle) {
+void initRetractFirst(AUX_Handle *handle) {
     app_claw_initMoveToPos(handle->claw, handle->item->clawPos);
 }
 
-void tickRetractFirst(STACK_Handle *handle) {
+void tickRetractFirst(AUX_Handle *handle) {
     app_claw_tickMovePos(handle->claw);
     if (handle->claw->__state == CLAW_ARRIVED) {
         app_stackStateMachine_setNextClawState(&clearancePos1);
     }
 }
 
-void initClearancePos1(STACK_Handle *handle) {
+void initClearancePos1(AUX_Handle *handle) {
     app_claw_setAngle(handle->claw, CLAW_CLEARANCE_ANGLE);
     handle->__clawAngleCounter = 0;
 }
 
-void tickClearancePos1(STACK_Handle *handle) {
+void tickClearancePos1(AUX_Handle *handle) {
     if (handle->__clawAngleCounter >= CLEARANCE_POS_TICKS) {
         app_stackStateMachine_setNextClawState(&extendForSecond);
         app_stackStateMachine_setNextStackState(&sweeperLeft);
@@ -334,34 +334,34 @@ void tickClearancePos1(STACK_Handle *handle) {
     handle->__clawAngleCounter++;
 }
 
-void initExtendForSecond(STACK_Handle *handle) {
+void initExtendForSecond(AUX_Handle *handle) {
     app_claw_initFullyExtend(handle->claw);
 }
 
-void tickExtendForSecond(STACK_Handle *handle) {
+void tickExtendForSecond(AUX_Handle *handle) {
     app_claw_tickMovePos(handle->claw);
     if (handle->claw->__state == CLAW_ARRIVED) {
         app_stackStateMachine_setNextClawState(&grabSecond);
     }
 }
 
-void initGrabSecond(STACK_Handle *handle) {
+void initGrabSecond(AUX_Handle *handle) {
     app_claw_setAngle(handle->claw, 0);
     handle->__clawAngleCounter = 0;
 }
 
-void tickGrabSecond(STACK_Handle *handle) {
+void tickGrabSecond(AUX_Handle *handle) {
     if (handle->__clawAngleCounter >= NUM_TICKS_CLAW_DESCEND) {
         app_stackStateMachine_setNextClawState(&retractSecond);
     }
     handle->__clawAngleCounter++;
 }
 
-void initRetractSecond(STACK_Handle *handle) {
-    app_claw_initMoveToPos(handle->claw, CLAW_OUTSIDE_SWEEPER_DISTANCE + handle->item->clawPos);
+void initRetractSecond(AUX_Handle *handle) {
+    app_claw_initMoveToPos(handle->claw, CLAW_OUTSIDE_SWEEPER_DISTANCE - handle->item->clawPos);
 }
 
-void tickRetractSecond(STACK_Handle *handle) {
+void tickRetractSecond(AUX_Handle *handle) {
     app_claw_tickMovePos(handle->claw);
     if (handle->claw->__state == CLAW_ARRIVED) {
         if (currentStackState->name == stackWaiting.name) {
@@ -372,23 +372,23 @@ void tickRetractSecond(STACK_Handle *handle) {
     }
 }
 
-void initInsertSecond(STACK_Handle *handle) {
+void initInsertSecond(AUX_Handle *handle) {
     app_claw_initMoveToPos(handle->claw, handle->item->clawPos);
 }
 
-void tickInsertSecond(STACK_Handle *handle) {
+void tickInsertSecond(AUX_Handle *handle) {
     app_claw_tickMovePos(handle->claw);
     if (handle->claw->__state == CLAW_ARRIVED) {
         app_stackStateMachine_setNextClawState(&clearancePos2);
     }
 }
 
-void initClearancePos2(STACK_Handle *handle) {
+void initClearancePos2(AUX_Handle *handle) {
     app_claw_setAngle(handle->claw, CLAW_CLEARANCE_ANGLE);
     handle->__clawAngleCounter = 0;
 }
 
-void tickClearancePos2(STACK_Handle *handle) {
+void tickClearancePos2(AUX_Handle *handle) {
     if (handle->__clawAngleCounter >= CLEARANCE_POS_TICKS) {
         app_stackStateMachine_setNextClawState(&clawWaiting);
         app_stackStateMachine_setNextStackState(&sweeperRight);
@@ -396,7 +396,7 @@ void tickClearancePos2(STACK_Handle *handle) {
     handle->__clawAngleCounter++;
 }
 
-void tickClawWaiting(STACK_Handle *handle) {
+void tickClawWaiting(AUX_Handle *handle) {
     UNUSED(handle);
     // do nothing
 }

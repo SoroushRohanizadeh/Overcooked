@@ -4,12 +4,12 @@
 #define DEFAULT_LIFT_X 20U // TODO determine
 #define SWEEPER_DELAY_TICKS 300 // todo determine this
 
-void (*__preStackTick)(STACK_Handle *handle);
+void (*__preStackTick)(AUX_Handle *handle);
 
-void app_preStacking_tickStacking(STACK_Handle *handle);
-void app_preStacking_tickArrived(STACK_Handle *handle);
+void app_preStacking_tickStacking(AUX_Handle *handle);
+void app_preStacking_tickArrived(AUX_Handle *handle);
 
-void app_preStacking_init(STACK_Handle *handle, uint16_t lastItemHeight) {
+void app_preStacking_init(AUX_Handle *handle, uint16_t lastItemHeight) {
     app_claw_initFullyExtend(handle->claw);
     app_claw_setAngle(handle->claw, DEFAULT_CLAW_ANGLE);
 
@@ -21,11 +21,11 @@ void app_preStacking_init(STACK_Handle *handle, uint16_t lastItemHeight) {
     __preStackTick = app_preStacking_tickStacking;
 }
 
-void app_preStacking_tick(STACK_Handle *handle) {
+void app_preStacking_tick(AUX_Handle *handle) {
     __preStackTick(handle);
 }
 
-void app_preStacking_tickStacking(STACK_Handle *handle) {
+void app_preStacking_tickStacking(AUX_Handle *handle) {
     app_claw_tickMovePos(handle->claw);
     app_sweeper_tickMovePos(handle->sweeper);
 
@@ -35,6 +35,6 @@ void app_preStacking_tickStacking(STACK_Handle *handle) {
     }
 }
 
-void app_preStacking_tickArrived(STACK_Handle *handle) {
+void app_preStacking_tickArrived(AUX_Handle *handle) {
     // Do nothing
 }

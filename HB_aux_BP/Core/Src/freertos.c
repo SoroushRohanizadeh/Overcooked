@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <usart.h>
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
@@ -117,6 +119,12 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
+    char msg[40];
+
+    if (HAL_UART_Receive(&huart2, ) == HAL_OK) {
+
+    }
+
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */

@@ -17,7 +17,7 @@ typedef struct __STACK_ITEM {
     uint16_t clawPos; // how far in the claw goes before stacking item TODO measure for each food + plate
 } STACK_Item;
 
-typedef struct __STACK_Handle {
+typedef struct __AUX_Handle {
     LIFT_Handle* leftLift;
     LIFT_Handle* rightLift;
     CLAW_Handle* claw;
@@ -26,29 +26,29 @@ typedef struct __STACK_Handle {
 
     PreStacking_State __preStackState;
     uint16_t __clawAngleCounter; // used to stall until claw reaches correct angle
-} STACK_Handle;
+} AUX_Handle;
 
 typedef struct __STACK_State {
     char name[MAX_NAME_LEN];
 
-    void (*run_on_entry)(STACK_Handle* handle);
-    void (*run_on_100Hz)(STACK_Handle* handle);
-    void (*run_on_exit) (STACK_Handle* handle);
+    void (*run_on_entry)(AUX_Handle* handle);
+    void (*run_on_100Hz)(AUX_Handle* handle);
+    void (*run_on_exit) (AUX_Handle* handle);
 } STACK_State;
 
 typedef struct __CLAW_Stack_State {
     char name[MAX_NAME_LEN];
 
-    void (*run_on_entry)(STACK_Handle* handle);
-    void (*run_on_100Hz)(STACK_Handle* handle);
-    void (*run_on_exit) (STACK_Handle* handle);
+    void (*run_on_entry)(AUX_Handle* handle);
+    void (*run_on_100Hz)(AUX_Handle* handle);
+    void (*run_on_exit) (AUX_Handle* handle);
 } CLAW_Stack_State;
 
 #endif //APP_STACKING_H
 
-void app_stacking_initStack(STACK_Handle* handle, STACK_Item* item);
-void app_stacking_tickStack(STACK_Handle* handle);
+void app_stacking_initStack(AUX_Handle* handle, STACK_Item* item);
+void app_stacking_tickStack(AUX_Handle* handle);
 
 
-void app_stackStateMachine_init(STACK_Handle* handle, const CLAW_Stack_State* start_claw, const STACK_State* start_stack);
-void app_stackStateMachine_tick100Hz(STACK_Handle* handle);
+void app_stackStateMachine_init(AUX_Handle* handle, const CLAW_Stack_State* start_claw, const STACK_State* start_stack);
+void app_stackStateMachine_tick100Hz(AUX_Handle* handle);
