@@ -1,6 +1,6 @@
 #include "hw_reflectance.h"
 
-#define BLACK_THRESHOLD 400
+#define BLACK_THRESHOLD 600
 
 bool hw_reflectance_lineDetected(ADC_Handler* handle, uint8_t sns) {
     io_adc_read_raw(handle);

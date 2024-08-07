@@ -13,13 +13,13 @@
 #define R1 6
 #define R2 7
 
-#define BLACK_THRESHOLD 400
+#define BLACK_THRESHOLD 600
 #define CORRECTION_FACTOR 0.25
 
 #define BRAKE_TICKS 1
 
 void app_lineFollowing_tick(LF_Handle* handle, uint8_t throttle, Drive_State state) {
-    if (state != DRIVE_LEFT && state != DRIVE_LEFT) return;
+    if (state != DRIVE_LEFT && state != DRIVE_RIGHT) return;
 
     io_adc_read_raw(handle->sns);
     volatile uint16_t* values = handle->sns->adcBuffer;

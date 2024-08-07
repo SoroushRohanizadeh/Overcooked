@@ -1,17 +1,10 @@
 #include "app_init.h"
 
+#include "../../../HB_aux_BP/Core/Inc/usart.h"
+
 #define NUM_NODES 6
 
 PWM_Handle cw_pwmHandler_w1 = {
-  .htim = &htim4,
-  .channel = TIM_CHANNEL_1,
-  .TIM_start = HAL_TIM_Base_Start,
-  .PWM_start = HAL_TIM_PWM_Start,
-  .TIM_stop = HAL_TIM_Base_Stop,
-  .PWM_stop = HAL_TIM_PWM_Stop
-};
-
-PWM_Handle ccw_pwmHandler_w1 = {
   .htim = &htim4,
   .channel = TIM_CHANNEL_2,
   .TIM_start = HAL_TIM_Base_Start,
@@ -20,9 +13,18 @@ PWM_Handle ccw_pwmHandler_w1 = {
   .PWM_stop = HAL_TIM_PWM_Stop
 };
 
+PWM_Handle ccw_pwmHandler_w1 = {
+  .htim = &htim4,
+  .channel = TIM_CHANNEL_1,
+  .TIM_start = HAL_TIM_Base_Start,
+  .PWM_start = HAL_TIM_PWM_Start,
+  .TIM_stop = HAL_TIM_Base_Stop,
+  .PWM_stop = HAL_TIM_PWM_Stop
+};
+
 PWM_Handle cw_pwmHandler_w2 = {
   .htim = &htim3,
-  .channel = TIM_CHANNEL_4,
+  .channel = TIM_CHANNEL_3,
   .TIM_start = HAL_TIM_Base_Start,
   .PWM_start = HAL_TIM_PWM_Start,
   .TIM_stop = HAL_TIM_Base_Stop,
@@ -31,7 +33,7 @@ PWM_Handle cw_pwmHandler_w2 = {
 
 PWM_Handle ccw_pwmHandler_w2 = {
   .htim = &htim3,
-  .channel = TIM_CHANNEL_3,
+  .channel = TIM_CHANNEL_4,
   .TIM_start = HAL_TIM_Base_Start,
   .PWM_start = HAL_TIM_PWM_Start,
   .TIM_stop = HAL_TIM_Base_Stop,
@@ -58,7 +60,7 @@ PWM_Handle ccw_pwmHandler_w3 = {
 
 PWM_Handle cw_pwmHandler_w4 = {
   .htim = &htim4,
-  .channel = TIM_CHANNEL_4,
+  .channel = TIM_CHANNEL_3,
   .TIM_start = HAL_TIM_Base_Start,
   .PWM_start = HAL_TIM_PWM_Start,
   .TIM_stop = HAL_TIM_Base_Stop,
@@ -67,7 +69,7 @@ PWM_Handle cw_pwmHandler_w4 = {
 
 PWM_Handle ccw_pwmHandler_w4 = {
   .htim = &htim4,
-  .channel = TIM_CHANNEL_3,
+  .channel = TIM_CHANNEL_4,
   .TIM_start = HAL_TIM_Base_Start,
   .PWM_start = HAL_TIM_PWM_Start,
   .TIM_stop = HAL_TIM_Base_Stop,
@@ -166,7 +168,8 @@ NAVI_Handle naviHandle = {
   .rightBumperDef = GPIOB,
   .rightBumperPin = RIGHT_BUMP_Pin,
   .numNodes = NUM_NODES,
-  .nodes = nodes
+  .nodes = nodes,
+  .huart = &huart3
 };
 
 void app_init_init(ADC_Handler* adcHandler) {

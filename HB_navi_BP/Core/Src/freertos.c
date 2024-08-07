@@ -187,29 +187,28 @@ void StartDefaultTask(void *argument)
     .twoADC = false,
     .numPins = NUM_ADC_PINS,
     .adcBuffer = adc_dma,
+    .adcConvCMPLT = &adcConvCMPLT,
     // .adcPins = adc_pins,
     .ADC_Start = HAL_ADC_Start_DMA
   };
 
   app_init_init(&adcHandler);
 
-  // app_navi_initDriveToNode(app_init_getNaviHandle(), app_init_getNode("Lettuce"),
-  //   app_init_getNode("Cooking"));
+  app_navi_initDriveToNode(app_init_getNaviHandle(), app_init_getNode("Cheese"),
+    app_init_getNode("Lettuce"));
 
   int currentTicks = osKernelGetTickCount();
   /* Infinite loop */
   for(;;)
   {
-    // app_naviStateMachine_tick100Hz(app_init_getNaviHandle());
+    app_naviStateMachine_tick100Hz(app_init_getNaviHandle());
+
     // io_adc_read_raw(&adcHandler);
     // char msg[57];
-    // sprintf(msg, "%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t\r\n",  adc_dma[0], adc_dma[1], adc_dma[2], adc_dma[3],
+    //
+    // sprintf(msg, "%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\r\n",  adc_dma[0], adc_dma[1], adc_dma[2], adc_dma[3],
     //   adc_dma[4] ,adc_dma[5] ,adc_dma[6], adc_dma[7]);
     // HAL_UART_Transmit(&huart3, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-
-    char msg[10];
-    sprintf(msg, "ello\r\n");
-    HAL_UART_Transmit(&huart3, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     currentTicks += PERIOD;
     osDelayUntil(currentTicks);

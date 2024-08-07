@@ -1,5 +1,8 @@
 #include "app_navi.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #define DEFAULT_THROTTLE 50U
 #define ROTATION_SPEED 50U
 #define CORRECTION_THROTTLE 20U
@@ -12,6 +15,8 @@
 // --- State Machine ---
 const NAVI_State* currentState;
 const NAVI_State* nextState;
+
+void app_navi_printState(NAVI_Handle* handle);
 
 void runNaviTickFunction(NAVI_Handle* handle, void (*tick_function)(NAVI_Handle* handler)) {
     if (tick_function != NULL) {
@@ -30,6 +35,27 @@ void runNaviTickFunction(NAVI_Handle* handle, void (*tick_function)(NAVI_Handle*
         }
     }
     nextState = currentState;
+
+    app_navi_printState(handle);
+}
+
+void app_navi_printState(NAVI_Handle* handle) {
+    char name[MAX_NAME_LENGTH];
+    if (currentState->name == DRIVE_VERT) {
+        strcpy(name, "DRIVE_VERT\r\n");
+    } else if (currentState->name == DRIVE_HOR) {
+        strcpy(name, "DRIVE_HOR\r\n");
+    } else if (currentState->name == ALIGN_VERT) {
+        strcpy(name, "ALIGN_VERT\r\n");
+    } else if (currentState->name == ALIGN_HOR) {
+        strcpy(name, "ALIGN_HOR\r\n");
+    } else if (currentState->name == ROTATE) {
+        strcpy(name, "ROTATE\r\n");
+    } else {
+        strcpy(name, "ARRIVED\r\n");
+    }
+
+    HAL_UART_Transmit(handle->huart, (uint8_t*) name, strlen(name), HAL_MAX_DELAY);
 }
 
 void app_naviStateMachine_init(NAVI_Handle* handle, const NAVI_State* start_state) {
@@ -231,11 +257,11 @@ void app_navi_numSkips(NAVI_Handle *handle, Drive_State state) {
         if (handle->nodes[i].type != handle->__destinationNode->type) continue;
 
         if (state == DRIVE_RIGHT) {
-            if (handle->nodes[i].xLocation > handle->__currentNode->xLocation) {
+            if (handle->nodes[i].xLocation >= handle->__currentNode->xLocation) {
                 numSkips++;
             }
         } else {
-            if (handle->nodes[i].xLocation > handle->__currentNode->xLocation) {
+            if (handle->nodes[i].xLocation <= handle->__currentNode->xLocation) {
                 numSkips++;
             }
         }
@@ -264,7 +290,13 @@ void app_tickDriveHor(NAVI_Handle *handle) {
         sns = T1;
     }
 
+    char msg[14];
+
+    sprintf(msg, "%d\t \r\n",  handle->__numSkipsHorizontal);
+    HAL_UART_Transmit(handle->huart, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+
     if (hw_reflectance_lineDetected(handle->sns, sns)) {
+
         if (handle->__numSkipsHorizontal == 0) {
             app_naviStateMachine_setNextState(&alignHorState);
         } else if (!handle->__lineSeenToSkip) {
