@@ -194,8 +194,8 @@ void StartDefaultTask(void *argument)
 
   app_init_init(&adcHandler);
 
-  app_navi_initDriveToNode(app_init_getNaviHandle(), app_init_getNode("Cheese"),
-    app_init_getNode("Lettuce"));
+  app_navi_initDriveToNode(app_init_getNaviHandle(), app_init_getNode(CHEESE),
+    app_init_getNode(LETTUCE));
 
   int currentTicks = osKernelGetTickCount();
   /* Infinite loop */

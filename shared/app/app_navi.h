@@ -14,8 +14,18 @@ typedef enum __Node_Type {
     LEFT_BOUND
 } Node_Type;
 
+typedef enum __Node_Name {
+    LETTUCE,
+    CHEESE,
+    TOMATO,
+    PASSING,
+    COOKTOP,
+    PLATING,
+    START
+} Node_Name;
+
 typedef struct __Node {
-    char name[MAX_NAME_LENGTH];
+    Node_Name name;
     Node_Type type;
     uint16_t xLocation; // in milimeters with respect to LEFT_BOUND, rough understimate
 } Node;

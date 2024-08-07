@@ -8,4 +8,4 @@ void app_init_init(ADC_Handler* adcHandler);
 
 NAVI_Handle* app_init_getNaviHandle();
 
-const Node* app_init_getNode(char name[]);
+const Node* app_init_getNode(Node_Name name);

@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEFAULT_THROTTLE 50U
+#define DEFAULT_THROTTLE 100U
 #define ROTATION_SPEED 50U
-#define CORRECTION_THROTTLE 20U
+#define CORRECTION_THROTTLE 0
 #define INTO_WALL_THROTTLE 20U
 
 #define BOTTOM_HEIGHT 762U
@@ -250,34 +250,41 @@ void app_exitDriveVertToBench(NAVI_Handle *handle) {
     app_drivetrain_stop(handle->dtHandle);
 }
 
-void app_navi_numSkips(NAVI_Handle *handle, Drive_State state) {
+void app_navi_numSkips(NAVI_Handle *handle) {
     uint8_t numSkips = 0;
 
     for (uint8_t i = 0; i < handle->numNodes; i++) {
         if (handle->nodes[i].type != handle->__destinationNode->type) continue;
 
-        if (state == DRIVE_RIGHT) {
-            if (handle->nodes[i].xLocation >= handle->__currentNode->xLocation) {
+        if (handle->dtHandle->state == DRIVE_RIGHT) {
+            if (handle->nodes[i].xLocation > handle->__currentNode->xLocation
+                && handle->nodes[i].xLocation <= handle->__destinationNode->xLocation) {
                 numSkips++;
             }
-        } else {
-            if (handle->nodes[i].xLocation <= handle->__currentNode->xLocation) {
+        } else if (handle->dtHandle->state == DRIVE_LEFT) {
+            if (handle->nodes[i].xLocation < handle->__currentNode->xLocation
+                && handle->nodes[i].xLocation >= handle->__destinationNode->xLocation) {
                 numSkips++;
             }
         }
     }
+    // char msg[19];
+    // sprintf(msg, "num skips: %d\t \r\n",  numSkips);
+    // HAL_UART_Transmit(handle->huart, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
     handle->__numSkipsHorizontal = numSkips - 1; // accounting for __destinationNode being in nodes[]
 }
 
 void app_initDriveHor(NAVI_Handle *handle) {
     handle->__lineSeenToSkip = false;
 
+    handle->__numSkipsHorizontal = 0;
+
     if (handle->__destinationNode->xLocation > handle->__currentNode->xLocation) {
         app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, DRIVE_RIGHT); // TODO consider making this vector slightly into wall
-        app_navi_numSkips(handle, DRIVE_RIGHT);
+        app_navi_numSkips(handle);
     } else {
         app_drivetrain_drive(handle->dtHandle, DEFAULT_THROTTLE, DRIVE_LEFT); // TODO consider making this vector slightly into wall
-        app_navi_numSkips(handle, DRIVE_LEFT);
+        app_navi_numSkips(handle);
     }
 }
 
@@ -291,20 +298,20 @@ void app_tickDriveHor(NAVI_Handle *handle) {
     }
 
     char msg[14];
-
     sprintf(msg, "%d\t \r\n",  handle->__numSkipsHorizontal);
     HAL_UART_Transmit(handle->huart, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
 
     if (hw_reflectance_lineDetected(handle->sns, sns)) {
-
-        if (handle->__numSkipsHorizontal == 0) {
-            app_naviStateMachine_setNextState(&alignHorState);
-        } else if (!handle->__lineSeenToSkip) {
-            handle->__lineSeenToSkip = true;
-            handle->__numSkipsHorizontal -= 1;
-        }
+        handle->__lineSeenToSkip = true;
     } else {
-        handle->__lineSeenToSkip = false;
+        if (handle->__lineSeenToSkip) {
+            if (handle->__numSkipsHorizontal == 0) {
+                app_naviStateMachine_setNextState(&alignHorState);
+            } else {
+                handle->__numSkipsHorizontal -= 1;
+            }
+            handle->__lineSeenToSkip = false;
+        }
     }
 }
 
@@ -314,9 +321,10 @@ void app_exitDriveHor(NAVI_Handle *handle) {
 
     if (state == DRIVE_RIGHT) {
         app_drivetrain_drive(handle->dtHandle, CORRECTION_THROTTLE, DRIVE_LEFT);
-    } else {
+    } else if (state == DRIVE_LEFT) {
         app_drivetrain_drive(handle->dtHandle, CORRECTION_THROTTLE, DRIVE_RIGHT);
     }
+    handle->__lineSeenToSkip = false;
 }
 
 void app_tickAlignHor(NAVI_Handle *handle) {
@@ -328,10 +336,30 @@ void app_tickAlignHor(NAVI_Handle *handle) {
         sns = T2;
     }
 
-    if (!hw_reflectance_lineDetected(handle->sns, sns)) {
+    if (hw_reflectance_lineDetected(handle->sns, sns)) {
         app_drivetrain_stop(handle->dtHandle);
         app_naviStateMachine_setNextState(&arrivedState);
     }
+
+    // if (handle->dtHandle->state == DRIVE_RIGHT) {
+    //     sns = T2;
+    // } else {
+    //     sns = T1;
+    // }
+    //
+    // if (hw_reflectance_lineDetected(handle->sns, sns)) {
+    //     handle->__lineSeenToSkip = true;
+    // } else {
+    //     if (handle->__lineSeenToSkip) {
+    //         app_drivetrain_stop(handle->dtHandle);
+    //         app_naviStateMachine_setNextState(&arrivedState);
+    //     }
+    // }
+
+    // if (!hw_reflectance_lineDetected(handle->sns, sns)) {
+    //     app_drivetrain_stop(handle->dtHandle);
+    //     app_naviStateMachine_setNextState(&arrivedState);
+    // }
 }
 
 // --- END State Machine Functions ---

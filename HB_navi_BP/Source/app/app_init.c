@@ -117,44 +117,44 @@ DT_Handle driveHandle = {
 };
 
 const Node start = {
-  .name = "Start",
+  .name = START,
   .type = LEFT_BOUND,
   .xLocation = 0
 };
 
 const Node lettuce = {
-  .name = "Lettuce",
+  .name = LETTUCE,
   .type = BOTTOM_NODE,
   .xLocation = 2426
 };
 
 const Node cheese = {
-  .name = "Cheese",
+  .name = CHEESE,
   .type = BOTTOM_NODE,
   .xLocation = 152
 };
 
 const Node tomato = {
-  .name = "Tomato",
+  .name = TOMATO,
   .type = TOP_NODE,
   .xLocation = 152
 };
 
 // Nominally the "cutting" square
 const Node passing = {
-  .name = "Passing",
+  .name = PASSING,
   .type = TOP_NODE,
   .xLocation = 610
 };
 
 const Node cooktop = {
-  .name = "Cooking",
+  .name = COOKTOP,
   .type = TOP_NODE,
   .xLocation = 1829
 };
 
 const Node plating = {
-  .name = "Plating",
+  .name = PLATING,
   .type = TOP_NODE,
   .xLocation = 2286
 };
@@ -180,7 +180,7 @@ NAVI_Handle* app_init_getNaviHandle() {
     return &naviHandle;
 }
 
-const Node* app_init_getNode(char name[]) {
+const Node* app_init_getNode(Node_Name name) {
     for (uint8_t i = 0; i < NUM_NODES; i++) {
       if (nodes[i].name == name) {
         return &nodes[i];
