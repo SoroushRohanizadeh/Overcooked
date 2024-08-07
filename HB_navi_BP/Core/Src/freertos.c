@@ -46,7 +46,8 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define PERIOD 10
+#define PERIOD_100Hz 10
+#define PERIOD_1kHz 1
 #define NUM_ADC_PINS 8
 /* USER CODE END PM */
 
@@ -60,6 +61,13 @@ const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for adc1kHz */
+osThreadId_t adc1kHzHandle;
+const osThreadAttr_t adc1kHz_attributes = {
+  .name = "adc1kHz",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,6 +99,18 @@ const osThreadAttr_t defaultTask_attributes = {
 //   .gpioPinCW = W4_CW_SIG_Pin,
 //   .gpioPinCCW = W4_CCW_SIG_Pin
 // };
+
+volatile uint16_t adc_dma[NUM_ADC_PINS];
+
+ADC_Handler adcHandler = {
+  .hadcs = &hadc1,
+  .twoADC = false,
+  .numPins = NUM_ADC_PINS,
+  .adcBuffer = adc_dma,
+  .adcConvCMPLT = &adcConvCMPLT,
+  // .adcPins = adc_pins,
+  .ADC_Start = HAL_ADC_Start_DMA
+};
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   UNUSED(hadc);
@@ -125,6 +145,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
+void StartTask1kHz(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -158,6 +179,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
+  /* creation of adc1kHz */
+  adc1kHzHandle = osThreadNew(StartTask1kHz, NULL, &adc1kHz_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -180,18 +204,6 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
   UNUSED(argument);
 
-  volatile uint16_t adc_dma[NUM_ADC_PINS];
-
-  ADC_Handler adcHandler = {
-    .hadcs = &hadc1,
-    .twoADC = false,
-    .numPins = NUM_ADC_PINS,
-    .adcBuffer = adc_dma,
-    .adcConvCMPLT = &adcConvCMPLT,
-    // .adcPins = adc_pins,
-    .ADC_Start = HAL_ADC_Start_DMA
-  };
-
   app_init_init(&adcHandler);
 
   app_navi_initDriveToNode(app_init_getNaviHandle(), app_init_getNode(CHEESE),
@@ -210,10 +222,35 @@ void StartDefaultTask(void *argument)
     //   adc_dma[4] ,adc_dma[5] ,adc_dma[6], adc_dma[7]);
     // HAL_UART_Transmit(&huart3, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-    currentTicks += PERIOD;
+    currentTicks += PERIOD_100Hz;
     osDelayUntil(currentTicks);
   }
   /* USER CODE END StartDefaultTask */
+}
+
+/* USER CODE BEGIN Header_StartTask1kHz */
+/**
+* @brief Function implementing the adc1kHz thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask1kHz */
+void StartTask1kHz(void *argument)
+{
+  /* USER CODE BEGIN StartTask1kHz */
+  int currentTicks = osKernelGetTickCount();
+  /* Infinite loop */
+  for(;;)
+  {
+    io_adc_read_raw(&adcHandler);
+
+    if (adc_dma[T2] >= BLACK_THRESHOLD) {
+      app_init_getNaviHandle()->__lineSeenToSkip = true;
+    }
+    currentTicks += PERIOD_1kHz;
+    osDelayUntil(currentTicks);
+  }
+  /* USER CODE END StartTask1kHz */
 }
 
 /* Private application code --------------------------------------------------*/

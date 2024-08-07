@@ -13,4 +13,6 @@
 #define R1 6
 #define R2 7
 
+#define BLACK_THRESHOLD 600
+
 bool hw_reflectance_lineDetected(ADC_Handler* handle, uint8_t sns);

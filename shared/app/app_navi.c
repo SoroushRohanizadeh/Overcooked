@@ -5,7 +5,7 @@
 
 #define DEFAULT_THROTTLE 100U
 #define ROTATION_SPEED 50U
-#define CORRECTION_THROTTLE 0
+#define CORRECTION_THROTTLE 10U
 #define INTO_WALL_THROTTLE 20U
 
 #define BOTTOM_HEIGHT 762U
@@ -302,7 +302,7 @@ void app_tickDriveHor(NAVI_Handle *handle) {
     HAL_UART_Transmit(handle->huart, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
 
     if (hw_reflectance_lineDetected(handle->sns, sns)) {
-        handle->__lineSeenToSkip = true;
+        // handle->__lineSeenToSkip = true;
     } else {
         if (handle->__lineSeenToSkip) {
             if (handle->__numSkipsHorizontal == 0) {

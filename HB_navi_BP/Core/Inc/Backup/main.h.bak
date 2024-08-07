@@ -61,10 +61,10 @@ void Error_Handler(void);
 #define W2_CW_PWM_GPIO_Port GPIOB
 #define W2_CCW_PWM_Pin GPIO_PIN_1
 #define W2_CCW_PWM_GPIO_Port GPIOB
-#define W3_CCW_PWM_Pin GPIO_PIN_9
-#define W3_CCW_PWM_GPIO_Port GPIOA
-#define W3_CW_PWM_Pin GPIO_PIN_10
+#define W3_CW_PWM_Pin GPIO_PIN_9
 #define W3_CW_PWM_GPIO_Port GPIOA
+#define W3_CCW_PWM_Pin GPIO_PIN_10
+#define W3_CCW_PWM_GPIO_Port GPIOA
 #define RIGHT_BUMP_Pin GPIO_PIN_4
 #define RIGHT_BUMP_GPIO_Port GPIOB
 #define LEFT_BUMP_Pin GPIO_PIN_5
