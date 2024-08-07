@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
@@ -25,7 +27,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include <usart.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,7 +38,12 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define BUFFER_SIZE 50
 
+uint8_t rxBuffer[BUFFER_SIZE];
+uint8_t tempBuffer[1];
+uint16_t rxIndex = 0;
+uint8_t dataReady = 0;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -57,7 +65,19 @@ const osThreadAttr_t defaultTask_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+  if (huart->Instance == USART2) {
+    rxBuffer[rxIndex++] = tempBuffer[0];
+    if (tempBuffer[0] == '\n') {
+      dataReady = 1;
+    }
+    if (rxIndex >= BUFFER_SIZE) {
+      rxIndex = 0; // Prevent buffer overflow
+    }
+    // Restart UART reception
+    HAL_UART_Receive_IT(&huart2, tempBuffer, 1);
+  }
+}
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -115,9 +135,16 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
+  for(;;) {
+    if (dataReady) {
+      // Reset flag
+      dataReady = 0;
+
+      HAL_UART_Transmit(&huart3, rxBuffer, rxIndex, HAL_MAX_DELAY);
+
+      memset(rxBuffer, 0, BUFFER_SIZE);
+      rxIndex = 0;
+    }
   }
   /* USER CODE END StartDefaultTask */
 }

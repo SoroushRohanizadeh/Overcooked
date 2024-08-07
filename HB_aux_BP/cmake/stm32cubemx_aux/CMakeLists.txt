@@ -14,8 +14,8 @@ target_compile_definitions(stm32cubemx_aux PUBLIC
 
 target_include_directories(stm32cubemx_aux PUBLIC
 	../../Core/Inc
-	../../Drivers/STM32F1xx_HAL_Driver/Inc
 	../../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
+	../../Drivers/STM32F1xx_HAL_Driver/Inc
 	../../Middlewares/Third_Party/FreeRTOS/Source/include
 	../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
 	../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3
@@ -28,7 +28,6 @@ target_sources(stm32cubemx_aux PUBLIC
 	../../Core/Src/gpio.c
 	../../Core/Src/freertos.c
 	../../Core/Src/adc.c
-	../../Core/Src/dma.c
 	../../Core/Src/tim.c
 	../../Core/Src/usart.c
 	../../Core/Src/stm32f1xx_it.c

@@ -18,8 +18,6 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include <usart.h>
-
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
@@ -27,7 +25,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include <usart.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,7 +36,12 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define BUFFER_SIZE 10
 
+uint8_t rxBuffer[BUFFER_SIZE];
+uint8_t tempBuffer[1];
+uint16_t rxIndex = 0;
+uint8_t dataReady = 0;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -59,7 +63,21 @@ const osThreadAttr_t defaultTask_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+  if (huart->Instance == USART2) {
+    rxBuffer[rxIndex++] = tempBuffer[0];
+    if (tempBuffer[0] == '\n') {
+      dataReady = 1;
+    }
+    if (rxIndex >= BUFFER_SIZE) {
+      rxIndex = 0; // Prevent buffer overflow
+    }
+    // Restart UART reception
+    HAL_UART_Receive_IT(&huart2, tempBuffer, 1);
 
+
+  }
+}
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -116,16 +134,22 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  HAL_UART_Receive_IT(&huart2, tempBuffer, 1);
   /* Infinite loop */
-  for(;;)
-  {
-    char msg[40];
+  for(;;) {
 
-    if (HAL_UART_Receive(&huart2, ) == HAL_OK) {
+    // char msg[] = "Hello there\r\n";
+    // HAL_UART_Transmit(&huart3, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
 
+    if (dataReady) {
+      // Reset flag
+      dataReady = 0;
+
+      HAL_UART_Transmit(&huart3, rxBuffer, strlen(rxBuffer), HAL_MAX_DELAY);
+
+      memset(rxBuffer, 0, BUFFER_SIZE);
+      rxIndex = 0;
     }
-
-    osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
 }
